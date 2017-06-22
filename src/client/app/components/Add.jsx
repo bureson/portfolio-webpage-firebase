@@ -10,7 +10,7 @@ class Add extends Component {
       original: this.original.value,
       prons: this.prons.value,
       means: this.means.value,
-      timestamp: Date.now()
+      timestamp: Math.floor(Date.now() / 1000)
     }, error => {
       if (error) {
         console.log(error);
