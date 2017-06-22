@@ -26,10 +26,11 @@ class Course extends Component {
     })
     this.courseRef = firebase.database().ref("course");
     this.courseRef.on('value', snapshot => {
+      const items = [];
       const tempItems = snapshot.val();
-      const items = Object.keys(tempItems)
-                          .sort(function(a, b) {return tempItems[b].timestamp - tempItems[a].timestamp})
-                          .map(function(key) {return tempItems[key]});
+      Object.keys(tempItems)
+            .sort(function(a, b) {return tempItems[b].timestamp - tempItems[a].timestamp})
+            .map(function(key) {items[key] = tempItems[key]});
       this.setState({
         course: items,
         loading: false
@@ -50,6 +51,7 @@ class Course extends Component {
 
   onDelete = (e, key) => {
     e.preventDefault();
+    alert(key);
     firebase.database().ref("course").child(key).remove();
   }
 
@@ -79,7 +81,7 @@ class Course extends Component {
                 {this.state.authed && <td>
                   <i className={'fa fa-calendar'} title={this.convertTimestamp(item.timestamp)}></i>
                   {' '}
-                  <a href="#" onClick={(e) => this.onDelete(e, key)}><i className={'fa fa-trash-o'}></i></a>
+                  <a href="#" onClick={(e) => this.onDelete(e, key)}><i className={'fa fa-trash'}></i></a>
                 </td>}
               </tr>
             )
