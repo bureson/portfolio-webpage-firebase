@@ -6,14 +6,14 @@
   "keywords": [
     "React",
     "Webpack",
-    "ESLint",
     "Babel",
-    "JavaScript"
+    "JavaScript",
+    "Less"
   ],
   "author": "Ondrej Bures",
   "repository": {
     "type": "git",
-    "url": "https://github.com/"
+    "url": "https://github.com/bureson/portfolio-webpage-firebase"
   },
   "license": "MIT",
   "scripts": {
@@ -40,13 +40,13 @@
     "babel-preset-es2015": "^6.14.0",
     "babel-preset-react": "^6.11.1",
     "babel-preset-stage-0": "^6.5.0",
-    "eslint": "^4.0.0",
-    "eslint-config-standard": "^10.2.1",
-    "eslint-plugin-promise": "^3.5.0",
-    "eslint-plugin-react": "^7.0.1",
-    "eslint-plugin-standard": "^3.0.1",
+    "css-hot-loader": "^1.2.0",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.4",
     "redux-devtools": "^3.3.1",
-    "webpack": "^2.6.1",
-    "webpack-dev-server": "^2.4.5"
+    "webpack": "^3.0.0",
+    "webpack-dev-server": "^2.5.0"
   }
 }

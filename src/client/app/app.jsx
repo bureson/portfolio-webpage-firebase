@@ -5,6 +5,7 @@ import Container from './components/Container';
 import Course from './components/Course';
 import Login from './components/Login';
 import Add from './components/Add';
+import Less from './less/root.less';
 
 render((
   <Router history={browserHistory}>

@@ -1,5 +1,6 @@
 var webpack = require("webpack");
 var path = require("path");
+var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 var BUILD_DIR = path.resolve(__dirname, "src/client/public");
 var APP_DIR = path.resolve(__dirname, "src/client/app");
@@ -17,7 +18,7 @@ module.exports = {
         }
     },
     module: {
-        loaders: [{
+        rules: [{
             test: /\.js$/,
             include: APP_DIR,
             exclude: /node_modules/,
@@ -27,14 +28,20 @@ module.exports = {
             include: APP_DIR,
             exclude: /node_modules/,
             loader: "babel-loader"
+        }, {
+            test: /\.less$/,
+            include: APP_DIR,
+            exclude: /node_modules/,
+            use: ['css-hot-loader'].concat(ExtractTextPlugin.extract([ 'css-loader', 'less-loader' ]))
         }]
     },
     resolve: {
-        extensions: ["", ".js", ".jsx"]
+        extensions: [".js", ".jsx"]
     },
     plugins: [
         new webpack.ProvidePlugin({
             "React": "react"
-        })
+        }),
+        new ExtractTextPlugin("style.css")
     ]
 };
