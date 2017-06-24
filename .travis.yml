@@ -2,8 +2,8 @@ language: node_js
 node_js:
   - "5.0"
 before_script:
-  = echo "Installing"
-  = npm install
+  - echo "Installing"
+  - npm install
 script:
   - echo "Starting"
   - npm start
