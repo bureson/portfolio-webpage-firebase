@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, browserHistory } from 'react-router';
+import { Link, browserHistory } from 'react-router-dom';
 
 class Menu extends Component {
 
