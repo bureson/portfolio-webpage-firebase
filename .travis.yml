@@ -4,6 +4,8 @@ node_js:
 before_script:
   - echo "Installing"
   - npm install
+  - cd functions
+  - npm install
 script:
   - echo "Starting"
   - npm run build
