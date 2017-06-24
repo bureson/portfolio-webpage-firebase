@@ -33,7 +33,7 @@ class Container extends Component {
   render = () => {
     return (
       <div className="container">
-        <h1>Language course by Ian @ Triggerz</h1>
+        <h1>Language course by Ian</h1>
         <Menu authed={this.state.authed} />
         {this.state.authed && <p>User logged: {this.state.user}</p>}
         {this.props.children}
