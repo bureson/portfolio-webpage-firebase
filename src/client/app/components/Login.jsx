@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { browserHistory } from 'react-router-dom';
+import { browserHistory, withRouter } from 'react-router-dom';
 
 class Login extends Component {
 
@@ -14,7 +14,7 @@ class Login extends Component {
     e.preventDefault();
     firebase.auth().signInWithEmailAndPassword(this.email.value, this.pw.value)
       .then(result => {
-        browserHistory.push('/');
+        this.props.history.push('/');
       })
       .catch(error => {
         this.setState({
@@ -43,4 +43,4 @@ class Login extends Component {
   }
 }
 
-export default Login;
+export default withRouter(Login);

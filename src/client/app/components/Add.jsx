@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { browserHistory } from 'react-router-dom';
+import { browserHistory, withRouter } from 'react-router-dom';
 
 class Add extends Component {
 
@@ -15,7 +15,7 @@ class Add extends Component {
       if (error) {
         console.log(error);
       } else {
-        browserHistory.push('/');
+        this.props.history.push('/');
       }
     });
   }
@@ -44,4 +44,4 @@ class Add extends Component {
 
 }
 
-export default Add;
+export default withRouter(Add);

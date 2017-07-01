@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import { Link, browserHistory } from 'react-router-dom';
+import { Link, browserHistory, withRouter } from 'react-router-dom';
 
 class Menu extends Component {
 
   onLogout = (e) => {
     e.preventDefault();
     firebase.auth().signOut();
-    browserHistory.push("/");
+    this.props.history.push('/');
   }
 
   render = () => {
@@ -22,4 +22,4 @@ class Menu extends Component {
 
 }
 
-export default Menu;
+export default withRouter(Menu);
