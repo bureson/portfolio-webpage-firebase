@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import firebase from 'firebase';
 
 class Add extends Component {
 

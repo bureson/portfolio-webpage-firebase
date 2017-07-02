@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import firebase from 'firebase';
 
 class Course extends Component {
 
@@ -51,7 +52,6 @@ class Course extends Component {
 
   onDelete = (e, key) => {
     e.preventDefault();
-    alert(key);
     firebase.database().ref("course").child(key).remove();
   }
 

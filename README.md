@@ -6,5 +6,5 @@ Portfolio webpage using firebase
 
 ## Commands
 
-`npm start`
-`npm run build`
+* `npm start`
+* `npm run build`
