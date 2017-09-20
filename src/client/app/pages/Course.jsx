@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
 class Course extends Component {
@@ -8,6 +9,7 @@ class Course extends Component {
     this.state = {
       authed: false,
       course: [],
+      page: 1,
       loading: true
     }
   }
@@ -27,11 +29,11 @@ class Course extends Component {
     })
     this.courseRef = firebase.database().ref("course");
     this.courseRef.on('value', snapshot => {
-      const items = [];
+      // const items = [];
       const tempItems = snapshot.val();
-      Object.keys(tempItems)
+      const items = Object.keys(tempItems)
             .sort(function(a, b) {return tempItems[b].timestamp - tempItems[a].timestamp})
-            .map(function(key) {items[key] = tempItems[key]});
+            .map(function(key) {return tempItems[key]}); // items[key] = tempItems[key]
       this.setState({
         course: items,
         loading: false
@@ -56,10 +58,12 @@ class Course extends Component {
   }
 
   renderCourse = () => {
-    let item;
     if (this.state.loading) {
       return <div>Loading ...</div>
     }
+    const firstKey = (this.state.page - 1) * 10;
+    const lastKey = firstKey + 10;
+    const courseSubset = this.state.course.slice(firstKey, lastKey);
     return (
       <table className={'table table-striped'}>
         <thead>
@@ -71,8 +75,7 @@ class Course extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.state.course && Object.keys(this.state.course).map((key, index) => {
-            item = this.state.course[key];
+          {this.state.course.map((item, index) => {
             return (
               <tr key={index}>
                 <td>{item.original}</td>
@@ -91,13 +94,18 @@ class Course extends Component {
     )
   }
 
-  render() {
+  render = () => {
     return (
-      <div className={'panel panel-default margin-top'}>
-        <div className={'panel-heading'}>List of {this.state.course && Object.keys(this.state.course).length} phrases</div>
-        <div className={'panel-body'}><p>This is temporary panel body</p></div>
-        {this.renderCourse()}
-      </div>
+      <DocumentTitle title='Course'>
+        <div>
+          <h2>Language course by Ian @ Triggerz</h2>
+          <div className={'panel panel-default margin-top'}>
+            <div className={'panel-heading'}>List of {this.state.course.length} phrases</div>
+            <div className={'panel-body'}><p>This is temporary panel body</p></div>
+            {this.renderCourse()}
+          </div>
+        </div>
+      </DocumentTitle>
     )
   }
 }

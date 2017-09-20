@@ -3,12 +3,13 @@ import { Route } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
-import Add from './Add';
+import Add from '../components/Add';
 import Course from './Course';
-import Login from './Login';
-import Menu from './Menu';
+import Home from './Home';
+import Login from '../components/Login';
+import Menu from '../components/Menu';
 
-class Container extends Component {
+class Index extends Component {
 
   constructor(props) {
     super(props);
@@ -38,18 +39,17 @@ class Container extends Component {
 
   render = () => {
     return (
-      <DocumentTitle title='Language course by Ian'>
-        <div className='container'>
-          <h1>Language course by Ian @ Triggerz</h1>
-          <Menu authed={this.state.authed} />
-          {this.state.authed && <p>User logged: {this.state.user}</p>}
-          <Route exact path={this.props.match.path} component={Course} />
-          <Route path='/add' component={Add} />
-          <Route path='/login' component={Login} />
-        </div>
-      </DocumentTitle>
+      <div className='container'>
+        <h1><span>O</span>ndrej <span>B</span>ures portfolio page</h1>
+        <Menu authed={this.state.authed} />
+        {this.state.authed && <p>User logged: {this.state.user}</p>}
+        <Route exact path={this.props.match.path} component={Home} />
+        <Route path='/course' component={Course} />
+        <Route path='/add' component={Add} />
+        <Route path='/login' component={Login} />
+      </div>
     )
   }
 }
 
-export default Container;
+export default Index;

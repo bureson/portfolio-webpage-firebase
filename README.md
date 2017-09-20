@@ -8,3 +8,7 @@ Portfolio webpage using firebase
 
 * `npm start`
 * `npm run build`
+
+When install fails
+
+* `npm cache verify`

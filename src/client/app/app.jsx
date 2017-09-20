@@ -2,7 +2,7 @@ import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, IndexRoute, browserHistory } from 'react-router-dom';
 import firebase from 'firebase';
 
-import Container from './components/Container';
+import Index from './pages/Index';
 import Less from './less/root.less';
 
 var config = {
@@ -17,6 +17,6 @@ firebase.initializeApp(config);
 
 render((
   <Router history={browserHistory}>
-    <Route component={Container} path='/' />
+    <Route component={Index} path='/' />
   </Router>
 ), document.getElementById('app'));
