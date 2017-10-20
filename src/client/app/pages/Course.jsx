@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
+import Pager from '../components/Pager';
+
 class Course extends Component {
 
   constructor(props) {
@@ -9,7 +11,7 @@ class Course extends Component {
     this.state = {
       authed: false,
       course: [],
-      page: 1,
+      page: 0,
       loading: true
     }
   }
@@ -57,13 +59,20 @@ class Course extends Component {
     firebase.database().ref("course").child(key).remove();
   }
 
+  onPageChange = (e, i) => {
+    e.preventDefault();
+    this.setState({
+      page: i
+    });
+  }
+
   renderCourse = () => {
     if (this.state.loading) {
       return <div>Loading ...</div>
     }
-    const firstKey = (this.state.page - 1) * 10;
+    const firstKey = this.state.page * 10;
     const lastKey = firstKey + 10;
-    const courseSubset = this.state.course.slice(firstKey, lastKey);
+    const pageContent = this.state.course.slice(firstKey, lastKey);
     return (
       <table className={'table table-striped'}>
         <thead>
@@ -75,7 +84,7 @@ class Course extends Component {
           </tr>
         </thead>
         <tbody>
-          {this.state.course.map((item, index) => {
+          {pageContent.map((item, index) => {
             return (
               <tr key={index}>
                 <td>{item.original}</td>
@@ -103,6 +112,7 @@ class Course extends Component {
             <div className={'panel-heading'}>List of {this.state.course.length} phrases</div>
             <div className={'panel-body'}><p>This is temporary panel body</p></div>
             {this.renderCourse()}
+            <Pager itemsCount={this.state.course.length} perPage={10} currentPage={this.state.page} onPageChange={(e, i) => this.onPageChange(e, i)} />
           </div>
         </div>
       </DocumentTitle>
