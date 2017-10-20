@@ -3,6 +3,7 @@ import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
 import Pager from '../components/Pager';
+import Search from '../components/Search';
 
 class Course extends Component {
 
@@ -11,8 +12,10 @@ class Course extends Component {
     this.state = {
       authed: false,
       course: [],
+      filteredCourse: [],
       page: 0,
-      loading: true
+      loading: true,
+      search: ''
     }
   }
 
@@ -31,13 +34,13 @@ class Course extends Component {
     })
     this.courseRef = firebase.database().ref("course");
     this.courseRef.on('value', snapshot => {
-      // const items = [];
-      const tempItems = snapshot.val();
-      const items = Object.keys(tempItems)
-            .sort(function(a, b) {return tempItems[b].timestamp - tempItems[a].timestamp})
-            .map(function(key) {return tempItems[key]}); // items[key] = tempItems[key]
+      const payload = snapshot.val();
+      const course = Object.keys(payload)
+            .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
+            .map(key => payload[key]);
       this.setState({
-        course: items,
+        course,
+        filteredCourse: course.filter(i => i.original.includes(this.state.search)),
         loading: false
       });
     });
@@ -59,6 +62,15 @@ class Course extends Component {
     firebase.database().ref("course").child(key).remove();
   }
 
+  onFilterChange = (e) => {
+    e.preventDefault();
+    const search = e.target.value;
+    this.setState({
+      search,
+      filteredCourse: this.state.course.filter(i => i.original.includes(search))
+    })
+  }
+
   onPageChange = (e, i) => {
     e.preventDefault();
     this.setState({
@@ -72,7 +84,7 @@ class Course extends Component {
     }
     const firstKey = this.state.page * 10;
     const lastKey = firstKey + 10;
-    const pageContent = this.state.course.slice(firstKey, lastKey);
+    const pageContent = this.state.filteredCourse.slice(firstKey, lastKey);
     return (
       <table className={'table table-striped'}>
         <thead>
@@ -109,10 +121,12 @@ class Course extends Component {
         <div>
           <h2>Language course by Ian @ Triggerz</h2>
           <div className={'panel panel-default margin-top'}>
-            <div className={'panel-heading'}>List of {this.state.course.length} phrases</div>
-            <div className={'panel-body'}><p>This is temporary panel body</p></div>
+            <div className={'panel-heading'}>List of {this.state.filteredCourse.length} phrases</div>
+            <div className={'panel-body'}>
+              <Search value={this.state.search} onChange={this.onFilterChange} />
+            </div>
             {this.renderCourse()}
-            <Pager itemsCount={this.state.course.length} perPage={10} currentPage={this.state.page} onPageChange={(e, i) => this.onPageChange(e, i)} />
+            <Pager itemsCount={this.state.filteredCourse.length} perPage={10} currentPage={this.state.page} onPageChange={this.onPageChange} />
           </div>
         </div>
       </DocumentTitle>
