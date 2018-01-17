@@ -53,7 +53,7 @@ class Course extends Component {
 
   convertTimestamp = (timestamp) => {
     const date = new Date(timestamp * 1000);
-    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
     return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
   }
 
@@ -67,7 +67,7 @@ class Course extends Component {
     const search = e.target.value;
     this.setState({
       search,
-      filteredCourse: this.state.course.filter(i => i.original.includes(search))
+      filteredCourse: this.state.course.filter(i => i.original.toLowerCase().includes(search.toLowerCase()))
     })
   }
 
