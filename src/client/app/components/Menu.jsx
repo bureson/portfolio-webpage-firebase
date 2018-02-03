@@ -16,7 +16,7 @@ class Menu extends Component {
         <ul className="nav nav-pills">
           <li><Link to="/">Home</Link></li>
           <li><Link to="/course">Course</Link></li>
-          {this.props.authed && <li><Link to="/add">Add new</Link></li>}
+          {this.props.authed &&<li><Link to="/countries">Countries</Link></li>}
           {!this.props.authed && <li><Link to="/login">Login</Link></li>}
           {this.props.authed && <li><a href="#" onClick={e => this.onLogout(e)}>Log out</a></li>}
         </ul>

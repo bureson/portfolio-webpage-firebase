@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
@@ -10,7 +11,7 @@ class Course extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      authed: false,
+      authed: props.authed,
       course: [],
       filteredCourse: [],
       page: 0,
@@ -20,24 +21,12 @@ class Course extends Component {
   }
 
   componentDidMount = () => {
-    this.removeListener = firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        this.setState({
-          authed: !user.isAnonymous,
-          user: user.email
-        })
-      } else {
-        this.setState({
-          authed: false
-        })
-      }
-    })
     this.courseRef = firebase.database().ref("course");
     this.courseRef.on('value', snapshot => {
-      const payload = snapshot.val();
+      const payload = snapshot.val() || {};
       const course = Object.keys(payload)
             .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
-            .map(key => payload[key]);
+            .map(key => Object.assign({key}, payload[key]));
       this.setState({
         course,
         filteredCourse: course.filter(i => i.original.includes(this.state.search)),
@@ -48,7 +37,12 @@ class Course extends Component {
 
   componentWillUnmount = () => {
     this.courseRef.off();
-    this.removeListener();
+  }
+
+  componentWillReceiveProps = (props) => {
+    this.setState({
+      authed: props.authed
+    });
   }
 
   convertTimestamp = (timestamp) => {
@@ -105,7 +99,7 @@ class Course extends Component {
                 {this.state.authed && <td>
                   <i className={'fa fa-calendar'} title={this.convertTimestamp(item.timestamp)}></i>
                   {' '}
-                  <a href="#" onClick={(e) => this.onDelete(e, key)}><i className={'fa fa-trash'}></i></a>
+                  <a href="#" onClick={(e) => this.onDelete(e, item.key)}><i className={'fa fa-trash'}></i></a>
                 </td>}
               </tr>
             )
@@ -121,7 +115,11 @@ class Course extends Component {
         <div>
           <h2>Language course by Ian @ Triggerz</h2>
           <div className={'panel panel-default margin-top'}>
-            <div className={'panel-heading'}>List of {this.state.filteredCourse.length} phrases</div>
+            <div className={'panel-heading'}>
+              List of {this.state.filteredCourse.length} phrases
+              {this.state.authed && <Link to={'/add-phrase'}><button className={'btn btn-default pull-right'}>Add new phrase</button></Link>}
+              <div className={'clearfix'}></div>
+            </div>
             <div className={'panel-body'}>
               <Search value={this.state.search} onChange={this.onFilterChange} />
             </div>

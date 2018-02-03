@@ -3,7 +3,7 @@ import { withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 import DocumentTitle from 'react-document-title';
 
-class Add extends Component {
+class AddWord extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
@@ -17,14 +17,14 @@ class Add extends Component {
       if (error) {
         console.log(error);
       } else {
-        this.props.history.push('/');
+        this.props.history.push('/course');
       }
     });
   }
 
   render = () => {
     return (
-      <DocumentTitle title='Add new item'>
+      <DocumentTitle title='Add new phrase'>
         <div className={'row'}>
           <div className={'col-xs-9'}>
             <form onSubmit={e => this.onSubmit(e)}>
@@ -62,4 +62,4 @@ class Add extends Component {
   }
 }
 
-export default withRouter(Add);
+export default withRouter(AddWord);

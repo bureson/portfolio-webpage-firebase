@@ -3,7 +3,9 @@ import { Route } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
-import Add from './Add';
+import AddCountry from './AddCountry';
+import AddWord from './AddWord';
+import Countries from './Countries';
 import Course from './Course';
 import Home from './Home';
 import Login from '../components/Login';
@@ -46,8 +48,10 @@ class Index extends Component {
           <Menu authed={this.state.authed} />
           {this.state.authed && <p>User logged: {this.state.user}</p>}
           <Route exact path={this.props.match.path} component={Home} />
-          <Route path='/course' component={Course} />
-          <Route path='/add' component={Add} />
+          <Route path='/countries' render={(props) => <Countries {...props} authed={this.state.authed}/>} />
+          <Route path='/add-country' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
+          <Route path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+          <Route path='/add-phrase' component={AddWord} />
           <Route path='/login' component={Login} />
         </div>
         </div>
