@@ -24,7 +24,7 @@ class Course extends Component {
   onFileUpload = (e) => {
     const file = e.target.files[0];
     const storageRef = firebase.storage().ref();
-    const uploadTask = storageRef.child(`countries/${file.name}`).put(file);
+    const uploadTask = storageRef.child(`country/${file.name}`).put(file);
     uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log('Upload is ' + Math.round(progress) + '% done');
