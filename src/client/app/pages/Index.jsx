@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Link, Route } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
@@ -25,7 +25,7 @@ class Index extends Component {
       if (user) {
         this.setState({
           authed: !user.isAnonymous,
-          user: user.email
+          user: user
         })
       } else {
         this.setState({
@@ -41,20 +41,19 @@ class Index extends Component {
 
   render = () => {
     return (
-      <div className={'container'}>
-        <div className={'row'}>
-        <div className={'col-xs-12'}>
-          <h1><span>O</span>ndrej <span>B</span>ures portfolio page</h1>
-          <Menu authed={this.state.authed} />
-          {this.state.authed && <p>User logged: {this.state.user}</p>}
-          <Route exact path={this.props.match.path} component={Home} />
-          <Route path='/countries' render={(props) => <Countries {...props} authed={this.state.authed}/>} />
-          <Route path='/add-country' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
-          <Route path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
-          <Route path='/add-phrase' component={AddWord} />
-          <Route path='/login' component={Login} />
+      <div className='container'>
+        <div className='header'>
+          <Link to='/'>
+            <h1>Ondrej Bures</h1>
+          </Link>
+          <Menu authed={this.state.authed} user={this.state.user} />
         </div>
-        </div>
+        <Route exact path={this.props.match.path} component={Home} />
+        <Route path='/countries' render={(props) => <Countries {...props} authed={this.state.authed}/>} />
+        <Route path='/add-country' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
+        <Route path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+        <Route path='/add-phrase' component={AddWord} />
+        <Route path='/login' component={Login} />
       </div>
     )
   }

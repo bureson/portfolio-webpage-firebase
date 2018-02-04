@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
+import Loader from '../components/Loader';
 import Pager from '../components/Pager';
 import Search from '../components/Search';
 
@@ -15,6 +16,7 @@ class Course extends Component {
       course: [],
       filteredCourse: [],
       page: 0,
+      perPage: 20,
       loading: true,
       search: ''
     }
@@ -61,7 +63,7 @@ class Course extends Component {
     const search = e.target.value;
     this.setState({
       search,
-      filteredCourse: this.state.course.filter(i => i.original.toLowerCase().includes(search.toLowerCase()))
+      filteredCourse: this.state.course.filter(i => ['original', 'means'].some(key => i[key].toLowerCase().includes(search.toLowerCase())))
     })
   }
 
@@ -74,13 +76,13 @@ class Course extends Component {
 
   renderCourse = () => {
     if (this.state.loading) {
-      return <div>Loading ...</div>
+      return <Loader />
     }
-    const firstKey = this.state.page * 10;
-    const lastKey = firstKey + 10;
+    const firstKey = this.state.page * this.state.perPage;
+    const lastKey = firstKey + this.state.perPage;
     const pageContent = this.state.filteredCourse.slice(firstKey, lastKey);
     return (
-      <table className={'table table-striped'}>
+      <table>
         <thead>
           <tr>
             <th>Original</th>
@@ -111,21 +113,20 @@ class Course extends Component {
 
   render = () => {
     return (
-      <DocumentTitle title='Course'>
-        <div>
+      <DocumentTitle title='Course | Ondrej Bures'>
+        <div className='course'>
           <h2>Language course by Ian @ Triggerz</h2>
-          <div className={'panel panel-default margin-top'}>
-            <div className={'panel-heading'}>
+          <div className='course-header'>
+            <div className='course-info'>
               List of {this.state.filteredCourse.length} phrases
-              {this.state.authed && <Link to={'/add-phrase'}><button className={'btn btn-default pull-right'}>Add new phrase</button></Link>}
-              <div className={'clearfix'}></div>
             </div>
-            <div className={'panel-body'}>
+            <div className='course-controls'>
               <Search value={this.state.search} onChange={this.onFilterChange} />
+              {this.state.authed && <Link to={'/add-phrase'}><button>Add new phrase</button></Link>}
             </div>
-            {this.renderCourse()}
-            <Pager itemsCount={this.state.filteredCourse.length} perPage={10} currentPage={this.state.page} onPageChange={this.onPageChange} />
           </div>
+          {this.renderCourse()}
+          <Pager itemsCount={this.state.filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
         </div>
       </DocumentTitle>
     )

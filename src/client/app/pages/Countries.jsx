@@ -3,7 +3,9 @@ import { Link } from 'react-router-dom';
 import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
-class Course extends Component {
+import Loader from '../components/Loader';
+
+class Countries extends Component {
 
   constructor(props) {
     super(props);
@@ -38,32 +40,57 @@ class Course extends Component {
     });
   }
 
+  convertTimestamp = (timestamp) => {
+    const date = new Date(timestamp * 1000);
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return months[date.getMonth()] + ' ' + date.getFullYear();
+  }
+
   onDelete = (e, key) => {
     e.preventDefault();
     firebase.database().ref("country").child(key).remove();
   }
 
-  render = () => {
+  renderCountries = () => {
+    if (this.state.loading) {
+      return <Loader />
+    }
     return (
-      <DocumentTitle title='Countries'>
-        <div>
-          <h2>Countries log</h2>
-          {this.state.authed && <Link to={'/add-country'}><button className={'btn btn-default pull-right'}>Add new country</button></Link>}
-          <p>{this.state.country.length} countries visited</p>
-          {this.state.country.map((country, index) => {
-            return (
-              <div key={index}>
-                <p>{country.name} <a href='#' onClick={e => this.onDelete(e, country.key)}>Remove</a></p>
-                <p>{country.date}</p>
-                <img src={`${country.photoPath}`} width='500px' />
+      <div className='countries-list'>
+        {this.state.country.map((country, index) => {
+          return (
+            <div key={index} className='country'>
+              <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+              <div className='content'>
+                <h3>{country.name}</h3>
+                <small>{this.convertTimestamp(country.date)}</small>
                 <p>{country.description}</p>
               </div>
-            )
-          })}
+            </div>
+          )
+        })}
+      </div>
+    )
+  }
+
+  render = () => {
+    return (
+      <DocumentTitle title='Countries | Ondrej Bures'>
+        <div className='countries'>
+          <h2>Countries log</h2>
+          <div className='countries-header'>
+            <div className='countries-info'>
+              <p>{this.state.country.length} countries visited</p>
+            </div>
+            <div className='countries-controls'>
+              {this.state.authed && <Link to={'/add-country'}><button>Add new country</button></Link>}
+            </div>
+          </div>
+          {this.renderCountries()}
         </div>
       </DocumentTitle>
     )
   }
 }
 
-export default Course;
+export default Countries;

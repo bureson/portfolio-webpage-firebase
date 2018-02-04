@@ -61,17 +61,32 @@ class Course extends Component {
   }
 
   render = () => {
+    const isLoading = this.state.progress;
+    const hasUrl = this.state.filePath;
     return (
-      <DocumentTitle title='Add new country'>
+      <DocumentTitle title='Add new country | Ondrej Bures'>
         <div>
           <form onSubmit={e => this.onSubmit(e)}>
             <h2>Add new country</h2>
-            <input type='text' placeholder='Country name' ref={name => this.name = name} />
-            <input type='date' placeholder='Visited' ref={date => this.date = date} />
-            <input type='file' onChange={e => this.onFileUpload(e)} />
-            <textarea placeholder='Description' ref={description => this.description = description}></textarea>
-            <p>{this.state.filePath}</p>
-            <input type='submit' value='Submit'></input>
+            <div className='input-group'>
+              <label htmlFor='country'>Country</label>
+              <input type='text' id='country' placeholder='Country name' ref={name => this.name = name} />
+            </div>
+            <div className='input-group'>
+              <label htmlFor='date'>Date visited</label>
+              <input type='date' id='date' placeholder='Visited' ref={date => this.date = date} />
+            </div>
+            <div className='input-group'>
+              <label htmlFor='photo'>Main photo</label>
+              {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={e => this.onFileUpload(e)} />}
+              {isLoading && <progress value={this.state.progress} max='100' />}
+              {hasUrl && <p>{this.state.filePath}</p>}
+            </div>
+            <div className='input-group'>
+              <label htmlFor='short-desc'>Short description</label>
+              <textarea id='short-desc' placeholder='Description' ref={description => this.description = description}></textarea>
+            </div>
+            <button type='submit' value='Submit'>Submit</button>
           </form>
         </div>
       </DocumentTitle>

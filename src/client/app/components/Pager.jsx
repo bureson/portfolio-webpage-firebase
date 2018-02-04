@@ -21,8 +21,8 @@ class Course extends Component {
   render = () => {
     const pageCount = Math.ceil(this.state.itemsCount / this.state.perPage);
     return (
-      <nav className={'text-center'}>
-        <ul className={'pagination'}>
+      <nav className='pager'>
+        <ul>
           {[...Array(pageCount).keys()].map(i => {
             return (
               <li key={i} className={i === this.state.page && 'active'}>
