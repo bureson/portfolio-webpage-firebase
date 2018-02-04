@@ -40,7 +40,7 @@ module.exports = {
     extensions: [".js", ".jsx"]
   },
   plugins: [
-    new webpack.ProvidePlugin({"React": "react"}),
+    new webpack.ProvidePlugin({ "React": "react"}),
     new ExtractTextPlugin("style.css"),
     // new UglifyJSPlugin(),
     // new webpack.DefinePlugin({
