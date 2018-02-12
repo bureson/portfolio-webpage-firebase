@@ -25,8 +25,8 @@ class Course extends Component {
         <ul>
           {[...Array(pageCount).keys()].map(i => {
             return (
-              <li key={i} className={i === this.state.page && 'active'}>
-                <a href='#' onClick={e => this.props.onPageChange(e, i)}>{i + 1}</a>
+              <li key={i} className={i === this.state.page ? 'active' : undefined}>
+                <button onClick={e => this.props.onPageChange(e, i)}>{i + 1}</button>
               </li>
             )
           })}

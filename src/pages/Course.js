@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
 import Loader from '../components/Loader';
@@ -23,6 +22,7 @@ class Course extends Component {
   }
 
   componentDidMount = () => {
+    document.title = 'Language course | Ondrej Bures';
     this.courseRef = firebase.database().ref("course");
     this.courseRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
@@ -101,7 +101,7 @@ class Course extends Component {
                 {this.state.authed && <td>
                   <i className={'fa fa-calendar'} title={this.convertTimestamp(item.timestamp)}></i>
                   {' '}
-                  <a href="#" onClick={(e) => this.onDelete(e, item.key)}><i className={'fa fa-trash'}></i></a>
+                  <button onClick={(e) => this.onDelete(e, item.key)}><i className={'fa fa-trash'}></i></button>
                 </td>}
               </tr>
             )
@@ -113,22 +113,20 @@ class Course extends Component {
 
   render = () => {
     return (
-      <DocumentTitle title='Course | Ondrej Bures'>
-        <div className='course'>
-          <h2>Language course by Ian @ Triggerz</h2>
-          <div className='course-header'>
-            <div className='course-info'>
-              List of {this.state.filteredCourse.length} phrases
-            </div>
-            <div className='course-controls'>
-              <Search value={this.state.search} onChange={this.onFilterChange} />
-              {this.state.authed && <Link to={'/add-phrase'}><button>Add new phrase</button></Link>}
-            </div>
+      <div className='course'>
+        <h2>Language course by Ian @ Triggerz</h2>
+        <div className='course-header'>
+          <div className='course-info'>
+            List of {this.state.filteredCourse.length} phrases
           </div>
-          {this.renderCourse()}
-          <Pager itemsCount={this.state.filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
+          <div className='course-controls'>
+            <Search value={this.state.search} onChange={this.onFilterChange} />
+            {this.state.authed && <Link to={'/add-phrase'}><button>Add new phrase</button></Link>}
+          </div>
         </div>
-      </DocumentTitle>
+        {this.renderCourse()}
+        <Pager itemsCount={this.state.filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
+      </div>
     )
   }
 }

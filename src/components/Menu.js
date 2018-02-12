@@ -34,15 +34,15 @@ class Menu extends Component {
   render = () => {
     return (
       <nav className={this.state.isOpen ? 'open' : 'closed'}>
-        <a href='#' className='hamburger' onClick={e => this.toggleMenu(e)}>
+        <button className='hamburger' onClick={e => this.toggleMenu(e)}>
           <div></div>
           <div></div>
           <div></div>
-        </a>
+        </button>
         <ul>
           <li><Link to='/course' onClick={e => this.navigate(e)}>Course</Link></li>
           {this.props.authed &&<li><Link to='/countries' onClick={e => this.navigate(e)}>Countries</Link></li>}
-          <li><a href='#'><i className="fas fa-user-circle"></i></a>
+          <li><button><i className="fas fa-user-circle"></i></button>
             <ul>
               {!this.props.authed && <li><Link to='/login' onClick={e => this.navigate(e)}>Login</Link></li>}
               {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>Log out ({this.props.user.email})</Link></li>}

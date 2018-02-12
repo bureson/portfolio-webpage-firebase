@@ -366,14 +366,16 @@ table td:first-child {
 .pager ul li.active a {
   background: #eee;
 }
-.pager ul li a {
+.pager ul li button {
   background: #ffffff85;
   display: block;
   height: 30px;
   line-height: 30px;
   width: 30px;
+  border: 0;
+  padding: 0;
 }
-.pager ul li a:hover {
+.pager ul li button:hover {
   background: #eee;
 }
 .spinner {

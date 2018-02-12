@@ -1,11 +1,13 @@
+import React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router, Route, IndexRoute, browserHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
 import firebase from 'firebase';
 
+import './index.css';
 import Index from './pages/Index';
-import Less from './less/root.less';
+import registerServiceWorker from './registerServiceWorker';
 
-var config = {
+const config = {
   apiKey: "AIzaSyAeVI0XvsnAu3W7msJQ3Iff4ly-gcm9uLs",
   authDomain: "portfolio-project-f7f88.firebaseapp.com",
   databaseURL: "https://portfolio-project-f7f88.firebaseio.com",
@@ -15,8 +17,8 @@ var config = {
 };
 firebase.initializeApp(config);
 
-render((
-  <Router history={browserHistory}>
+render(
+  <Router>
     <Route component={Index} path='/' />
-  </Router>
-), document.getElementById('app'));
+  </Router>, document.getElementById('root'));
+registerServiceWorker();

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
 class Course extends Component {
@@ -64,32 +63,30 @@ class Course extends Component {
     const isLoading = this.state.progress;
     const hasUrl = this.state.filePath;
     return (
-      <DocumentTitle title='Add new country | Ondrej Bures'>
-        <div>
-          <form onSubmit={e => this.onSubmit(e)}>
-            <h2>Add new country</h2>
-            <div className='input-group'>
-              <label htmlFor='country'>Country</label>
-              <input type='text' id='country' placeholder='Country name' ref={name => this.name = name} />
-            </div>
-            <div className='input-group'>
-              <label htmlFor='date'>Date visited</label>
-              <input type='date' id='date' placeholder='Visited' ref={date => this.date = date} />
-            </div>
-            <div className='input-group'>
-              <label htmlFor='photo'>Main photo</label>
-              {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={e => this.onFileUpload(e)} />}
-              {isLoading && <progress value={this.state.progress} max='100' />}
-              {hasUrl && <p>{this.state.filePath}</p>}
-            </div>
-            <div className='input-group'>
-              <label htmlFor='short-desc'>Short description</label>
-              <textarea id='short-desc' placeholder='Description' ref={description => this.description = description}></textarea>
-            </div>
-            <button type='submit' value='Submit'>Submit</button>
-          </form>
-        </div>
-      </DocumentTitle>
+      <div>
+        <form onSubmit={e => this.onSubmit(e)}>
+          <h2>Add new country</h2>
+          <div className='input-group'>
+            <label htmlFor='country'>Country</label>
+            <input type='text' id='country' placeholder='Country name' ref={name => this.name = name} />
+          </div>
+          <div className='input-group'>
+            <label htmlFor='date'>Date visited</label>
+            <input type='date' id='date' placeholder='Visited' ref={date => this.date = date} />
+          </div>
+          <div className='input-group'>
+            <label htmlFor='photo'>Main photo</label>
+            {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={e => this.onFileUpload(e)} />}
+            {isLoading && <progress value={this.state.progress} max='100' />}
+            {hasUrl && <p>{this.state.filePath}</p>}
+          </div>
+          <div className='input-group'>
+            <label htmlFor='short-desc'>Short description</label>
+            <textarea id='short-desc' placeholder='Description' ref={description => this.description = description}></textarea>
+          </div>
+          <button type='submit' value='Submit'>Submit</button>
+        </form>
+      </div>
     )
   }
 }

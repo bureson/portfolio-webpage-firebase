@@ -1,0 +1,9 @@
+{
+  "short_name": "Ondrej Bures Portfolio",
+  "name": "Ondrej Bures portfolio page",
+  "icons": [],
+  "start_url": "./index.html",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}

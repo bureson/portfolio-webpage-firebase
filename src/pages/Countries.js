@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import DocumentTitle from 'react-document-title';
 import firebase from 'firebase';
 
 import Loader from '../components/Loader';
@@ -17,6 +16,7 @@ class Countries extends Component {
   }
 
   componentDidMount = () => {
+    document.title = 'Countries list | Ondrej Bures';
     this.countryRef = firebase.database().ref("country");
     this.countryRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
@@ -75,20 +75,18 @@ class Countries extends Component {
 
   render = () => {
     return (
-      <DocumentTitle title='Countries | Ondrej Bures'>
-        <div className='countries'>
-          <h2>Countries log</h2>
-          <div className='countries-header'>
-            <div className='countries-info'>
-              <p>{this.state.country.length} countries visited</p>
-            </div>
-            <div className='countries-controls'>
-              {this.state.authed && <Link to={'/add-country'}><button>Add new country</button></Link>}
-            </div>
+      <div className='countries'>
+        <h2>Countries log</h2>
+        <div className='countries-header'>
+          <div className='countries-info'>
+            <p>{this.state.country.length} countries visited</p>
           </div>
-          {this.renderCountries()}
+          <div className='countries-controls'>
+            {this.state.authed && <Link to={'/add-country'}><button>Add new country</button></Link>}
+          </div>
         </div>
-      </DocumentTitle>
+        {this.renderCountries()}
+      </div>
     )
   }
 }
