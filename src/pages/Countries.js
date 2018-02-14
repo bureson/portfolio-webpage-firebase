@@ -17,7 +17,7 @@ class Countries extends Component {
 
   componentDidMount = () => {
     document.title = 'Countries list | Ondrej Bures';
-    this.countryRef = firebase.database().ref("country");
+    this.countryRef = firebase.database().ref('country');
     this.countryRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
       const country = Object.keys(payload)
@@ -48,7 +48,7 @@ class Countries extends Component {
 
   onDelete = (e, key) => {
     e.preventDefault();
-    firebase.database().ref("country").child(key).remove();
+    firebase.database().ref('country').child(key).remove();
   }
 
   renderCountries = () => {
@@ -59,14 +59,16 @@ class Countries extends Component {
       <div className='countries-list'>
         {this.state.country.map((country, index) => {
           return (
-            <div key={index} className='country'>
-              <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
-              <div className='content'>
-                <h3>{country.name}</h3>
-                <small>{this.convertTimestamp(country.date)}</small>
-                <p>{country.description}</p>
+            <Link to={`/countries/${country.key}`} key={index}>
+              <div className='country'>
+                <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+                <div className='content'>
+                  <h3>{country.name}</h3>
+                  <small>{this.convertTimestamp(country.date)}</small>
+                  <p>{country.description}</p>
+                </div>
               </div>
-            </div>
+            </Link>
           )
         })}
       </div>
@@ -82,7 +84,7 @@ class Countries extends Component {
             <p>{this.state.country.length} countries visited</p>
           </div>
           <div className='countries-controls'>
-            {this.state.authed && <Link to={'/add-country'}><button>Add new country</button></Link>}
+            {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
           </div>
         </div>
         {this.renderCountries()}

@@ -6,7 +6,7 @@ class AddWord extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    const courseRef = firebase.database().ref("course");
+    const courseRef = firebase.database().ref('course');
     courseRef.push({
       original: this.original.value,
       prons: this.prons.value,

@@ -23,7 +23,7 @@ class Course extends Component {
 
   componentDidMount = () => {
     document.title = 'Language course | Ondrej Bures';
-    this.courseRef = firebase.database().ref("course");
+    this.courseRef = firebase.database().ref('course');
     this.courseRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
       const course = Object.keys(payload)
@@ -55,7 +55,9 @@ class Course extends Component {
 
   onDelete = (e, key) => {
     e.preventDefault();
-    firebase.database().ref("course").child(key).remove();
+    if (window.confirm('Are you sure you want to delete the item?')) {
+      firebase.database().ref('course').child(key).remove();
+    }
   }
 
   onFilterChange = (e) => {
