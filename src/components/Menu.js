@@ -42,12 +42,7 @@ class Menu extends Component {
         <ul>
           <li><Link to='/course' onClick={e => this.navigate(e)}>Course</Link></li>
           {this.props.authed &&<li><Link to='/countries' onClick={e => this.navigate(e)}>Countries</Link></li>}
-          <li><button><i className="fas fa-user-circle"></i></button>
-            <ul>
-              {!this.props.authed && <li><Link to='/login' onClick={e => this.navigate(e)}>Login</Link></li>}
-              {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>Log out ({this.props.user.email})</Link></li>}
-            </ul>
-          </li>
+          {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>Log out</Link></li>}
         </ul>
       </nav>
     )
