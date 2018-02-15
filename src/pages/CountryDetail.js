@@ -67,7 +67,7 @@ class CountryDetail extends Component {
         <h2>{this.state.country.name}</h2>
         <div className='countries-header'>
           <div className='countries-info'>
-            <p><strong>{this.convertTimestamp(this.state.country.date)}</strong></p>
+            <p><strong>Conquered in {this.convertTimestamp(this.state.country.date)}</strong></p>
             <p><em>{this.state.country.description}</em></p>
           </div>
           {this.state.authed && <div className='countries-controls'>
@@ -75,7 +75,7 @@ class CountryDetail extends Component {
             <button onClick={(e) => this.onDelete(e, this.state.country.key)}><i className={'fa fa-trash'}></i></button>
           </div>}
         </div>
-        {this.state.country.photoPath && <img src={this.state.country.photoPath} alt={this.state.country.name} />}
+        {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
         <div>
           <p>{this.state.country.story}</p>
         </div>

@@ -89,7 +89,7 @@ class Course extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    const key = this.state.key || this.name.value.replace(/\s+/g, '-').toLowerCase();
+    const key = this.state.key || this.state.name.replace(/\s+/g, '-').toLowerCase();
     firebase.database().ref(`country/${key}`).set({
       name: this.state.name,
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,

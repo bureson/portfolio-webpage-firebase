@@ -321,6 +321,12 @@ table td:first-child {
 .countries .countries-list .country .content {
   padding: 10px;
 }
+.countries .country-cover {
+  width: 100%;
+  height: 300px;
+  background-size: cover;
+  background-position: center;
+}
 .search-group {
   position: relative;
   display: inline-block;
