@@ -9,6 +9,7 @@ import Course from './Course';
 import Home from './Home';
 import Login from '../components/Login';
 import Menu from '../components/Menu';
+import NoMatch from '../components/NoMatch';
 import CountryDetail from './CountryDetail';
 
 class Index extends Component {
@@ -48,16 +49,17 @@ class Index extends Component {
           </Link>
           <Menu authed={this.state.authed} user={this.state.user} />
         </div>
-        <Route exact path={this.props.match.path} component={Home} />
-        <Route exact path='/countries' render={(props) => <Countries {...props} authed={this.state.authed}/>} />
         <Switch>
+          <Route exact path={this.props.match.path} component={Home} />
+          <Route exact path='/countries' render={(props) => <Countries {...props} authed={this.state.authed}/>} />
           <Route exact path='/countries/add' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
           <Route exact path='/countries/:country' render={(props) => <CountryDetail {...props} authed={this.state.authed}/>} />
           <Route exact path='/countries/:country/edit' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course/add' render={(props) => <AddWord {...props} authed={this.state.authed}/>} />
+          <Route exact path='/login' component={Login} />
+          <Route component={NoMatch} />
         </Switch>
-        <Route excat path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
-        <Route exact path='/add-phrase' component={AddWord} />
-        <Route exact path='/login' component={Login} />
       </div>
     )
   }

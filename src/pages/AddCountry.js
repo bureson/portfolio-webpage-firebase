@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import firebase from 'firebase';
 
 import Loader from '../components/Loader';
+import NoMatch from '../components/NoMatch';
 
 class Course extends Component {
 
@@ -104,11 +105,14 @@ class Course extends Component {
   }
 
   render = () => {
-    const isLoading = this.state.progress;
-    const hasUrl = this.state.filePath;
+    if (!this.state.authed) {
+      return <NoMatch />
+    }
     if (this.state.loading) {
       return <Loader />
     }
+    const isLoading = this.state.progress;
+    const hasUrl = this.state.filePath;
     return (
       <div>
         <form onSubmit={e => this.onSubmit(e)}>

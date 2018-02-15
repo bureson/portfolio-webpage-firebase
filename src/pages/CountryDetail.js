@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
 import Loader from '../components/Loader';
+import NoMatch from '../components/NoMatch';
 
 class CountryDetail extends Component {
 
@@ -20,15 +21,13 @@ class CountryDetail extends Component {
     this.countryRef = firebase.database().ref('country').child(countryKey);
     this.countryRef.on('value', snapshot => {
       const payload = snapshot.val();
-      if (payload) {
-        document.title = `${payload.name} | Ondrej Bures`;
-        this.setState({
-          country: Object.assign({
-            key: countryKey
-          }, payload),
-          loading: false
-        });
-      }
+      document.title = `${payload ? payload.name : 'Not found'} | Ondrej Bures`;
+      this.setState({
+        country: payload ? Object.assign({
+          key: countryKey
+        }, payload) : null,
+        loading: false
+      });
     });
   }
 
@@ -59,6 +58,9 @@ class CountryDetail extends Component {
   render = () => {
     if (this.state.loading) {
       return <Loader />
+    }
+    if (!this.state.country) {
+      return <NoMatch />
     }
     return (
       <div className='countries'>

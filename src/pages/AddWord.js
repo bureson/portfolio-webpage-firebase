@@ -2,7 +2,22 @@ import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 
+import NoMatch from '../components/NoMatch';
+
 class AddWord extends Component {
+
+  constructor(props) {
+    super(props);
+    this.state = {
+      authed: props.authed
+    }
+  }
+
+  componentWillReceiveProps = (props) => {
+    this.setState({
+      authed: props.authed
+    });
+  }
 
   onSubmit = (e) => {
     e.preventDefault();
@@ -22,6 +37,9 @@ class AddWord extends Component {
   }
 
   render = () => {
+    if (!this.state.authed) {
+      return <NoMatch />
+    }
     return (
       <div className='add-phrase'>
         <h2>Add new phrase</h2>

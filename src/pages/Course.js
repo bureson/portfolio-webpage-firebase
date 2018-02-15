@@ -123,7 +123,7 @@ class Course extends Component {
           </div>
           <div className='course-controls'>
             <Search value={this.state.search} onChange={this.onFilterChange} />
-            {this.state.authed && <Link to={'/add-phrase'}><button>Add new phrase</button></Link>}
+            {this.state.authed && <Link to={'/course/add'}><button>Add new phrase</button></Link>}
           </div>
         </div>
         {this.renderCourse()}
