@@ -42,7 +42,7 @@ class Countries extends Component {
 
   convertTimestamp = (timestamp) => {
     const date = new Date(timestamp * 1000);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     return months[date.getMonth()] + ' ' + date.getFullYear();
   }
 
