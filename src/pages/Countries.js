@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import firebase from 'firebase';
 
 import Loader from '../components/Loader';
@@ -23,8 +24,16 @@ class Countries extends Component {
       const country = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
             .map(key => Object.assign({key}, payload[key]));
+      const lastYear = new Date(country[0].date * 1000).getFullYear();
+      const firstYear = new Date(country[country.length - 1].date * 1000).getFullYear();
+      const data = [...Array(lastYear - firstYear + 1).keys()].map((_, key) => {
+        const year = firstYear + key;
+        const count = country.filter(c => new Date(c.date * 1000).getFullYear() === year).length;
+        return {year, count};
+      });
       this.setState({
         country,
+        data: data,
         loading: false
       });
     });
@@ -57,6 +66,13 @@ class Countries extends Component {
     }
     return (
       <div className='countries-list'>
+        <ResponsiveContainer height={200}>
+          <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}}>
+            <XAxis dataKey="year"/>
+            <Tooltip/>
+            <Line type="monotone" dataKey="count" stroke="#2c73b0" activeDot={{r: 8}}/>
+          </LineChart>
+        </ResponsiveContainer>
         {this.state.country.map((country, index) => {
           return (
             <Link to={`/countries/${country.key}`} key={index}>

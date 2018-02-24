@@ -461,6 +461,9 @@ table td:first-child {
   .welcome {
     margin: 0;
   }
+  .countries .countries-list .country {
+    width: 98%;
+  }
   .powered-by {
     margin: 50px 0 0;
     bottom: auto;
