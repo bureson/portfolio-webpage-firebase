@@ -30,7 +30,20 @@ class Countries extends Component {
         const year = firstYear + key;
         const count = country.filter(c => new Date(c.date * 1000).getFullYear() === year).length;
         return {year, count};
-      });
+      }).reduce((acc, val, key, array) => {
+        const {count} = val;
+        const holder = {year: '...', count: 0};
+        const isEmpty = count === 0;
+        const prevIsHolder = isEmpty && acc[acc.length - 1].year === '...';
+        const nextIsEmpty = isEmpty && [1, 2].every(inc => array[key + inc] && array[key + inc].count === 0);
+        return isEmpty
+        ? prevIsHolder
+          ? acc
+          : nextIsEmpty
+            ? acc.concat(holder)
+            : acc.concat(val)
+        : acc.concat(val);
+      }, []);
       this.setState({
         country,
         data: data,
