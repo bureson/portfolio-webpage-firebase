@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-class Course extends Component {
+class Pager extends Component {
 
   constructor(props) {
     super(props);
@@ -36,4 +36,4 @@ class Course extends Component {
   }
 }
 
-export default Course;
+export default Pager;
