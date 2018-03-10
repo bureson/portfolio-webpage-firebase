@@ -4,7 +4,7 @@ import firebase from 'firebase';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 
-class Course extends Component {
+class AddCountry extends Component {
 
   constructor(props) {
     super(props);
@@ -17,7 +17,8 @@ class Course extends Component {
       loading: true,
       name: '',
       progress: null,
-      story: ''
+      story: '',
+      timestamp: null
     }
   }
 
@@ -35,7 +36,8 @@ class Course extends Component {
             key: countryKey,
             loading: false,
             name: payload.name,
-            story: payload.story
+            story: payload.story,
+            timestamp: payload.timestamp
           });
         }
       });
@@ -96,7 +98,7 @@ class Course extends Component {
       photoPath: this.state.filePath || '',
       description: this.state.description,
       story: this.state.story,
-      timestamp: Math.floor(Date.now() / 1000)
+      timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
     }).then(() => {
       this.props.history.push('/countries');
     }).catch(e => {
@@ -146,4 +148,4 @@ class Course extends Component {
   }
 }
 
-export default Course;
+export default AddCountry;

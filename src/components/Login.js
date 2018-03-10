@@ -28,16 +28,16 @@ class Login extends Component {
     return (
       <div>
         <form onSubmit={e => this.onSubmit(e)}>
-          <div className="input-group">
-            <label htmlFor="email">E-mail:</label>
-            <input type="text" id="email" ref={email => this.email = email} />
+          <div className='input-group'>
+            <label htmlFor='email'>E-mail:</label>
+            <input type='text' id='email' ref={email => this.email = email} />
           </div>
-          <div className="input-group">
-            <label htmlFor="password">Password:</label>
-            <input type="password" id="password" ref={pw => this.pw = pw} />
+          <div className='input-group'>
+            <label htmlFor='password'>Password:</label>
+            <input type='password' id='password' ref={pw => this.pw = pw} />
           </div>
-          {this.state.errMess && <div className="alert alert-danger">{this.state.errMess}</div>}
-          <button type="submit" value='Submit'>Submit</button>
+          {this.state.errMess && <div className='alert alert-danger'>{this.state.errMess}</div>}
+          <button type='submit' value='Submit'>Submit</button>
         </form>
       </div>
     )

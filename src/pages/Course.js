@@ -90,7 +90,7 @@ class Course extends Component {
             <th>Original</th>
             <th>Pronunciation</th>
             <th>Translation</th>
-            {this.state.authed && <th>Functions</th>}
+            {this.state.authed && <th>Controls</th>}
           </tr>
         </thead>
         <tbody>

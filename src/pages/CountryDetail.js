@@ -4,6 +4,7 @@ import firebase from 'firebase';
 
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
+import Places from '../components/Places';
 
 class CountryDetail extends Component {
 
@@ -43,7 +44,7 @@ class CountryDetail extends Component {
 
   convertTimestamp = (timestamp) => {
     const date = new Date(timestamp * 1000);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Noemberv', 'December'];
     return months[date.getMonth()] + ' ' + date.getFullYear();
   }
 
@@ -72,10 +73,11 @@ class CountryDetail extends Component {
           </div>
           {this.state.authed && <div className='countries-controls'>
             <Link to={`/countries/${this.state.country.key}/edit`}><button><i className="fas fa-edit"></i></button></Link>
-            <button onClick={(e) => this.onDelete(e, this.state.country.key)}><i className={'fa fa-trash'}></i></button>
+            <button onClick={(e) => this.onDelete(e, this.state.country.key)}><i className={'fas fa-trash'}></i></button>
           </div>}
         </div>
         {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
+        <Places authed={this.state.authed} country={this.state.country.key} />
         <div>
           <p>{this.state.country.story}</p>
         </div>

@@ -17,7 +17,7 @@ class Countries extends Component {
   }
 
   componentDidMount = () => {
-    document.title = 'Countries list | Ondrej Bures';
+    document.title = 'Countries | Ondrej Bures';
     this.countryRef = firebase.database().ref('country');
     this.countryRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
