@@ -376,9 +376,6 @@ table td:first-child {
 .pager ul li:first-child {
   border: 0;
 }
-.pager ul li.active a {
-  background: #eee;
-}
 .pager ul li button {
   background: #ffffff85;
   display: block;
@@ -387,6 +384,9 @@ table td:first-child {
   width: 30px;
   border: 0;
   padding: 0;
+}
+.pager ul li.active button {
+  background: #eee;
 }
 .pager ul li button:hover {
   background: #eee;
