@@ -44,7 +44,7 @@ class CountryDetail extends Component {
 
   convertTimestamp = (timestamp) => {
     const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'Noemberv', 'December'];
+    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
     return months[date.getMonth()] + ' ' + date.getFullYear();
   }
 
