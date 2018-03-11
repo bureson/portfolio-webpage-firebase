@@ -7,7 +7,7 @@ import AddWord from './AddWord';
 import Countries from './Countries';
 import Course from './Course';
 import Home from './Home';
-import Login from '../components/Login';
+import Login from './Login';
 import Menu from '../components/Menu';
 import NoMatch from '../components/NoMatch';
 import CountryDetail from './CountryDetail';
