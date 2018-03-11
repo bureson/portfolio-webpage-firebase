@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import firebase from 'firebase';
 
 import Autocomplete from '../components/Autocomplete';
+import Maps from '../components/Maps';
 
 class Places extends Component {
 
@@ -56,6 +57,7 @@ class Places extends Component {
     return (
       <div className='places'>
         <h3>Visited places</h3>
+        <Maps places={this.state.places} />
         <table>
           <thead>
             <tr>

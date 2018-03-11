@@ -9,36 +9,43 @@ class Maps extends Component {
     };
   }
 
+  getZoom = (latDiff, lngDiff) => {
+    switch (true) { // NOTE: eventually handle also lngDiff
+      case (latDiff === 0): return 9;
+      case (latDiff < 1): return 8;
+      case (latDiff < 5): return 6;
+      case (latDiff < 10): return 5;
+      case (latDiff < 15): return 4;
+      case (latDiff < 20): return 3;
+      default: return 2;
+    }
+  }
+
   componentWillReceiveProps = (props) => {
-    this.setState({
-      places: props.places
-    });
-    window.initMap = this.initMap;
-    this.loadJS('https://maps.googleapis.com/maps/api/js?key=AIzaSyChMaHhqI42AeeqrFsWv0PTpA_YRu8P0CI&callback=initMap');
-  }
-
-  initMap = () => {
-    const center = this.state.places[0]; // NOTE: eventually do fancy calculations here
-    const map = new window.google.maps.Map(this.refs.map, {zoom: 5, center: {lat: center.lat, lng: center.lng}});
-    this.state.places.forEach(({lat, lng}) => {
-      new window.google.maps.Marker({
-        position: {lat, lng},
-        map: map
+    this.setState({places: props.places});
+    const places = props.places;
+    if (places.length) {
+      const latList = places.map(p => p.lat);
+      const lngList = places.map(p => p.lng);
+      const latDiff = Math.abs(Math.max.apply(null, latList) - Math.min.apply(null, latList));
+      const lngDiff = Math.abs(Math.max.apply(null, lngList) - Math.min.apply(null, lngList));
+      const zoom = this.getZoom(latDiff, lngDiff);
+      const centerLat = (Math.max.apply(null, latList) + Math.min.apply(null, latList)) / 2;
+      const centerLng = (Math.max.apply(null, lngList) + Math.min.apply(null, lngList)) / 2;
+      const map = new window.google.maps.Map(this.refs.map, {zoom, center: {lat: centerLat, lng: centerLng}});
+      places.forEach(({lat, lng}) => {
+        new window.google.maps.Marker({
+          position: {lat, lng},
+          map: map
+        });
       });
-    });
-  }
-
-  loadJS = (src) => {
-    const ref = window.document.getElementsByTagName('script')[0];
-    const script = window.document.createElement('script');
-    script.src = src;
-    script.async = true;
-    ref.parentNode.insertBefore(script, ref);
+    }
   }
 
   render = () => {
+    const className = this.state.places.length ? 'map' : 'no-map';
     return (
-      <div ref='map' className='map'></div>
+      <div ref='map' className={className}></div>
     )
   }
 

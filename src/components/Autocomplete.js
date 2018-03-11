@@ -65,8 +65,8 @@ class Autocomplete extends Component {
       <tr>
         <td><input ref='autocomplete' /></td>
         <td><input type='date' value={this.state.date} onChange={e => this.onChange(e, 'date')} /></td>
-        <td>{this.state.lat}</td>
-        <td>{this.state.lng}</td>
+        <td>{this.state.lat.toString().substring(0, 9)}</td>
+        <td>{this.state.lng.toString().substring(0, 9)}</td>
         <td><button onClick={e => this.onSubmit(e)}>Submit</button></td>
       </tr>
     )
