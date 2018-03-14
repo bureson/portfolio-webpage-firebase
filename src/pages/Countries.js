@@ -12,6 +12,7 @@ class Countries extends Component {
     this.state = {
       authed: props.authed,
       country: [],
+      filterYear: null,
       loading: true
     }
   }
@@ -73,20 +74,35 @@ class Countries extends Component {
     firebase.database().ref('country').child(key).remove();
   }
 
+  onDotClick = (e) => {
+    this.setState({
+      filterYear: e.activeLabel
+    });
+  }
+
+  clearFilter = (e) => {
+    this.setState({
+      filterYear: null
+    });
+  }
+
   renderCountries = () => {
     if (this.state.loading) {
       return <Loader />
     }
+    const countryList = this.state.filterYear
+      ? this.state.country.filter(c => new Date(c.date * 1000).getFullYear() === this.state.filterYear)
+      : this.state.country;
     return (
       <div className='countries-list'>
         <ResponsiveContainer height={200}>
-          <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}}>
+          <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}} onClick={this.onDotClick}>
             <XAxis dataKey="year"/>
             <Tooltip/>
             <Line type="monotone" dataKey="count" stroke="#2c73b0" activeDot={{r: 8}}/>
           </LineChart>
         </ResponsiveContainer>
-        {this.state.country.map((country, index) => {
+        {countryList.map((country, index) => {
           return (
             <Link to={`/countries/${country.key}`} key={index}>
               <div className='country'>
@@ -113,6 +129,7 @@ class Countries extends Component {
             <p>{this.state.country.length} countries visited</p>
           </div>
           <div className='countries-controls'>
+            {this.state.filterYear &&<button onClick={this.clearFilter}>Clear filter</button>}
             {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
           </div>
         </div>
