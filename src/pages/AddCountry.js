@@ -89,6 +89,22 @@ class AddCountry extends Component {
     })
   }
 
+  onDelete = (e) => {
+    e.preventDefault();
+    const urlTokens = decodeURIComponent(this.state.filePath).split('/');
+    const fileName = urlTokens[urlTokens.length - 1].split('?')[0];
+    const storageRef = firebase.storage().ref();
+    const fileRef = storageRef.child(`country/${fileName}`);
+    fileRef.delete().then(() => {
+      this.setState({
+        filePath: null
+      });
+      if (this.state.key) {
+        firebase.database().ref(`country/${this.state.key}/photoPath`).set(null);
+      }
+    });
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
     const key = this.state.key || this.state.name.replace(/\s+/g, '-').toLowerCase();
@@ -135,7 +151,10 @@ class AddCountry extends Component {
             <label htmlFor='photo'>Main photo</label>
             {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={e => this.onFileUpload(e)} />}
             {isLoading && <progress value={this.state.progress} max='100' />}
-            {hasUrl && <p>{this.state.filePath}</p>}
+            {hasUrl && <p>
+              <button onClick={this.onDelete}><i className="fas fa-trash"></i></button>
+              {this.state.filePath}
+            </p>}
           </div>
           <div className='input-group'>
             <label htmlFor='short-desc'>Story</label>

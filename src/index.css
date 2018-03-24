@@ -95,6 +95,9 @@ textarea {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.input-group p button {
+  margin-right: 5px;
+}
 .input-group label {
   display: inline-block;
   font-weight: 700;
