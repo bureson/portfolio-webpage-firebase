@@ -35,6 +35,7 @@ class Home extends Component {
             <a href='https://www.instagram.com/ondrej_bures/' target='_blank' rel='noopener noreferrer'><i className='fab fa-instagram'></i></a>
             <a href='https://www.linkedin.com/in/ondrej-bures/' target='_blank' rel='noopener noreferrer'><i className='fab fa-linkedin'></i></a>
             <a href='https://github.com/bureson' target='_blank' rel='noopener noreferrer'><i className='fab fa-github-square'></i></a>
+            <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><i className="fab fa-goodreads"></i></a>
           </p>
         </div>
         <div className='powered-by'>
