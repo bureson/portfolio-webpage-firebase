@@ -129,7 +129,7 @@ class Countries extends Component {
             <p>{this.state.country.length} countries visited</p>
           </div>
           <div className='countries-controls'>
-            {this.state.filterYear &&<button onClick={this.clearFilter}>Clear filter</button>}
+            {this.state.filterYear && <button onClick={this.clearFilter}>Clear filter: {this.state.filterYear}</button>}
             {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
           </div>
         </div>
