@@ -31,7 +31,7 @@ h3 {
   margin: 20px 0;
 }
 ul {
-  list-style: none;
+  margin: 0 0 0 20px;
 }
 p {
   margin: 0 0 10px;
@@ -182,6 +182,7 @@ table td:first-child {
 }
 .header nav ul {
   display: block;
+  list-style: none;
 }
 .header nav ul li {
   float: left;
@@ -377,6 +378,8 @@ table td:first-child {
   border: 1px solid #e2e0e0;
   border-radius: 3px;
   display: inline-block;
+  list-style: none;
+  margin: 0;
 }
 .pager ul li {
   display: inline-block;
@@ -420,6 +423,8 @@ table td:first-child {
 }
 .powered-by ul {
   display: inline-block;
+  list-style: none;
+  margin: 0;
 }
 .powered-by ul li {
   display: inline-block;
