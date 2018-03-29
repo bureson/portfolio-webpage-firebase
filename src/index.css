@@ -113,6 +113,10 @@ textarea {
   display: inline-block;
   width: 70%;
 }
+.input-group input[type='checkbox'] {
+  width: 20px;
+  height: 20px;
+}
 .input-group progress {
   margin: 10px 0;
   width: 40%;

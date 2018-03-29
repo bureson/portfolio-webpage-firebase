@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
+import { Converter } from 'showdown';
 
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
@@ -65,6 +66,12 @@ class CountryDetail extends Component {
     if (!this.state.country) {
       return <NoMatch />
     }
+    const mdConverter = new Converter({
+      noHeaderId: true,
+      underline: true,
+      openLinksInNewWindow: true
+    });
+    const storyHtml = mdConverter.makeHtml(this.state.country.story);
     return (
       <div className='countries'>
         <h2>{this.state.country.name}</h2>
@@ -80,9 +87,7 @@ class CountryDetail extends Component {
         </div>
         {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
         <Places authed={this.state.authed} country={this.state.country.key} />
-        <div>
-          <p>{this.state.country.story}</p>
-        </div>
+        <div dangerouslySetInnerHTML={{__html: storyHtml}} />
       </div>
     )
   }

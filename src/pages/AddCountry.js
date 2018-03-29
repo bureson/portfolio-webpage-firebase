@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import firebase from 'firebase';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { Converter } from 'showdown';
 
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
@@ -38,6 +39,7 @@ class AddCountry extends Component {
             key: countryKey,
             loading: false,
             name: payload.name,
+            preview: false,
             story: payload.story,
             timestamp: payload.timestamp
           });
@@ -91,6 +93,12 @@ class AddCountry extends Component {
     })
   }
 
+  onToggle = (e) => {
+    this.setState({
+      preview: !this.state.preview
+    });
+  }
+
   onDelete = (e) => {
     e.preventDefault();
     const urlTokens = decodeURIComponent(this.state.filePath).split('/');
@@ -131,6 +139,12 @@ class AddCountry extends Component {
     if (this.state.loading) {
       return <Loader />
     }
+    const mdConverter = new Converter({
+      noHeaderId: true,
+      underline: true,
+      openLinksInNewWindow: true
+    });
+    const storyHtml = mdConverter.makeHtml(this.state.story);
     const isLoading = this.state.progress;
     const hasUrl = this.state.filePath;
     return (
@@ -162,6 +176,11 @@ class AddCountry extends Component {
             <label htmlFor='short-desc'>Story</label>
             <textarea id='short-desc' rows='10' placeholder='Story' onChange={e => this.onChange(e, 'story')} value={this.state.story} />
           </div>
+          <div className='input-group'>
+            <label htmlFor='story-preview'>Preview</label>
+            <input type='checkbox' checked={this.state.preview} onChange={this.onToggle} />
+          </div>
+          {this.state.preview && <div dangerouslySetInnerHTML={{__html: storyHtml}} />}
           <button type='submit' value='Submit'>Submit</button>
         </form>
       </div>
