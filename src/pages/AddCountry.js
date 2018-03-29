@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
@@ -152,7 +154,7 @@ class AddCountry extends Component {
             {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={e => this.onFileUpload(e)} />}
             {isLoading && <progress value={this.state.progress} max='100' />}
             {hasUrl && <p>
-              <button onClick={this.onDelete}><i className="fas fa-trash"></i></button>
+              <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
               {this.state.filePath}
             </p>}
           </div>

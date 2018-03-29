@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSignInAlt } from '@fortawesome/fontawesome-free-solid';
+import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads } from '@fortawesome/fontawesome-free-brands';
 
 import firebaseLogo from '../assets/firebase-logo.png';
 import reactLogo from '../assets/react-logo.png';
@@ -31,11 +34,11 @@ class Home extends Component {
             &nbsp;You can see the list in the <em>Countries</em> section.
           </p>
           <p>
-            <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><i className='fab fa-facebook-square'></i></a>
-            <a href='https://www.instagram.com/ondrej_bures/' target='_blank' rel='noopener noreferrer'><i className='fab fa-instagram'></i></a>
-            <a href='https://www.linkedin.com/in/ondrej-bures/' target='_blank' rel='noopener noreferrer'><i className='fab fa-linkedin'></i></a>
-            <a href='https://github.com/bureson' target='_blank' rel='noopener noreferrer'><i className='fab fa-github-square'></i></a>
-            <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><i className="fab fa-goodreads"></i></a>
+            <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /></a>
+            <a href='https://www.instagram.com/ondrej_bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faInstagram} /></a>
+            <a href='https://www.linkedin.com/in/ondrej-bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faLinkedin} /></a>
+            <a href='https://github.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGithubSquare} /></a>
+            <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGoodreads} /></a>
           </p>
         </div>
         <div className='powered-by'>
@@ -43,7 +46,7 @@ class Home extends Component {
             <li><a href='https://reactjs.org/' target='_blank' rel='noopener noreferrer'><img src={reactLogo} alt='react' /></a></li>
             <li><a href='https://firebase.google.com/' target='_blank' rel='noopener noreferrer'><img src={firebaseLogo} alt='firebase' /></a></li>
             <li><a href='https://travis-ci.org/' target='_blank' rel='noopener noreferrer'><img src={travisciLogo} alt='travis ci' /></a></li>
-            <li><Link to={'/login'}><i className="fas fa-sign-in-alt"></i></Link></li>
+            <li><Link to={'/login'}><FontAwesomeIcon icon={faSignInAlt} /></Link></li>
           </ul>
         </div>
       </div>

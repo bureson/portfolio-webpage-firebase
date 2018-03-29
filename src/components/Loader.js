@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 
 class Loader extends Component {
   render = () => {
@@ -7,7 +6,6 @@ class Loader extends Component {
       <div className='spinner'></div>
     )
   }
-
 }
 
-export default withRouter(Loader);
+export default Loader;

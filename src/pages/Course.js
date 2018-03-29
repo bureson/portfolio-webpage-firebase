@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
 import Loader from '../components/Loader';
 import Pager from '../components/Pager';
@@ -50,7 +52,7 @@ class Course extends Component {
   convertTimestamp = (timestamp) => {
     const date = new Date(timestamp * 1000);
     const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear() + ' ' + date.getHours() + ':' + date.getMinutes();
+    return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
   }
 
   onDelete = (e, key) => {
@@ -90,7 +92,8 @@ class Course extends Component {
             <th>Original</th>
             <th>Pronunciation</th>
             <th>Translation</th>
-            {this.state.authed && <th>Controls</th>}
+            {this.state.authed && <th>Added</th>}
+            {this.state.authed && <th>Control</th>}
           </tr>
         </thead>
         <tbody>
@@ -100,11 +103,8 @@ class Course extends Component {
                 <td>{item.original}</td>
                 <td>{item.prons}</td>
                 <td>{item.means}</td>
-                {this.state.authed && <td>
-                  <i className={'fa fa-calendar'} title={this.convertTimestamp(item.timestamp)}></i>
-                  {' '}
-                  <button onClick={(e) => this.onDelete(e, item.key)}><i className={'fa fa-trash'}></i></button>
-                </td>}
+                {this.state.authed && <td>{this.convertTimestamp(item.timestamp)}</td>}
+                {this.state.authed && <td><button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button></td>}
               </tr>
             )
           })}

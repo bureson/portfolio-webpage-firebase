@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
 import Autocomplete from '../components/Autocomplete';
 import Maps from '../components/Maps';
@@ -77,7 +79,7 @@ class Places extends Component {
                   <td>{place.lat.toString().substring(0, 9)}</td>
                   <td>{place.lng.toString().substring(0, 9)}</td>
                   {this.state.authed && <td>
-                    <button onClick={(e) => this.onDelete(e, place.key)}><i className={'fas fa-trash'}></i></button>
+                    <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>
                   </td>}
                 </tr>
               )

@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 
 import NoMatch from '../components/NoMatch';
@@ -72,4 +71,4 @@ class AddWord extends Component {
   }
 }
 
-export default withRouter(AddWord);
+export default AddWord;

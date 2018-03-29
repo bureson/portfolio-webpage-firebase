@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
@@ -72,8 +74,8 @@ class CountryDetail extends Component {
             <p><em>{this.state.country.description}</em></p>
           </div>
           {this.state.authed && <div className='countries-controls'>
-            <Link to={`/countries/${this.state.country.key}/edit`}><button><i className="fas fa-edit"></i></button></Link>
-            <button onClick={(e) => this.onDelete(e, this.state.country.key)}><i className={'fas fa-trash'}></i></button>
+            <Link to={`/countries/${this.state.country.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
+            <button onClick={(e) => this.onDelete(e, this.state.country.key)}><FontAwesomeIcon icon={faTrash} /></button>
           </div>}
         </div>
         {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}

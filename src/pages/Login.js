@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { withRouter } from 'react-router-dom';
 import firebase from 'firebase';
 
 class Login extends Component {
@@ -44,4 +43,4 @@ class Login extends Component {
   }
 }
 
-export default withRouter(Login);
+export default Login;

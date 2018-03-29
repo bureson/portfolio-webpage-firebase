@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/fontawesome-free-solid';
 
 class Search extends Component {
   render = () => {
@@ -11,7 +13,7 @@ class Search extends Component {
           value={this.props.value}
           onChange={e => this.props.onChange(e)}
         />
-        <i className='fas fa-search'></i>
+        <FontAwesomeIcon icon={faSearch} />
       </div>
     )
   }

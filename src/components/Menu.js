@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, withRouter } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 
 class Menu extends Component {
@@ -50,4 +50,4 @@ class Menu extends Component {
 
 }
 
-export default withRouter(Menu);
+export default Menu;

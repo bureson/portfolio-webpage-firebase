@@ -1,4 +1,5 @@
-@import url(https://fonts.googleapis.com/css?family=Lato:400,700);@import url(https://use.fontawesome.com/releases/v5.0.6/css/all.css);* {
+@import url(https://fonts.googleapis.com/css?family=Lato:400,700);
+* {
   padding: 0;
   margin: 0;
 }
@@ -230,8 +231,9 @@ table td:first-child {
   padding: 20px 0 20px 20px;
   margin: 50px 50px 0;
 }
-.welcome i {
-  font-size: 30px;
+.welcome svg {
+  width: 30px !important;
+  height: 30px !important;
   margin: 10px;
 }
 .welcome h2 {
@@ -341,7 +343,7 @@ table td:first-child {
   position: relative;
   display: inline-block;
 }
-.search-group i {
+.search-group svg {
   position: absolute;
   right: 10px;
   opacity: 0.5;
