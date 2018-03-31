@@ -3,14 +3,17 @@ import { Link, Route, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 
 import AddCountry from './AddCountry';
+import AddPost from './AddPost';
 import AddWord from './AddWord';
+import Blog from './Blog';
 import Countries from './Countries';
+import CountryDetail from './CountryDetail';
 import Course from './Course';
 import Home from './Home';
 import Login from './Login';
 import Menu from '../components/Menu';
 import NoMatch from '../components/NoMatch';
-import CountryDetail from './CountryDetail';
+import Post from './Post';
 
 class Index extends Component {
 
@@ -57,6 +60,10 @@ class Index extends Component {
           <Route exact path='/countries/:country/edit' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
           <Route exact path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
           <Route exact path='/course/add' render={(props) => <AddWord {...props} authed={this.state.authed}/>} />
+          <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
+          <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
+          <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />
+          <Route exact path='/blog/:post/edit' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
           <Route exact path='/login' component={Login} />
           <Route component={NoMatch} />
         </Switch>

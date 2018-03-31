@@ -18,7 +18,7 @@ class Menu extends Component {
     });
   }
 
-  navigate = (e, route) => {
+  navigate = (e) => {
     this.setState({
       isOpen: false
     });
@@ -42,6 +42,7 @@ class Menu extends Component {
         <ul>
           <li><Link to='/course' onClick={e => this.navigate(e)}>Course</Link></li>
           <li><Link to='/countries' onClick={e => this.navigate(e)}>Countries</Link></li>
+          <li><Link to='/blog' onClick={e => this.navigate(e)}>Blog</Link></li>
           {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>Log out</Link></li>}
         </ul>
       </nav>

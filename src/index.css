@@ -244,19 +244,19 @@ table td:first-child {
 .welcome h2 {
   margin: 0 0 20px;
 }
-.course-header {
+.page-header {
   width: 100%;
 }
-.course-header .course-info {
+.page-header .page-info {
   float: left;
 }
-.course-header .course-controls {
+.page-header .page-controls {
   float: right;
 }
-.course-header .course-controls button {
+.page-header .page-controls button {
   margin-left: 10px;
 }
-.course-header:after {
+.page-header:after {
   content: '';
   display: block;
   clear: both;
@@ -274,32 +274,15 @@ table td:first-child {
   width: 20%;
   float: right;
 }
-.countries .countries-header {
-  width: 100%;
-}
-.countries .countries-header .countries-info {
-  float: left;
-}
-.countries .countries-header .countries-controls {
-  float: right;
-}
-.countries .countries-header .countries-controls button {
-  margin-left: 10px;
-}
-.countries .countries-header:after {
-  content: '';
-  display: block;
-  clear: both;
-}
-.countries .countries-list {
+.page .countries-list {
   margin: 0 -1%;
 }
-.countries .countries-list::after {
+.page .countries-list::after {
   content: '';
   display: block;
   clear: both;
 }
-.countries .countries-list .country {
+.page .countries-list .country {
   background: #ffffff85;
   border-radius: 3px;
   border: 1px solid #e2e0e0;
@@ -308,26 +291,26 @@ table td:first-child {
   margin: 20px 1% 0;
   width: 31.333%;
 }
-.countries .countries-list .country h3 {
+.page .countries-list .country h3 {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
   margin: 0;
 }
-.countries .countries-list .country small {
+.page .countries-list .country small {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.countries .countries-list .country p {
+.page .countries-list .country p {
   display: block;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-.countries .countries-list .country .photo {
+.page .countries-list .country .photo {
   border-radius: 3px 3px 0 0;
   width: 100%;
   height: 200px;
@@ -335,10 +318,10 @@ table td:first-child {
   background-size: cover;
   background-position: center;
 }
-.countries .countries-list .country .content {
+.page .countries-list .country .content {
   padding: 10px;
 }
-.countries .country-cover {
+.page .country-cover {
   width: 100%;
   height: 300px;
   background-size: cover;
@@ -486,7 +469,7 @@ table td:first-child {
   .welcome {
     margin: 0;
   }
-  .countries .countries-list .country {
+  .page .countries-list .country {
     width: 98%;
   }
   .powered-by {

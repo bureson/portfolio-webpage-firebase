@@ -122,13 +122,13 @@ class Countries extends Component {
 
   render = () => {
     return (
-      <div className='countries'>
+      <div className='page'>
         <h2>Countries log</h2>
-        <div className='countries-header'>
-          <div className='countries-info'>
+        <div className='page-header'>
+          <div className='page-info'>
             <p>{this.state.country.length} countries visited</p>
           </div>
-          <div className='countries-controls'>
+          <div className='page-controls'>
             {this.state.filterYear && <button onClick={this.clearFilter}>Clear filter: {this.state.filterYear}</button>}
             {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
           </div>

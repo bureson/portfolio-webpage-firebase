@@ -7,28 +7,27 @@ import { Converter } from 'showdown';
 
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
-import Places from '../components/Places';
 
-class CountryDetail extends Component {
+class Post extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       authed: props.authed,
-      country: null,
+      post: null,
       loading: true
     }
   }
 
   componentDidMount = () => {
-    const countryKey = this.props.match.params.country;
-    this.countryRef = firebase.database().ref('country').child(countryKey);
-    this.countryRef.on('value', snapshot => {
+    const postKey = this.props.match.params.post;
+    this.postRef = firebase.database().ref('blog').child(postKey);
+    this.postRef.on('value', snapshot => {
       const payload = snapshot.val();
-      document.title = `${payload ? payload.name : 'Not found'} | Ondrej Bures`;
+      document.title = `${payload ? payload.title : 'Not found'} | Ondrej Bures`;
       this.setState({
-        country: payload ? Object.assign({
-          key: countryKey
+        post: payload ? Object.assign({
+          key: postKey
         }, payload) : null,
         loading: false
       });
@@ -36,7 +35,7 @@ class CountryDetail extends Component {
   }
 
   componentWillUnmount = () => {
-    this.countryRef.off();
+    this.postRef.off();
   }
 
   componentWillReceiveProps = (props) => {
@@ -53,9 +52,9 @@ class CountryDetail extends Component {
 
   onDelete = (e, key) => {
     e.preventDefault();
-    if (window.confirm('Are you sure you want to remove the country?')) {
-      firebase.database().ref('country').child(key).remove();
-      this.props.history.push('/countries');
+    if (window.confirm('Are you sure you want to remove the post?')) {
+      firebase.database().ref('blog').child(key).remove();
+      this.props.history.push('/blog');
     }
   }
 
@@ -63,7 +62,7 @@ class CountryDetail extends Component {
     if (this.state.loading) {
       return <Loader />
     }
-    if (!this.state.country) {
+    if (!this.state.post) {
       return <NoMatch />
     }
     const mdConverter = new Converter({
@@ -71,26 +70,25 @@ class CountryDetail extends Component {
       underline: true,
       openLinksInNewWindow: true
     });
-    const storyHtml = mdConverter.makeHtml(this.state.country.story);
+    const perexHtml = mdConverter.makeHtml(this.state.post.perex);
+    const bodyHtml = mdConverter.makeHtml(this.state.post.body);
     return (
       <div className='page'>
-        <h2>{this.state.country.name}</h2>
+        <h2>{this.state.post.title}</h2>
         <div className='page-header'>
           <div className='page-info'>
-            <p><strong>Conquered in {this.convertTimestamp(this.state.country.date)}</strong></p>
-            <p><em>{this.state.country.description}</em></p>
+            <p><strong>Posted in {this.convertTimestamp(this.state.post.timestamp)}</strong></p>
           </div>
           {this.state.authed && <div className='page-controls'>
-            <Link to={`/countries/${this.state.country.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
-            <button onClick={(e) => this.onDelete(e, this.state.country.key)}><FontAwesomeIcon icon={faTrash} /></button>
+            <Link to={`/blog/${this.state.post.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
+            <button onClick={(e) => this.onDelete(e, this.state.post.key)}><FontAwesomeIcon icon={faTrash} /></button>
           </div>}
         </div>
-        {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
-        <Places authed={this.state.authed} country={this.state.country.key} />
-        <div dangerouslySetInnerHTML={{__html: storyHtml}} />
+        <div dangerouslySetInnerHTML={{__html: perexHtml}} />
+        <div dangerouslySetInnerHTML={{__html: bodyHtml}} />
       </div>
     )
   }
 }
 
-export default CountryDetail;
+export default Post;

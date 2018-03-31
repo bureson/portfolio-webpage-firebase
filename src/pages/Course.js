@@ -115,13 +115,13 @@ class Course extends Component {
 
   render = () => {
     return (
-      <div className='course'>
+      <div className='page'>
         <h2>Language course by Ian @ Triggerz</h2>
-        <div className='course-header'>
-          <div className='course-info'>
+        <div className='page-header'>
+          <div className='page-info'>
             List of {this.state.filteredCourse.length} phrases
           </div>
-          <div className='course-controls'>
+          <div className='page-controls'>
             <Search value={this.state.search} onChange={this.onFilterChange} />
             {this.state.authed && <Link to={'/course/add'}><button>Add new phrase</button></Link>}
           </div>
