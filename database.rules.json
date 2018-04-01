@@ -2,6 +2,9 @@
   "rules": {
     ".read": true,
     ".write": "auth != null",
+    "attachment": {
+      ".indexOn": ["post"]
+    },
     "place": {
       ".indexOn": ["country"]
     }

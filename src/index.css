@@ -34,6 +34,7 @@ ul {
   margin: 0 0 10px 20px;
 }
 p {
+  text-align: justify;
   margin: 0 0 10px;
 }
 a {
@@ -52,6 +53,9 @@ a:link {
 }
 a:visited {
   text-decoration: none;
+}
+img {
+  max-width: 100%;
 }
 button {
   background: #eee;
@@ -116,6 +120,7 @@ textarea {
 .input-group input[type='checkbox'] {
   width: 20px;
   height: 20px;
+  margin: 10px 0;
 }
 .input-group progress {
   margin: 10px 0;
@@ -125,6 +130,13 @@ textarea {
 .input-group textarea {
   display: inline-block;
   width: 70%;
+}
+.input-group .input-container {
+  width: 73%;
+  display: inline-block;
+}
+.input-group .input-container table {
+  margin: 0;
 }
 table {
   border: 1px solid #e2e0e0;

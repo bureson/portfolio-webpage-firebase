@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
+import { Converter } from 'showdown';
 
+import Attachments from '../components/Attachments';
 import NoMatch from '../components/NoMatch';
 
 class AddPost extends Component {
@@ -13,6 +15,7 @@ class AddPost extends Component {
       title: '',
       perex: '',
       body: '',
+      preview: false,
       public: false,
       timestamp: null
     }
@@ -73,9 +76,9 @@ class AddPost extends Component {
     })
   }
 
-  onToggle = (e) => {
+  onToggle = (e, key) => {
     this.setState({
-      public: !this.state.public
+      [key]: !this.state[key]
     });
   }
 
@@ -83,6 +86,12 @@ class AddPost extends Component {
     if (!this.state.authed) {
       return <NoMatch />
     }
+    const mdConverter = new Converter({
+      noHeaderId: true,
+      underline: true,
+      openLinksInNewWindow: true
+    });
+    const bodyHtml = mdConverter.makeHtml(this.state.body);
     return (
       <div>
         <h2>Add post</h2>
@@ -97,14 +106,20 @@ class AddPost extends Component {
           </div>
           <div className='input-group'>
             <label htmlFor='public'>Public</label>
-            <input id='public' type='checkbox' checked={this.state.public} onChange={this.onToggle} />
+            <input id='public' type='checkbox' checked={this.state.public} onChange={e => this.onToggle(e, 'public')} />
           </div>
+          <div className='input-group'>
+            <label htmlFor='public'>Preview</label>
+            <input id='preview' type='checkbox' checked={this.state.preview} onChange={e => this.onToggle(e, 'preview')} />
+          </div>
+          {this.state.key && <Attachments post={this.state.key} />}
           <div className='input-group'>
             <label htmlFor='body'>Body</label>
             <textarea id='body' rows='5' placeholder='Body' onChange={e => this.onChange(e, 'body')} value={this.state.body} />
           </div>
           <button type='submit' value='Submit'>Submit</button>
         </form>
+        {this.state.preview && <div dangerouslySetInnerHTML={{__html: bodyHtml}} />}
       </div>
     )
   }
