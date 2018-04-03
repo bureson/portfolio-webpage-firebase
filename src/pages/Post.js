@@ -5,6 +5,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
+import { readingTime, convertTimestamp } from '../components/Library';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 
@@ -44,12 +45,6 @@ class Post extends Component {
     });
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   onDelete = (e, key) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to remove the post?')) {
@@ -77,14 +72,14 @@ class Post extends Component {
         <h2>{this.state.post.title}</h2>
         <div className='page-header'>
           <div className='page-info'>
-            <p><strong>Posted in {this.convertTimestamp(this.state.post.timestamp)}</strong></p>
+            <p><strong>Posted in {convertTimestamp(this.state.post.timestamp)}, reading time ~{readingTime(this.state.post.body)} minutes</strong></p>
           </div>
           {this.state.authed && <div className='page-controls'>
             <Link to={`/blog/${this.state.post.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
             <button onClick={(e) => this.onDelete(e, this.state.post.key)}><FontAwesomeIcon icon={faTrash} /></button>
           </div>}
         </div>
-        <div dangerouslySetInnerHTML={{__html: perexHtml}} />
+        <div><em dangerouslySetInnerHTML={{__html: perexHtml}} /></div>
         <div dangerouslySetInnerHTML={{__html: bodyHtml}} />
       </div>
     )

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import firebase from 'firebase';
 
+import { convertTimestamp } from '../components/Library';
 import Loader from '../components/Loader';
 
 class Countries extends Component {
@@ -63,12 +64,6 @@ class Countries extends Component {
     });
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   onDelete = (e, key) => {
     e.preventDefault();
     firebase.database().ref('country').child(key).remove();
@@ -109,7 +104,7 @@ class Countries extends Component {
                 <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
                 <div className='content'>
                   <h3>{country.name}</h3>
-                  <small>{this.convertTimestamp(country.date)}</small>
+                  <small>{convertTimestamp(country.date)}</small>
                   <p>{country.description}</p>
                 </div>
               </div>

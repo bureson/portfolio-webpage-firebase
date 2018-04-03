@@ -4,6 +4,7 @@ import firebase from 'firebase';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
+import { convertTimestamp } from '../components/Library';
 import Loader from '../components/Loader';
 import Pager from '../components/Pager';
 import Search from '../components/Search';
@@ -49,12 +50,6 @@ class Course extends Component {
     });
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-    return date.getDate() + ' ' + months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   onDelete = (e, key) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to delete the item?')) {
@@ -67,6 +62,7 @@ class Course extends Component {
     const search = e.target.value;
     this.setState({
       search,
+      page: 0,
       filteredCourse: this.state.course.filter(i => ['original', 'means'].some(key => i[key].toLowerCase().includes(search.toLowerCase())))
     })
   }
@@ -103,7 +99,7 @@ class Course extends Component {
                 <td>{item.original}</td>
                 <td>{item.prons}</td>
                 <td>{item.means}</td>
-                {this.state.authed && <td>{this.convertTimestamp(item.timestamp)}</td>}
+                {this.state.authed && <td>{convertTimestamp(item.timestamp, 'dd:mm:yyyy')}</td>}
                 {this.state.authed && <td><button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button></td>}
               </tr>
             )
@@ -119,7 +115,7 @@ class Course extends Component {
         <h2>Language course by Ian @ Triggerz</h2>
         <div className='page-header'>
           <div className='page-info'>
-            List of {this.state.filteredCourse.length} phrases
+            List of {this.state.course.length} phrases
           </div>
           <div className='page-controls'>
             <Search value={this.state.search} onChange={this.onFilterChange} />

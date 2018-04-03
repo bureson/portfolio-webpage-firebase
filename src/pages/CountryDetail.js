@@ -5,6 +5,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
+import { convertTimestamp } from '../components/Library';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import Places from '../components/Places';
@@ -45,12 +46,6 @@ class CountryDetail extends Component {
     });
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   onDelete = (e, key) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to remove the country?')) {
@@ -77,7 +72,7 @@ class CountryDetail extends Component {
         <h2>{this.state.country.name}</h2>
         <div className='page-header'>
           <div className='page-info'>
-            <p><strong>Conquered in {this.convertTimestamp(this.state.country.date)}</strong></p>
+            <p><strong>Conquered in {convertTimestamp(this.state.country.date)}</strong></p>
             <p><em>{this.state.country.description}</em></p>
           </div>
           {this.state.authed && <div className='page-controls'>

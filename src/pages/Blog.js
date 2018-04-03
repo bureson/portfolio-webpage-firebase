@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 import { Converter } from 'showdown';
 
+import { convertTimestamp, readingTime } from '../components/Library';
 import Loader from '../components/Loader';
 
 class Blog extends Component {
@@ -41,12 +42,6 @@ class Blog extends Component {
     });
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   renderBlog = (availablePostList) => {
     if (this.state.loading) {
       return <Loader />
@@ -60,11 +55,10 @@ class Blog extends Component {
       <div>
         {availablePostList.map((post, index) => {
           const perexHtml = mdConverter.makeHtml(post.perex);
-          const readingTime = Math.ceil(post.body.split(' ').filter(w => w.length > 4).length / 200);
           return (
             <div key={index}>
               <h2><Link to={`/blog/${post.key}`}>{post.title}</Link></h2>
-              <p><strong>Posted in {this.convertTimestamp(post.timestamp)}, reading time ~{readingTime} minutes</strong></p>
+              <p><strong>Posted in {convertTimestamp(post.timestamp)}, reading time ~{readingTime(post.body)} minutes</strong></p>
               <div dangerouslySetInnerHTML={{__html: perexHtml}} />
             </div>
           )

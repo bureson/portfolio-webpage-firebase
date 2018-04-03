@@ -6,6 +6,8 @@ import { faTrash } from '@fortawesome/fontawesome-free-solid';
 import Autocomplete from '../components/Autocomplete';
 import Maps from '../components/Maps';
 
+import { convertTimestamp } from './Library';
+
 class Places extends Component {
 
   constructor(props) {
@@ -42,12 +44,6 @@ class Places extends Component {
     });
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   onDelete = (e, key) => {
     if (window.confirm('Are you sure you want to remove the place?')) {
       e.preventDefault();
@@ -75,7 +71,7 @@ class Places extends Component {
               return (
                 <tr key={index}>
                   <td>{place.name}</td>
-                  <td>{this.convertTimestamp(place.date)}</td>
+                  <td>{convertTimestamp(place.date)}</td>
                   <td>{place.lat.toString().substring(0, 9)}</td>
                   <td>{place.lng.toString().substring(0, 9)}</td>
                   {this.state.authed && <td>
