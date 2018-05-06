@@ -3,7 +3,7 @@ import { shallow } from 'enzyme';
 
 import Pager from './Pager';
 
-describe('component/pager', () => {
+describe('component/Pager', () => {
   it('renders without crashing', () => {
     const wrapper = shallow(<Pager itemsCount={20} currentPage={2} perPage={5} />);
     expect(wrapper.find('li')).toHaveLength(6);
