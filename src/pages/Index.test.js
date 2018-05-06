@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link, Route, Switch } from 'react-router-dom';
 import { shallow } from 'enzyme';
 import firebase from 'firebase';
 
@@ -23,9 +22,9 @@ describe('pages/Index', () => {
 
     expect(wrapper.state().authed).toBe(true);
 
-    expect(unmounter.mock.calls).toEqual([]);
+    expect(unmounter).not.toHaveBeenCalled();
     wrapper.unmount();
-    expect(unmounter.mock.calls).toEqual([[]]);
+    expect(unmounter).toHaveBeenCalled();
   });
 
   it('handles incorrect auth', () => {
