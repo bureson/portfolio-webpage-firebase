@@ -1,13 +1,15 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
 
+import { convertTimestamp } from './Library';
+
 class Autocomplete extends Component {
 
   constructor(props) {
     super(props);
     this.state = {
       country: props.country,
-      date: this.convertTimestamp(Math.floor(Date.now() / 1000)),
+      date: convertTimestamp(Math.floor(Date.now() / 1000), 'yyyy-mm-dd'),
       lat: '',
       lng: '',
       name: ''
@@ -21,14 +23,6 @@ class Autocomplete extends Component {
 
   componentWillUnmount() {
     this.event.remove();
-  }
-
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1) < 10 ? `0${date.getMonth() + 1}` : date.getMonth() + 1;
-    const day = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();
-    return `${year}-${month}-${day}`;
   }
 
   onSelected = () => {

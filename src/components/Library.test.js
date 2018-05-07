@@ -6,6 +6,14 @@ describe('component/Library', () => {
       expect(convertTimestamp(608544000, 'dd:mm:yyyy')).toBe('14 April 1989');
     });
 
+    it('converts to yyyy-mm-dd', () => {
+      expect(convertTimestamp(608544000, 'yyyy-mm-dd')).toBe('1989-04-14');
+    });
+
+    it('converts Christmas to yyyy-mm-dd', () => {
+      expect(convertTimestamp(1514145600, 'yyyy-mm-dd')).toBe('2017-12-24');
+    });
+
     it('uses default date format', () => {
       expect(convertTimestamp(608544000)).toBe('April 1989');
     })
