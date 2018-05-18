@@ -11,7 +11,7 @@ import travisciLogo from '../assets/travisci-logo.png';
 class Home extends Component {
 
   componentDidMount = () => {
-    document.title = 'Homepage | Ondrej Bures';
+    document.title = 'Portfolio | Ondrej Bures';
   }
 
   render = () => {
