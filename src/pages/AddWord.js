@@ -8,7 +8,10 @@ class AddWord extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      authed: props.authed
+      authed: props.authed,
+      original: '',
+      pronunciation: '',
+      translation: ''
     }
   }
 
@@ -18,13 +21,46 @@ class AddWord extends Component {
     });
   }
 
+  onChange = (e, key) => {
+    this.setState({
+      [key]: e.target.value
+    });
+  }
+
+  onKeyUp = (e, key) => {
+    if (e.ctrlKey && e.altKey) {
+      switch (e.keyCode) {
+        case 65: // Note: A
+          e.preventDefault();
+          this.setState({
+            [key]: `${this.state[key]}å`
+          });
+          break;
+        case 69: // Note: E
+          e.preventDefault();
+          this.setState({
+            [key]: `${this.state[key]}æ`
+          });
+          break;
+        case 79: // Note: O
+          e.preventDefault();
+          this.setState({
+            [key]: `${this.state[key]}ø`
+          });
+          break;
+        default:
+          break;
+      }
+    }
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
     const courseRef = firebase.database().ref('course');
     courseRef.push({
-      original: this.original.value,
-      prons: this.prons.value,
-      means: this.means.value,
+      original: this.state.original,
+      prons: this.state.pronunciation,
+      means: this.state.translation,
       timestamp: Math.floor(Date.now() / 1000)
     }, error => {
       if (error) {
@@ -43,27 +79,23 @@ class AddWord extends Component {
       <div className='add-phrase'>
         <h2>Add new phrase</h2>
         <form onSubmit={e => this.onSubmit(e)}>
-          <div className='input-group'>
-            <label htmlFor='original'>Original</label>
-            <input type='text' id='original' ref={original => this.original = original} />
-          </div>
-          <div className='input-group'>
-            <label htmlFor='pronunciation'>Pronunciation</label>
-            <input type='text' id='pronunciation' ref={prons => this.prons = prons} />
-          </div>
-          <div className='input-group'>
-            <label htmlFor='translation'>Translation</label>
-            <input type='text' id='translation' ref={means => this.means = means} />
-          </div>
+          {['original', 'pronunciation', 'translation'].map(name => {
+            return (
+              <div className='input-group' key={name}>
+                <label htmlFor={name}>{name.charAt(0).toUpperCase() + name.slice(1)}</label>
+                <input type='text' id={name} value={this.state[name]} onChange={e => this.onChange(e, name)} onKeyUp={e => this.onKeyUp(e, name)} />
+              </div>
+            )
+          })}
           <button type='submit' value='Submit'>Submit</button>
         </form>
         <div className='tooltip'>
           <h3>Special characters</h3>
           <ul>
-            <li>å</li>
-            <li>ø</li>
+            <li>å (Ctrl + Shift + A)</li>
+            <li>æ (Ctrl + Shift + E)</li>
+            <li>ø (Ctrl + Shift + O)</li>
             <li>ö</li>
-            <li>æ</li>
           </ul>
         </div>
       </div>
