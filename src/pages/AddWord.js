@@ -92,9 +92,9 @@ class AddWord extends Component {
         <div className='tooltip'>
           <h3>Special characters</h3>
           <ul>
-            <li>å (Ctrl + Shift + A)</li>
-            <li>æ (Ctrl + Shift + E)</li>
-            <li>ø (Ctrl + Shift + O)</li>
+            <li>å (Ctrl + Alt + A)</li>
+            <li>æ (Ctrl + Alt + E)</li>
+            <li>ø (Ctrl + Alt + O)</li>
             <li>ö</li>
           </ul>
         </div>
