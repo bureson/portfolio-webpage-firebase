@@ -59,20 +59,22 @@ class Attachments extends Component {
       }, error => {
         console.log(error); // Note: eventually handle error
       }, () => {
-        const attachmentRef = firebase.database().ref('attachment');
-        attachmentRef.push({
-          name: file.name,
-          post: this.state.post,
-          url: uploadTask.snapshot.downloadURL,
-          size: uploadTask.snapshot.totalBytes,
-          timestamp: Math.floor(Date.now() / 1000)
-        }, error => {
-          if (error) {
-            console.log(error);
-          }
-        });
-        this.setState({
-          progress: null
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          const attachmentRef = firebase.database().ref('attachment');
+          attachmentRef.push({
+            name: file.name,
+            post: this.state.post,
+            url: downloadURL,
+            size: uploadTask.snapshot.totalBytes,
+            timestamp: Math.floor(Date.now() / 1000)
+          }, error => {
+            if (error) {
+              console.log(error);
+            }
+          });
+          this.setState({
+            progress: null
+          });
         });
       }
     );
