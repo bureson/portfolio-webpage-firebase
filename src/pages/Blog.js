@@ -57,7 +57,7 @@ class Blog extends Component {
           const perexHtml = mdConverter.makeHtml(post.perex);
           return (
             <div key={index}>
-              <h2><Link to={`/blog/${post.key}`}>{post.title}</Link></h2>
+              <h2>{!post.public && '*'}<Link to={`/blog/${post.key}`}>{post.title}</Link></h2>
               <p><strong>Posted in {convertTimestamp(post.timestamp)}, reading time ~{readingTime(post.body)} minutes</strong></p>
               <div dangerouslySetInnerHTML={{__html: perexHtml}} />
             </div>
