@@ -79,9 +79,11 @@ class AddCountry extends Component {
       }, (error) => {
         console.log(error); // Note: eventually handle error
       }, () => {
-        this.setState({
-          filePath: uploadTask.snapshot.downloadURL,
-          progress: null
+        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+          this.setState({
+            filePath: downloadURL,
+            progress: null
+          });
         });
       }
     );
