@@ -113,7 +113,7 @@ class Attachments extends Component {
                 return (
                   <tr key={index}>
                     <td>{attachment.name}</td>
-                    <td><a href={attachment.url} target='_blank'>Link</a></td>
+                    <td><a href={attachment.url} target='_blank' rel='noopener noreferrer'>Link</a></td>
                     <td>{Math.round(attachment.size / 1000)} kB</td>
                     <td>{this.convertTimestamp(attachment.timestamp)}</td>
                     <td><button onClick={(e) => this.onDelete(e, attachment)}><FontAwesomeIcon icon={faTrash} /></button></td>
