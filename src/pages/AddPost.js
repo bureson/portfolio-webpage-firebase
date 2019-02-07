@@ -115,7 +115,7 @@ class AddPost extends Component {
           {this.state.key && <Attachments post={this.state.key} />}
           <div className='input-group'>
             <label htmlFor='body'>Body</label>
-            <textarea id='body' rows='5' placeholder='Body' onChange={e => this.onChange(e, 'body')} value={this.state.body} />
+            <textarea id='body' rows='20' placeholder='Body' onChange={e => this.onChange(e, 'body')} value={this.state.body} />
           </div>
           <button type='submit' value='Submit'>Submit</button>
         </form>
