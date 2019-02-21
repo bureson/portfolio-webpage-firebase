@@ -70,8 +70,9 @@ class Countries extends Component {
   }
 
   onDotClick = (e) => {
+    const filterYear = e.activeLabel === this.state.filterYear ? null : e.activeLabel;
     this.setState({
-      filterYear: e.activeLabel
+      filterYear
     });
   }
 
