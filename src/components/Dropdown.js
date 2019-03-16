@@ -15,6 +15,11 @@ class Dropdown extends Component {
     });
   }
 
+  select = (...args) => {
+    this.toggle();
+    this.props.select(...args);
+  }
+
   render = () => {
     return (
       <div className={'dropdown inline ' + (this.state.active ? 'active' : 'inactive')}>
@@ -23,7 +28,7 @@ class Dropdown extends Component {
         {this.state.active && <div className='options'>
           {this.props.optionList.map((option) => {
             return (
-              <button key={option.key} onClick={() => this.props.select(option.key, option.direction)}>{option.key}</button>
+              <button key={option.key} onClick={() => this.select(option.key, option.direction)}>{option.key}</button>
             );
           })}
         </div>}
