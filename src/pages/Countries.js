@@ -3,7 +3,8 @@ import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import firebase from 'firebase';
 
-import { convertTimestamp } from '../components/Library';
+import { convertTimestamp, sortBy } from '../components/Library';
+import Dropdown from '../components/Dropdown';
 import Loader from '../components/Loader';
 
 class Countries extends Component {
@@ -12,9 +13,11 @@ class Countries extends Component {
     super(props);
     this.state = {
       authed: props.authed,
-      country: [],
+      countryList: [],
       filterYear: null,
-      loading: true
+      loading: true,
+      sortBy: 'date',
+      sortDirection: 'desc'
     }
   }
 
@@ -23,14 +26,14 @@ class Countries extends Component {
     this.countryRef = firebase.database().ref('country');
     this.countryRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
-      const country = Object.keys(payload)
+      const countryList = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
             .map(key => Object.assign({key}, payload[key]));
-      const lastYear = new Date(country[0].date * 1000).getFullYear();
-      const firstYear = new Date(country[country.length - 1].date * 1000).getFullYear();
+      const lastYear = new Date(countryList[0].date * 1000).getFullYear();
+      const firstYear = new Date(countryList[countryList.length - 1].date * 1000).getFullYear();
       const data = [...Array(lastYear - firstYear + 1).keys()].map((_, key) => {
         const year = firstYear + key;
-        const count = country.filter(c => new Date(c.date * 1000).getFullYear() === year).length;
+        const count = countryList.filter(c => new Date(c.date * 1000).getFullYear() === year).length;
         return {year, count};
       }).reduce((acc, val, key, array) => {
         const {count} = val;
@@ -47,7 +50,7 @@ class Countries extends Component {
         : acc.concat(val);
       }, []);
       this.setState({
-        country,
+        countryList,
         data: data,
         loading: false
       });
@@ -82,13 +85,21 @@ class Countries extends Component {
     });
   }
 
+  select = (sortBy, sortDirection) => {
+    this.setState({
+      sortBy,
+      sortDirection
+    });
+  }
+
   renderCountries = () => {
     if (this.state.loading) {
       return <Loader />
     }
-    const countryList = this.state.filterYear
-      ? this.state.country.filter(c => new Date(c.date * 1000).getFullYear() === this.state.filterYear)
-      : this.state.country;
+    const filteredCountryList = this.state.filterYear
+      ? this.state.countryList.filter(c => new Date(c.date * 1000).getFullYear() === this.state.filterYear)
+      : this.state.countryList;
+    const sortedCountryList = filteredCountryList.sort(sortBy(this.state.sortBy, this.state.sortDirection));
     return (
       <div className='countries-list'>
         <ResponsiveContainer height={200}>
@@ -98,7 +109,7 @@ class Countries extends Component {
             <Line type="monotone" dataKey="count" stroke="#2c73b0" activeDot={{r: 8}}/>
           </LineChart>
         </ResponsiveContainer>
-        {countryList.map((country, index) => {
+        {sortedCountryList.map((country, index) => {
           return (
             <Link to={`/countries/${country.key}`} key={index}>
               <div className='country'>
@@ -122,10 +133,11 @@ class Countries extends Component {
         <h2>Countries log</h2>
         <div className='page-header'>
           <div className='page-info'>
-            <p>{this.state.country.length} countries visited</p>
+            <p>{this.state.countryList.length} countries visited</p>
           </div>
           <div className='page-controls'>
             {this.state.filterYear && <button onClick={this.clearFilter}>Clear filter: {this.state.filterYear}</button>}
+            <Dropdown selected={this.state.sortBy} optionList={[{ key: 'date', direction: 'desc' }, { key: 'name', dirrection: 'asc' }]} select={this.select} />
             {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
           </div>
         </div>

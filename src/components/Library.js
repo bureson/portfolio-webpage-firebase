@@ -17,3 +17,12 @@ export const convertTimestamp = (timestamp, format) => {
 export const readingTime = (string) => {
   return Math.ceil(string.split(' ').filter(w => w.length >= 4).length / 200);
 }
+
+export const sortBy = (prop, direction) => {
+  const desc = direction === 'desc';
+  return (a, b) => {
+    if (a[prop] < b[prop]) return desc ? 1 : -1;
+    if (a[prop] > b[prop]) return desc ? -1 : 1;
+    return 0;
+  }
+}
