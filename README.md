@@ -10,6 +10,7 @@ Portfolio webpage using firebase
 * `npm start`
 * `npm run build`
 * `npm test`
+* `npm test -- --coverage`
 
 When install fails
 

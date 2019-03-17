@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
@@ -8,6 +8,7 @@ import { Converter } from 'showdown';
 import { valueByType } from '../lib/Shared';
 import { definition } from '../lib/CourseModel';
 import Loader from '../components/Loader';
+import NoMatch from '../components/NoMatch';
 import Pager from '../components/Pager';
 import Search from '../components/Search';
 
@@ -18,7 +19,6 @@ class Course extends Component {
     this.state = {
       authed: props.authed,
       course: [],
-      filteredCourse: [],
       languageKey: props.match.params.language,
       page: 0,
       perPage: 20,
@@ -63,12 +63,9 @@ class Course extends Component {
   onFilterChange = (e) => {
     e.preventDefault();
     const search = e.target.value;
-    const courseFields = definition[this.state.languageKey].fields;
-    const searchFields = Object.keys(courseFields).filter(field => courseFields[field].search);
     this.setState({
       search,
-      page: 0,
-      filteredCourse: this.state.course.filter(i => searchFields.some(key => i[key].toLowerCase().includes(search.toLowerCase())))
+      page: 0
     })
   }
 
@@ -79,13 +76,25 @@ class Course extends Component {
     });
   }
 
+  filterCourse = () => {
+    const courseFields = definition[this.state.languageKey].fields;
+    const searchFields = Object.keys(courseFields).filter(field => courseFields[field].search);
+    const search = this.state.search;
+    return this.state.course.filter(i => {
+      return search ? searchFields.some(key => {
+        return i[key].toLowerCase().includes(search.toLowerCase());
+      }) : true;
+    });
+  }
+
   renderCourse = () => {
     if (this.state.loading) {
       return <Loader />
     }
     const firstKey = this.state.page * this.state.perPage;
     const lastKey = firstKey + this.state.perPage;
-    const pageContent = this.state.filteredCourse.slice(firstKey, lastKey);
+    const filteredCourse = this.filterCourse();
+    const pageContent = filteredCourse.slice(firstKey, lastKey);
     const courseFields = definition[this.state.languageKey].fields;
     const availableCourseFields = Object.keys(courseFields).filter(key => this.state.authed || !courseFields[key].private);
     return (
@@ -121,7 +130,9 @@ class Course extends Component {
   }
 
   render = () => {
+    if (!definition[this.state.languageKey]) return <NoMatch />;
     const { title, description } = definition[this.state.languageKey];
+    const filteredCourse = this.filterCourse();
     const mdConverter = new Converter({
       noHeaderId: true,
       underline: true,
@@ -141,7 +152,7 @@ class Course extends Component {
           </div>
         </div>
         {this.renderCourse()}
-        <Pager itemsCount={this.state.filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
+        <Pager itemsCount={filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
       </div>
     )
   }

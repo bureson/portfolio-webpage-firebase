@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
-import firebase from 'firebase';
+import firebase from 'firebase/app';
 
 import { convertTimestamp, sortBy } from '../lib/Shared';
 import Dropdown from '../components/Dropdown';
