@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import firebase from 'firebase';
 
-import { convertTimestamp, sortBy } from '../components/Library';
+import { convertTimestamp, sortBy } from '../lib/Shared';
 import Dropdown from '../components/Dropdown';
 import Loader from '../components/Loader';
 
@@ -73,7 +73,11 @@ class Countries extends Component {
   }
 
   onDotClick = (e) => {
-    const filterYear = e.activeLabel === this.state.filterYear ? null : e.activeLabel;
+    const filterYear = e
+      ? e.activeLabel === this.state.filterYear
+        ? null
+        : e.activeLabel 
+      : null;
     this.setState({
       filterYear
     });

@@ -5,7 +5,7 @@ import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
-import { convertTimestamp } from '../components/Library';
+import { convertTimestamp } from '../lib/Shared';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import Places from '../components/Places';

@@ -6,7 +6,7 @@ import { faTrash } from '@fortawesome/fontawesome-free-solid';
 import Autocomplete from '../components/Autocomplete';
 import Maps from '../components/Maps';
 
-import { convertTimestamp } from './Library';
+import { convertTimestamp } from '../lib/Shared';
 
 class Places extends Component {
 

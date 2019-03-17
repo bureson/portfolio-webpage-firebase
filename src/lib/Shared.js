@@ -14,6 +14,17 @@ export const convertTimestamp = (timestamp, format) => {
   }
 }
 
+export const defaultByType = (type) => {
+  switch (type) {
+    case 'timestamp':
+      return Math.floor(Date.now() / 1000);
+    case 'string':
+    case 'text':
+    default:
+      return '';
+  }
+}
+
 export const readingTime = (string) => {
   return Math.ceil(string.split(' ').filter(w => w.length >= 4).length / 200);
 }
@@ -24,5 +35,16 @@ export const sortBy = (prop, direction) => {
     if (a[prop] < b[prop]) return desc ? 1 : -1;
     if (a[prop] > b[prop]) return desc ? -1 : 1;
     return 0;
+  }
+}
+
+export const valueByType = (value, type) => {
+  switch (type) {
+    case 'timestamp':
+      return convertTimestamp(value, 'dd:mm:yyyy');
+    case 'string':
+    case 'text':
+    default:
+      return value;
   }
 }

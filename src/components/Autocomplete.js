@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
 
-import { convertTimestamp } from './Library';
+import { convertTimestamp } from '../lib/Shared';
 
 class Autocomplete extends Component {
 

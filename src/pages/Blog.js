@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 import { Converter } from 'showdown';
 
-import { convertTimestamp, readingTime } from '../components/Library';
+import { convertTimestamp, readingTime } from '../lib/Shared';
 import Loader from '../components/Loader';
 
 class Blog extends Component {

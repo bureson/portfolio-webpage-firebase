@@ -1,6 +1,6 @@
-import {convertTimestamp, readingTime} from './Library';
+import {convertTimestamp, readingTime} from './Shared';
 
-describe('component/Library', () => {
+describe('component/Shared', () => {
   describe('convertTimestamp', () => {
     it('converts to full date', () => {
       expect(convertTimestamp(608544000, 'dd:mm:yyyy')).toBe('14 April 1989');

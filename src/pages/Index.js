@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, Route, Switch } from 'react-router-dom';
+import { Link, Redirect, Route, Switch } from 'react-router-dom';
 import firebase from 'firebase';
 
 import AddCountry from './AddCountry';
@@ -9,6 +9,7 @@ import Blog from './Blog';
 import Countries from './Countries';
 import CountryDetail from './CountryDetail';
 import Course from './Course';
+import {definition} from '../lib/CourseModel';
 import Home from './Home';
 import Login from './Login';
 import Menu from '../components/Menu';
@@ -44,6 +45,7 @@ class Index extends Component {
   }
 
   render = () => {
+    const defaultCourse = Object.keys(definition)[0];
     return (
       <div className='container'>
         <div className='header'>
@@ -58,8 +60,9 @@ class Index extends Component {
           <Route exact path='/countries/add' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
           <Route exact path='/countries/:country' render={(props) => <CountryDetail {...props} authed={this.state.authed}/>} />
           <Route exact path='/countries/:country/edit' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
-          <Route exact path='/course' render={(props) => <Course {...props} authed={this.state.authed}/>} />
-          <Route exact path='/course/add' render={(props) => <AddWord {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course' render={() => <Redirect to={`/course/${defaultCourse}`} />} />
+          <Route exact path='/course/:language' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course/:language/add' render={(props) => <AddWord {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />

@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
 import firebase from 'firebase';
 
+import { definition } from '../lib/CourseModel';
+import Dropdown from '../components/Dropdown';
 import NoMatch from '../components/NoMatch';
+import { defaultByType } from '../lib/Shared';
 
 class AddWord extends Component {
 
@@ -9,9 +12,7 @@ class AddWord extends Component {
     super(props);
     this.state = {
       authed: props.authed,
-      original: '',
-      pronunciation: '',
-      translation: ''
+      languageKey: props.match.params.language
     }
   }
 
@@ -33,19 +34,19 @@ class AddWord extends Component {
         case 65: // Note: A
           e.preventDefault();
           this.setState({
-            [key]: `${this.state[key]}å`
+            [key]: `${this.state[key] || ''}å`
           });
           break;
         case 69: // Note: E
           e.preventDefault();
           this.setState({
-            [key]: `${this.state[key]}æ`
+            [key]: `${this.state[key] || ''}æ`
           });
           break;
         case 79: // Note: O
           e.preventDefault();
           this.setState({
-            [key]: `${this.state[key]}ø`
+            [key]: `${this.state[key] || ''}ø`
           });
           break;
         default:
@@ -56,17 +57,20 @@ class AddWord extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    const courseRef = firebase.database().ref('danish');
-    courseRef.push({
-      original: this.state.original,
-      prons: this.state.pronunciation,
-      means: this.state.translation,
-      timestamp: Math.floor(Date.now() / 1000)
-    }, error => {
+    const courseRef = firebase.database().ref(this.state.languageKey);
+    const courseFields = definition[this.state.languageKey].fields;
+    const item = Object.keys(courseFields).reduce((obj, key) => {
+      const { type } = courseFields[key];
+      return {
+        ...obj,
+        [key]: this.state[key] || defaultByType(type)
+      };
+    }, {});
+    courseRef.push(item, error => {
       if (error) {
         console.log(error);
       } else {
-        this.props.history.push('/course');
+        this.props.history.push(`/course/${this.state.languageKey}`);
       }
     });
   }
@@ -75,17 +79,39 @@ class AddWord extends Component {
     if (!this.state.authed) {
       return <NoMatch />
     }
+    const courseFields = definition[this.state.languageKey].fields;
+    const availableCourseFields = Object.keys(courseFields).filter(key => !courseFields[key].private);
     return (
       <div className='add-phrase'>
         <h2>Add new phrase</h2>
         <form onSubmit={e => this.onSubmit(e)}>
-          {['original', 'pronunciation', 'translation'].map(name => {
+          {availableCourseFields.map(key => {
+            const { title, type, options } = courseFields[key];
+            const value = this.state[key] || '';
             return (
-              <div className='input-group' key={name}>
-                <label htmlFor={name}>{name.charAt(0).toUpperCase() + name.slice(1)}</label>
-                <input type='text' id={name} value={this.state[name]} onChange={e => this.onChange(e, name)} onKeyUp={e => this.onKeyUp(e, name)} />
+              <div className='input-group' key={key}>
+                <label htmlFor={key}>{title}</label>
+                {(() => {
+                  switch (type) {
+                    case 'options':
+                      const select = (option) => this.onChange({ target: { value: option.key } }, key);
+                      const selected = value || 'Choose one ...';
+                      return (
+                        <Dropdown selected={selected} optionList={options} select={select} />
+                      );
+                    case 'text':
+                      return (
+                        <textarea value={value} onChange={e => this.onChange(e, key)} rows={5} />
+                      );
+                    case 'string':
+                    default:
+                      return (
+                        <input type='text' id={key} value={value} onChange={e => this.onChange(e, key)} onKeyUp={e => this.onKeyUp(e, key)} />
+                      );
+                  }
+                })()}
               </div>
-            )
+            );
           })}
           <button type='submit' value='Submit'>Submit</button>
         </form>

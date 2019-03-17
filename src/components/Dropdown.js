@@ -10,13 +10,15 @@ class Dropdown extends Component {
   }
 
   toggle = (e) => {
+    e.preventDefault();
     this.setState({
       active: !this.state.active
     });
   }
 
-  select = (option) => {
-    this.toggle();
+  select = (e, option) => {
+    e.preventDefault();
+    this.toggle(e);
     this.props.select(option);
   }
 
@@ -28,7 +30,7 @@ class Dropdown extends Component {
         {this.state.active && <div className='options'>
           {this.props.optionList.map((option) => {
             return (
-              <button key={option.key} onClick={() => this.select(option)}>{option.key}</button>
+              <button key={option.key} onClick={(e) => this.select(e, option)}>{option.key}</button>
             );
           })}
         </div>}

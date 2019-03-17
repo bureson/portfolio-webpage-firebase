@@ -100,6 +100,9 @@ textarea {
 .dropdown {
   position: relative;
 }
+.dropdown.inline {
+  display: inline-block;
+}
 .dropdown .options {
   position: absolute;
   z-index: 1;
@@ -148,6 +151,12 @@ textarea {
 .input-group textarea {
   display: inline-block;
   width: 70%;
+}
+.input-group .dropdown {
+  width: 30%;
+}
+.input-group .dropdown > button {
+  width: 100%;
 }
 .input-group .input-container {
   width: 73%;

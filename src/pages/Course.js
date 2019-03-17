@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import firebase from 'firebase';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { Converter } from 'showdown';
 
-import { convertTimestamp } from '../components/Library';
+import { valueByType } from '../lib/Shared';
+import { definition } from '../lib/CourseModel';
 import Loader from '../components/Loader';
 import Pager from '../components/Pager';
 import Search from '../components/Search';
@@ -17,6 +19,7 @@ class Course extends Component {
       authed: props.authed,
       course: [],
       filteredCourse: [],
+      languageKey: props.match.params.language,
       page: 0,
       perPage: 20,
       loading: true,
@@ -26,7 +29,7 @@ class Course extends Component {
 
   componentDidMount = () => {
     document.title = 'Language course | Ondrej Bures';
-    this.courseRef = firebase.database().ref('danish');
+    this.courseRef = firebase.database().ref(this.state.languageKey);
     this.courseRef.on('value', snapshot => {
       const payload = snapshot.val() || {};
       const course = Object.keys(payload)
@@ -53,17 +56,19 @@ class Course extends Component {
   onDelete = (e, key) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to delete the item?')) {
-      firebase.database().ref('danish').child(key).remove();
+      firebase.database().ref(this.state.languageKey).child(key).remove();
     }
   }
 
   onFilterChange = (e) => {
     e.preventDefault();
     const search = e.target.value;
+    const courseFields = definition[this.state.languageKey].fields;
+    const searchFields = Object.keys(courseFields).filter(field => courseFields[field].search);
     this.setState({
       search,
       page: 0,
-      filteredCourse: this.state.course.filter(i => ['original', 'means'].some(key => i[key].toLowerCase().includes(search.toLowerCase())))
+      filteredCourse: this.state.course.filter(i => searchFields.some(key => i[key].toLowerCase().includes(search.toLowerCase())))
     })
   }
 
@@ -81,14 +86,18 @@ class Course extends Component {
     const firstKey = this.state.page * this.state.perPage;
     const lastKey = firstKey + this.state.perPage;
     const pageContent = this.state.filteredCourse.slice(firstKey, lastKey);
+    const courseFields = definition[this.state.languageKey].fields;
+    const availableCourseFields = Object.keys(courseFields).filter(key => this.state.authed || !courseFields[key].private);
     return (
       <table>
         <thead>
           <tr>
-            <th>Original</th>
-            <th>Pronunciation</th>
-            <th>Translation</th>
-            {this.state.authed && <th>Added</th>}
+            {availableCourseFields.map(key => {
+              const field = courseFields[key];
+              return (
+                <th key={key}>{field.title}</th>
+              );
+            })}
             {this.state.authed && <th>Control</th>}
           </tr>
         </thead>
@@ -96,10 +105,12 @@ class Course extends Component {
           {pageContent.map((item, index) => {
             return (
               <tr key={index}>
-                <td>{item.original}</td>
-                <td>{item.prons}</td>
-                <td>{item.means}</td>
-                {this.state.authed && <td>{convertTimestamp(item.timestamp, 'dd:mm:yyyy')}</td>}
+                {availableCourseFields.map(key => {
+                  const { type } = courseFields[key];
+                  return (
+                    <td key={key}>{valueByType(item[key], type)}</td>
+                  );
+                })}
                 {this.state.authed && <td><button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button></td>}
               </tr>
             )
@@ -110,22 +121,23 @@ class Course extends Component {
   }
 
   render = () => {
+    const { title, description } = definition[this.state.languageKey];
+    const mdConverter = new Converter({
+      noHeaderId: true,
+      underline: true,
+      openLinksInNewWindow: true
+    });
     return (
       <div className='page'>
-        <h2>Language course by Ian @ Triggerz</h2>
-        <p>
-          After running the <em>Word of the day</em> for more than a year, on the 25th of July 2018 we decided that it would be nice to round up the challenge at the number 300.
-          Since then we have managed to come up with a couple of good words that are worth noting down here and we might occasionally do so in the future, but
-          we consider this initiative to be finished. A giant thanks belongs to my colleague <a href='http://ianvictor.dk/' target='_blank' rel='noopener noreferrer'>Ian Abildskou</a>,
-          because this brought us, but not only us a lot of fun.
-        </p>
+        <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
+        <p dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(description)}} />
         <div className='page-header'>
           <div className='page-info'>
             List of {this.state.course.length} phrases
           </div>
           <div className='page-controls'>
             <Search value={this.state.search} onChange={this.onFilterChange} />
-            {this.state.authed && <Link to={'/course/add'}><button>Add new phrase</button></Link>}
+            {this.state.authed && <Link to={`/course/${this.state.languageKey}/add`}><button>Add new phrase</button></Link>}
           </div>
         </div>
         {this.renderCourse()}
