@@ -23,7 +23,7 @@ class Dropdown extends Component {
   render = () => {
     return (
       <div className={'dropdown inline ' + (this.state.active ? 'active' : 'inactive')}>
-        <button onClick={this.toggle}>Sort by: {this.props.selected}</button>
+        <button onClick={this.toggle}>{this.props.selected}</button>
         {this.state.active && <div className='overlay' onClick={this.toggle}></div>}
         {this.state.active && <div className='options'>
           {this.props.optionList.map((option) => {

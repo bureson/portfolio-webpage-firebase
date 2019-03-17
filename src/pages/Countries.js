@@ -137,7 +137,7 @@ class Countries extends Component {
           </div>
           <div className='page-controls'>
             {this.state.filterYear && <button onClick={this.clearFilter}>Clear filter: {this.state.filterYear}</button>}
-            <Dropdown selected={this.state.sortBy} optionList={[{ key: 'date', direction: 'desc' }, { key: 'name', dirrection: 'asc' }]} select={this.select} />
+            <Dropdown selected={`Sorted by ${this.state.sortBy}`} optionList={[{ key: 'date', direction: 'desc' }, { key: 'name', dirrection: 'asc' }]} select={this.select} />
             {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
           </div>
         </div>
