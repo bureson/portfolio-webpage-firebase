@@ -15,9 +15,9 @@ class Dropdown extends Component {
     });
   }
 
-  select = (...args) => {
+  select = (option) => {
     this.toggle();
-    this.props.select(...args);
+    this.props.select(option);
   }
 
   render = () => {
@@ -28,7 +28,7 @@ class Dropdown extends Component {
         {this.state.active && <div className='options'>
           {this.props.optionList.map((option) => {
             return (
-              <button key={option.key} onClick={() => this.select(option.key, option.direction)}>{option.key}</button>
+              <button key={option.key} onClick={() => this.select(option)}>{option.key}</button>
             );
           })}
         </div>}

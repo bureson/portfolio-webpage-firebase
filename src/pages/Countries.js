@@ -85,10 +85,10 @@ class Countries extends Component {
     });
   }
 
-  select = (sortBy, sortDirection) => {
+  select = ({key, direction}) => {
     this.setState({
-      sortBy,
-      sortDirection
+      sortBy: key,
+      sortDirection: direction
     });
   }
 
