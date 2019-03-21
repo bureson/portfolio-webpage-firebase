@@ -25,8 +25,22 @@ export const defaultByType = (type) => {
   }
 }
 
+export const randomNumber = (max) => {
+  return Math.floor(Math.random() * max);
+}
+
 export const readingTime = (string) => {
   return Math.ceil(string.split(' ').filter(w => w.length >= 4).length / 200);
+}
+
+export const shuffle = (list) => {
+  for (let i = list.length; i; i--) {
+    const j = randomNumber(list.length - 1);
+    const x = list[i - 1];
+    list[i - 1] = list[j];
+    list[j] = x;
+  }
+  return list;
 }
 
 export const sortBy = (prop, direction) => {

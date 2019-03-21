@@ -12,12 +12,13 @@ import Blog from './Blog';
 import Countries from './Countries';
 import CountryDetail from './CountryDetail';
 import Course from './Course';
-import {definition} from '../lib/CourseModel';
+import { definition } from '../lib/CourseModel';
 import Home from './Home';
 import Login from './Login';
 import Menu from '../components/Menu';
 import NoMatch from '../components/NoMatch';
 import Post from './Post';
+import Practice from './Practice';
 
 class Index extends Component {
 
@@ -48,7 +49,7 @@ class Index extends Component {
   }
 
   render = () => {
-    const defaultCourse = Object.keys(definition)[0];
+    const defaultCourse = Object.keys(definition).find(key => definition[key].default);
     return (
       <div className='container'>
         <div className='header'>
@@ -66,6 +67,7 @@ class Index extends Component {
           <Route exact path='/course' render={() => <Redirect to={`/course/${defaultCourse}`} />} />
           <Route exact path='/course/:language' render={(props) => <Course {...props} authed={this.state.authed}/>} />
           <Route exact path='/course/:language/add' render={(props) => <AddWord {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course/:language/practice' render={(props) => <Practice {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />

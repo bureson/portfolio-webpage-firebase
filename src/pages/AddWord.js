@@ -59,8 +59,7 @@ class AddWord extends Component {
     e.preventDefault();
     const courseRef = firebase.database().ref(this.state.languageKey);
     const courseFields = definition[this.state.languageKey].fields;
-    const item = Object.keys(courseFields).reduce((obj, key) => {
-      const { type } = courseFields[key];
+    const item = courseFields.reduce((obj, { key, type }) => {
       return {
         ...obj,
         [key]: this.state[key] || defaultByType(type)
@@ -80,13 +79,12 @@ class AddWord extends Component {
       return <NoMatch />
     }
     const courseFields = definition[this.state.languageKey].fields;
-    const availableCourseFields = Object.keys(courseFields).filter(key => !courseFields[key].private);
+    const availableCourseFields = courseFields.filter((field) => !field.private);
     return (
       <div className='add-phrase'>
         <h2>Add new phrase</h2>
         <form onSubmit={e => this.onSubmit(e)}>
-          {availableCourseFields.map(key => {
-            const { title, type, options } = courseFields[key];
+          {availableCourseFields.map(({ key, title, type, options }) => {
             const value = this.state[key] || '';
             return (
               <div className='input-group' key={key}>

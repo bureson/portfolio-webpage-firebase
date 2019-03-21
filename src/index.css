@@ -369,6 +369,27 @@ table td:first-child {
   background-size: cover;
   background-position: center;
 }
+.practice, .practice p {
+  text-align: center;
+}
+.practice .options {
+  margin: 20px 30%;
+}
+.practice .options div {
+  background: #ffffff85;
+  border: 1px solid #eee;
+  margin-bottom: 10px;
+  padding: 10px;
+  cursor: pointer;
+}
+.practice .options div.correct {
+  background: #00cc0020;
+  border: 1px solid #00cc00;
+}
+.practice .options div.incorrect {
+  background: #cc000020;
+  border: 1px solid #cc0000;
+}
 .search-group {
   position: relative;
   display: inline-block;
@@ -513,6 +534,9 @@ table td:first-child {
   }
   .page .countries-list .country {
     width: 98%;
+  }
+  .practice .options {
+    margin: 20px 5%;
   }
   .powered-by {
     margin: 50px 0 0;

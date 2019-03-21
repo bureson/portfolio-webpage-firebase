@@ -29,18 +29,7 @@ class Course extends Component {
 
   componentDidMount = () => {
     document.title = 'Language course | Ondrej Bures';
-    this.courseRef = firebase.database().ref(this.state.languageKey);
-    this.courseRef.on('value', snapshot => {
-      const payload = snapshot.val() || {};
-      const course = Object.keys(payload)
-            .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
-            .map(key => Object.assign({key}, payload[key]));
-      this.setState({
-        course,
-        filteredCourse: course.filter(i => i.original.includes(this.state.search)),
-        loading: false
-      });
-    });
+    this.loadData(this.state.languageKey);
   }
 
   componentWillUnmount = () => {
@@ -48,8 +37,32 @@ class Course extends Component {
   }
 
   componentWillReceiveProps = (props) => {
+    const languageKey = props.match.params.language;
+    const languageHasChanged = languageKey !== this.state.languageKey;
     this.setState({
-      authed: props.authed
+      authed: props.authed,
+      ...languageHasChanged && {
+        course: [],
+        languageKey,
+        loading: true,
+        page: 0,
+        search: ''
+      }
+    });
+    languageHasChanged && this.loadData(languageKey);
+  }
+
+  loadData = (languageKey) => {
+    this.courseRef = firebase.database().ref(languageKey);
+    this.courseRef.on('value', snapshot => {
+      const payload = snapshot.val() || {};
+      const course = Object.keys(payload)
+            .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
+            .map(key => Object.assign({key}, payload[key]));
+      this.setState({
+        course,
+        loading: false
+      });
     });
   }
 
@@ -78,13 +91,19 @@ class Course extends Component {
 
   filterCourse = () => {
     const courseFields = definition[this.state.languageKey].fields;
-    const searchFields = Object.keys(courseFields).filter(field => courseFields[field].search);
+    const searchFields = courseFields.filter(({ search }) => search).map(({ key }) => key);
     const search = this.state.search;
     return this.state.course.filter(i => {
       return search ? searchFields.some(key => {
         return i[key].toLowerCase().includes(search.toLowerCase());
       }) : true;
     });
+  }
+
+  checkAvailability = (field) => {
+    if (field.detail) return false;
+    if (field.private && !this.state.authed) return false;
+    return true;
   }
 
   renderCourse = () => {
@@ -96,15 +115,14 @@ class Course extends Component {
     const filteredCourse = this.filterCourse();
     const pageContent = filteredCourse.slice(firstKey, lastKey);
     const courseFields = definition[this.state.languageKey].fields;
-    const availableCourseFields = Object.keys(courseFields).filter(key => this.state.authed || !courseFields[key].private);
+    const availableCourseFields = courseFields.filter(field => this.checkAvailability(field));
     return (
       <table>
         <thead>
           <tr>
-            {availableCourseFields.map(key => {
-              const field = courseFields[key];
+            {availableCourseFields.map(({ key, title }) => {
               return (
-                <th key={key}>{field.title}</th>
+                <th key={key}>{title}</th>
               );
             })}
             {this.state.authed && <th>Control</th>}
@@ -114,8 +132,7 @@ class Course extends Component {
           {pageContent.map((item, index) => {
             return (
               <tr key={index}>
-                {availableCourseFields.map(key => {
-                  const { type } = courseFields[key];
+                {availableCourseFields.map(({ key, type }) => {
                   return (
                     <td key={key}>{valueByType(item[key], type)}</td>
                   );
@@ -141,6 +158,13 @@ class Course extends Component {
     return (
       <div className='page'>
         <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
+        {this.state.authed && <ul>
+          {Object.keys(definition).map(key => {
+            return (
+              <li key={key}><Link to={`/course/${key}`}>{definition[key].title}</Link></li>
+            )
+          })}
+        </ul>}
         <p dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(description)}} />
         <div className='page-header'>
           <div className='page-info'>
@@ -149,6 +173,7 @@ class Course extends Component {
           <div className='page-controls'>
             <Search value={this.state.search} onChange={this.onFilterChange} />
             {this.state.authed && <Link to={`/course/${this.state.languageKey}/add`}><button>Add new phrase</button></Link>}
+            <Link to={`/course/${this.state.languageKey}/practice`}><button>Test yourself</button></Link>
           </div>
         </div>
         {this.renderCourse()}
