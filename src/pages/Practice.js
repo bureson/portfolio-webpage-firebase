@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import firebase from 'firebase/app';
 
-import { randomNumber, shuffle } from '../lib/Shared';
+import { definition } from '../lib/CourseModel';
 import Loader from '../components/Loader';
+import { randomNumber, shuffle } from '../lib/Shared';
 
 class Practice extends Component {
 
@@ -29,10 +30,10 @@ class Practice extends Component {
       const practice = Object.keys(payload)
             .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
             .map(key => Object.assign({key}, payload[key]));
-      const { questionKey, optionList } = this.generateQuestion(practice);
+      const { questionKey, optionKeyList } = this.generateQuestion(practice);
       this.setState({
         loading: false,
-        optionList,
+        optionKeyList,
         practice,
         questionKey
       });
@@ -51,50 +52,47 @@ class Practice extends Component {
 
   generateQuestion = (practice) => {
     const questionKey = randomNumber(practice.length - 1);
-    const question = practice[questionKey];
-    const optionKeyList = [...Array(3).keys()].map(_ => randomNumber(practice.length - 1));
-    const optionList = shuffle([{ key: question.key, title: question.means, correct: true }, ...optionKeyList.map(key => {
-      const wrong = practice[key];
-      return { key: wrong.key, title: wrong.means };
-    })]);
-    return { questionKey, optionList };
+    const optionKeyList = shuffle([questionKey, ...[...Array(3).keys()].map(_ => randomNumber(practice.length - 1))]);
+    return { questionKey, optionKeyList };
   }
 
   goToNext = () => {
-    const { questionKey, optionList } = this.generateQuestion(this.state.practice);
+    const { questionKey, optionKeyList } = this.generateQuestion(this.state.practice);
     this.setState({
       questionKey,
-      optionList,
+      optionKeyList,
       selectedKey: null
     });
   }
 
-  selectItem = (item) => {
-    !this.state.selectedKey && this.setState({
-      correctCount: item.correct ? this.state.correctCount + 1 : this.state.correctCount,
-      selectedKey: item.key,
-      totalCount: this.state.totalCount + 1
-    });
+  selectAnswer = (selectedKey) => {
+    if (!this.state.selectedKey) {
+      const isCorrect = selectedKey === this.state.questionKey;
+      this.setState({
+        correctCount: isCorrect ? this.state.correctCount + 1 : this.state.correctCount,
+        selectedKey,
+        totalCount: this.state.totalCount + 1
+      });
+    }
   }
 
   renderPractice = () => {
     if (this.state.loading) {
       return <Loader />
     }
-    const randomItem = this.state.practice[this.state.questionKey];
-    const optionList = this.state.optionList;
+    const question = this.state.practice[this.state.questionKey];
     return (
       <div className='practice'>
         <p>Choose a correct translation for</p>
-        <h3>{randomItem.original}</h3>
+        <h3>{question.original}</h3>
         <div className='options'>
-          {optionList.map((item, i) => {
-            const { key, title } = item;
-            const isThisKey = this.state.selectedKey && key === this.state.selectedKey;
-            const isCorrectKey = this.state.selectedKey && key === randomItem.key;
+          {this.state.optionKeyList.map((optionKey, i) => {
+            const { means } = this.state.practice[optionKey];
+            const isThisKey = this.state.selectedKey && optionKey === this.state.selectedKey;
+            const isCorrectKey = this.state.selectedKey && optionKey === this.state.questionKey;
             const className = isCorrectKey ? 'correct' : isThisKey ? 'incorrect' : '';
             return (
-              <div key={i} className={className} onClick={e => this.selectItem(item)}>{title}</div>
+              <div key={i} className={className} onClick={e => this.selectAnswer(optionKey)}>{means}</div>
             );
           })}
         </div>
@@ -105,9 +103,10 @@ class Practice extends Component {
   }
 
   render = () => {
+    const { title } = definition[this.state.languageKey];
     return (
       <div className='page'>
-        <h2>Practice</h2>
+        <h2>{title}</h2>
         <div className='page-header'>
           <div className='page-info'>
 
