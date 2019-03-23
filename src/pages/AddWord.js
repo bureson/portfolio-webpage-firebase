@@ -29,29 +29,14 @@ class AddWord extends Component {
   }
 
   onKeyUp = (e, key) => {
-    if (e.ctrlKey && e.altKey) {
-      switch (e.keyCode) {
-        case 65: // Note: A
-          e.preventDefault();
-          this.setState({
-            [key]: `${this.state[key] || ''}å`
-          });
-          break;
-        case 69: // Note: E
-          e.preventDefault();
-          this.setState({
-            [key]: `${this.state[key] || ''}æ`
-          });
-          break;
-        case 79: // Note: O
-          e.preventDefault();
-          this.setState({
-            [key]: `${this.state[key] || ''}ø`
-          });
-          break;
-        default:
-          break;
-      }
+    const { specialKeys } = definition[this.state.languageKey];
+    if (e.ctrlKey && e.altKey && specialKeys[e.key]) {
+      e.preventDefault();
+      const state = this.state[key] || '';
+      const specialKey = specialKeys[e.key];
+      this.setState({
+        [key]: state + specialKey
+      });
     }
   }
 
@@ -78,11 +63,11 @@ class AddWord extends Component {
     if (!this.state.authed) {
       return <NoMatch />
     }
-    const courseFields = definition[this.state.languageKey].fields;
-    const availableCourseFields = courseFields.filter((field) => !field.private);
+    const { fields, specialKeys } = definition[this.state.languageKey];
+    const availableCourseFields = fields.filter((field) => !field.private);
     return (
       <div className='add-phrase'>
-        <h2>Add new phrase</h2>
+        <h3>Add new phrase</h3>
         <form onSubmit={e => this.onSubmit(e)}>
           {availableCourseFields.map(({ key, title, type, options }) => {
             const value = this.state[key] || '';
@@ -113,15 +98,16 @@ class AddWord extends Component {
           })}
           <button type='submit' value='Submit'>Submit</button>
         </form>
-        <div className='tooltip'>
+        {specialKeys && <div className='tooltip'>
           <h3>Special characters</h3>
           <ul>
-            <li>å (Ctrl + Alt + A)</li>
-            <li>æ (Ctrl + Alt + E)</li>
-            <li>ø (Ctrl + Alt + O)</li>
-            <li>ö</li>
+            {Object.keys(specialKeys).map(key => {
+              return (
+                <li key={key}>{`${specialKeys[key]} (Ctrl + Alt + ${key.toUpperCase()})`}</li>
+              );
+            })}
           </ul>
-        </div>
+        </div>}
       </div>
     )
   }

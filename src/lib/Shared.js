@@ -1,3 +1,19 @@
+export const classNames = (...args) => {
+  const classNameList = args.reduce((list, arg) => {
+    const type = typeof arg;
+    switch (type) {
+      case 'string':
+        return [...list, arg];
+      case 'object':
+        const keyList = Object.keys(arg).filter(key => !!arg[key]);
+        return [...list, ...keyList];
+      default:
+        throw new Error('Unsupported type');
+    };
+  }, []);
+  return classNameList.join(' ');
+}
+
 export const convertTimestamp = (timestamp, format) => {
   const date = new Date(timestamp * 1000);
   const dd = date.getDate() < 10 ? `0${date.getDate()}` : date.getDate();

@@ -9,7 +9,7 @@ class NoMatch extends Component {
   render = () => {
     return (
       <div className="no-match">
-        <h2>Oops!</h2>
+        <h2>Oopsie!</h2>
         <p>Seems like you are trying to reach something that doesn't exist</p>
       </div>
     )

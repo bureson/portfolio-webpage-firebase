@@ -7,7 +7,6 @@ import 'firebase/storage';
 
 import AddCountry from './AddCountry';
 import AddPost from './AddPost';
-import AddWord from './AddWord';
 import Blog from './Blog';
 import Countries from './Countries';
 import CountryDetail from './CountryDetail';
@@ -18,7 +17,6 @@ import Login from './Login';
 import Menu from '../components/Menu';
 import NoMatch from '../components/NoMatch';
 import Post from './Post';
-import Practice from './Practice';
 
 class Index extends Component {
 
@@ -66,8 +64,8 @@ class Index extends Component {
           <Route exact path='/countries/:country/edit' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
           <Route exact path='/course' render={() => <Redirect to={`/course/${defaultCourse}`} />} />
           <Route exact path='/course/:language' render={(props) => <Course {...props} authed={this.state.authed}/>} />
-          <Route exact path='/course/:language/add' render={(props) => <AddWord {...props} authed={this.state.authed}/>} />
-          <Route exact path='/course/:language/practice' render={(props) => <Practice {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course/:language/add' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course/:language/practice' render={(props) => <Course {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />
