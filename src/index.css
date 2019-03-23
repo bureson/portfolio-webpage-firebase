@@ -57,7 +57,7 @@ a:visited {
 img {
   max-width: 100%;
 }
-button {
+button, .button {
   background: #eee;
   border-radius: 3px;
   border: 1px solid #e2e0e0;
@@ -67,7 +67,7 @@ button {
   font-size: inherit;
   padding: 8px 10px;
 }
-button:hover {
+button:hover, .button:hover {
   background: #e2dfdf;
 }
 input {
@@ -190,6 +190,12 @@ table td {
 }
 table td:first-child {
   border-left: 0;
+}
+table td.control {
+  white-space: nowrap;
+}
+table td.control a:first-child {
+  margin-right: 5px;
 }
 .container {
   box-sizing: border-box;

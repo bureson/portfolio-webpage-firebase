@@ -15,7 +15,7 @@ describe('pages/Index', () => {
     }));
     const wrapper = shallow(<Index match={{path: '/'}} />);
     const routeList = wrapper.find('Switch').find('Route');
-    expect(routeList).toHaveLength(15);
+    expect(routeList).toHaveLength(16);
     routeList.forEach(route => {
       route.props().render && route.props().render();
     });

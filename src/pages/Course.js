@@ -72,6 +72,7 @@ class Course extends Component {
       <Switch>
         <Route exact path={'/course/:language'} render={(props) => <CourseTable {...props} {...courseProps} />} />
         <Route exact path={'/course/:language/add'} render={(props) => <AddWord {...props} {...courseProps} />} />
+        <Route exact path={'/course/:language/edit/:key'} render={(props) => <AddWord {...props} {...courseProps} />} />
         <Route exact path={'/course/:language/practice'} render={(props) => <CoursePractice {...props} {...courseProps} />} />
       </Switch>
     );

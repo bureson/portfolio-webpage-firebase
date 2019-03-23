@@ -12,8 +12,25 @@ class AddWord extends Component {
     super(props);
     this.state = {
       authed: props.authed,
-      languageKey: props.match.params.language
+      languageKey: props.match.params.language,
+      wordKey: props.match.params.key
     }
+  }
+
+  componentDidMount = () => {
+    if (this.state.wordKey) {
+      const word = this.props.course.find(item => item.key === this.state.wordKey);
+      this.setState(word);
+    }
+    // Note: recaptcha code below if I ever decide to allow users post new words
+    // Remember to add <div id='recaptcha-container' /> to component's body
+    // if (!this.state.authed) {
+    //   window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+    //     size: 'normal',
+    //     callback: (response) => console.log(response)
+    //   });
+    //   window.recaptchaVerifier.render().then(widgetId => window.recaptchaWidgetId = widgetId);
+    // }
   }
 
   componentWillReceiveProps = (props) => {
@@ -42,7 +59,6 @@ class AddWord extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    const courseRef = firebase.database().ref(this.state.languageKey);
     const courseFields = definition[this.state.languageKey].fields;
     const item = courseFields.reduce((obj, { key, type }) => {
       return {
@@ -50,7 +66,9 @@ class AddWord extends Component {
         [key]: this.state[key] || defaultByType(type)
       };
     }, {});
-    courseRef.push(item, error => {
+    const ref = this.state.wordKey ? `${this.state.languageKey}/${this.state.wordKey}` : this.state.languageKey;
+    const method = this.state.wordKey ? 'set' : 'push';
+    firebase.database().ref(ref)[method](item, error => {
       if (error) {
         console.log(error);
       } else {

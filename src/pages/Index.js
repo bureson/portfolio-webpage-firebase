@@ -65,6 +65,7 @@ class Index extends Component {
           <Route exact path='/course' render={() => <Redirect to={`/course/${defaultCourse}`} />} />
           <Route exact path='/course/:language' render={(props) => <Course {...props} authed={this.state.authed}/>} />
           <Route exact path='/course/:language/add' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+          <Route exact path='/course/:language/edit/:key' render={(props) => <Course {...props} authed={this.state.authed}/>} />
           <Route exact path='/course/:language/practice' render={(props) => <Course {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
           <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />

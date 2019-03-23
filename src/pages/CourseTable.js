@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import firebase from 'firebase/app';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
 import { definition } from '../lib/CourseModel';
@@ -116,7 +116,10 @@ class CourseTable extends Component {
                       <td key={key}>{valueByType(item[key], type)}</td>
                     );
                   })}
-                  {this.state.authed && <td><button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button></td>}
+                  {this.state.authed && <td className='control'>
+                    <Link to={`/course/${this.state.languageKey}/edit/${item.key}`} className='button'><FontAwesomeIcon icon={faEdit} /></Link>
+                    <button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button>
+                  </td>}
                 </tr>
               )
             })}
