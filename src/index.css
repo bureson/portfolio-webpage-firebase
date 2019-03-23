@@ -121,6 +121,12 @@ textarea {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
+.input-group p.did-you-mean {
+  font-size: 12px;
+  font-style: italic;
+  margin: 0;
+  margin-left: 22%;
+}
 .input-group p button {
   margin-right: 5px;
 }

@@ -4,7 +4,7 @@ import firebase from 'firebase/app';
 import { definition } from '../lib/CourseModel';
 import Dropdown from '../components/Dropdown';
 import NoMatch from '../components/NoMatch';
-import { defaultByType } from '../lib/Shared';
+import { defaultByType, similarity } from '../lib/Shared';
 
 class AddWord extends Component {
 
@@ -40,8 +40,18 @@ class AddWord extends Component {
   }
 
   onChange = (e, key) => {
+    const { value } = e.target;
+    const { fields } = definition[this.state.languageKey];
+    const { search } = fields.find(f => f.key === key);
+    const similarWordList = search ? this.props.course.reduce((acc, item) => {
+      const sim = similarity(item[key], value);
+      const thisWord = item.key === this.state.wordKey;
+      const shouldAdd = !thisWord && sim > 0.65;
+      return shouldAdd ? [...acc, item[key]] : acc;
+    }, []) : [];
     this.setState({
-      [key]: e.target.value
+      [key]: e.target.value,
+      [`${key}Sim`]: similarWordList
     });
   }
 
@@ -59,8 +69,8 @@ class AddWord extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    const courseFields = definition[this.state.languageKey].fields;
-    const item = courseFields.reduce((obj, { key, type }) => {
+    const { fields } = definition[this.state.languageKey];
+    const item = fields.reduce((obj, { key, type }) => {
       return {
         ...obj,
         [key]: this.state[key] || defaultByType(type)
@@ -89,6 +99,8 @@ class AddWord extends Component {
         <form onSubmit={e => this.onSubmit(e)}>
           {availableCourseFields.map(({ key, title, type, options }) => {
             const value = this.state[key] || '';
+            const keySim = this.state[`${key}Sim`];
+            const hasSim = keySim && keySim.length;
             return (
               <div className='input-group' key={key}>
                 <label htmlFor={key}>{title}</label>
@@ -107,7 +119,10 @@ class AddWord extends Component {
                     case 'string':
                     default:
                       return (
-                        <input type='text' id={key} value={value} onChange={e => this.onChange(e, key)} onKeyUp={e => this.onKeyUp(e, key)} />
+                        <span>
+                          <input type='text' id={key} value={value} onChange={e => this.onChange(e, key)} onKeyUp={e => this.onKeyUp(e, key)} />
+                          {!!hasSim && <p className='did-you-mean'>Did you mean: {keySim.join(', ')}</p>}
+                        </span>
                       );
                   }
                 })()}
