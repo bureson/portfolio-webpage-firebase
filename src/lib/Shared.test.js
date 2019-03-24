@@ -1,4 +1,4 @@
-import {convertTimestamp, readingTime} from './Shared';
+import { convertTimestamp, defaultByType, readingTime, similarity, sortBy } from './Shared';
 
 describe('component/Shared', () => {
   describe('convertTimestamp', () => {
@@ -20,7 +20,28 @@ describe('component/Shared', () => {
   });
 
   describe('readingTime', () => {
-    const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas elit odio, finibus at gravida a, volutpat quis diam. Sed mauris elit, mollis rhoncus tristique quis, imperdiet eget sapien. Nunc accumsan sapien in odio rhoncus, a faucibus nulla venenatis. Nulla posuere enim enim, aliquet eleifend mauris dictum at. Sed at fermentum tortor. Praesent in lobortis magna. Maecenas hendrerit felis elit, ac fringilla leo viverra a. Aenean tempus lacus non erat mollis consequat. Donec vitae porta leo. Fusce id luctus ligula. Aliquam quis ante tempor, cursus eros nec, consectetur odio.';
-    expect(readingTime(loremIpsum)).toBe(1);
+    it('calculates readting time', () => {
+      const loremIpsum = 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas elit odio, finibus at gravida a, volutpat quis diam. Sed mauris elit, mollis rhoncus tristique quis, imperdiet eget sapien. Nunc accumsan sapien in odio rhoncus, a faucibus nulla venenatis. Nulla posuere enim enim, aliquet eleifend mauris dictum at. Sed at fermentum tortor. Praesent in lobortis magna. Maecenas hendrerit felis elit, ac fringilla leo viverra a. Aenean tempus lacus non erat mollis consequat. Donec vitae porta leo. Fusce id luctus ligula. Aliquam quis ante tempor, cursus eros nec, consectetur odio.';
+      expect(readingTime(loremIpsum)).toBe(1);
+    });
   });
+
+  describe('defaultByType', () => {
+    it('returns default value for data type', () => {
+      expect(defaultByType('string')).toBe('');
+    });
+  });
+
+  describe('similarity', () => {
+    it('compares similarity between two string values', () => {
+      expect(Number(similarity('ondrej', 'andrej').toFixed(2))).toBe(0.83);
+    });
+  });
+
+  describe('sortBy', () => {
+    it('returns a sorter', () => {
+      const list = [{ i: 3 }, { i: 1 }, { i: 2 }];
+      expect(list.sort(sortBy('i'))).toEqual([{ i: 1 }, { i: 2 }, { i: 3 }]);
+    });
+  })
 });

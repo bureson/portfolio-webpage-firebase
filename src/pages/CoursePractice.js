@@ -19,10 +19,11 @@ class CoursePractice extends Component {
 
   componentDidMount = () => {
     document.title = 'Language practice | Ondrej Bures';
-    this.generateQuestion(this.props.course);
+    this.generateQuestion();
   }
 
-  generateQuestion = (course) => {
+  generateQuestion = () => {
+    const course = this.props.course;
     const questionKey = randomNumber(course.length - 1);
     const optionKeyList = shuffle([questionKey, ...[...Array(3).keys()].map(_ => randomNumber(course.length - 1))]);
     this.setState({
@@ -30,10 +31,6 @@ class CoursePractice extends Component {
       optionKeyList,
       selectedKey: null
     });
-  }
-
-  goToNext = () => {
-    this.generateQuestion(this.props.course);
   }
 
   selectAnswer = (selectedKey) => {
@@ -48,8 +45,9 @@ class CoursePractice extends Component {
   }
 
   render = () => {
+    const isSelected = this.state.selectedKey !== null;
     const question = this.props.course[this.state.questionKey];
-    const className = classNames('options', { 'result': this.state.selectedKey });
+    const className = classNames('options', { 'result': isSelected });
     return (
       <div className='practice'>
         <p>Choose a correct translation for</p>
@@ -57,8 +55,8 @@ class CoursePractice extends Component {
         <div className={className}>
           {this.state.optionKeyList.map((optionKey, i) => {
             const { means } = this.props.course[optionKey];
-            const isThisKey = this.state.selectedKey && optionKey === this.state.selectedKey;
-            const isCorrectKey = this.state.selectedKey && optionKey === this.state.questionKey;
+            const isThisKey = isSelected && optionKey === this.state.selectedKey;
+            const isCorrectKey = isSelected && optionKey === this.state.questionKey;
             const className = isCorrectKey ? 'correct' : isThisKey ? 'incorrect' : '';
             return (
               <div key={i} className={className} onClick={e => this.selectAnswer(optionKey)}>{means}</div>
@@ -66,7 +64,7 @@ class CoursePractice extends Component {
           })}
         </div>
         <p>Correct answers: {this.state.correctCount} / {this.state.totalCount}</p>
-        {this.state.selectedKey && <button onClick={this.goToNext}>Go to next question</button>}
+        {isSelected && <button onClick={this.generateQuestion}>Go to next question</button>}
       </div>
     )
   }
