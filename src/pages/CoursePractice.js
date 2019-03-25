@@ -1,15 +1,17 @@
 import React, { Component } from 'react';
 
-// import { definition } from '../lib/CourseModel';
+import { definition } from '../lib/CourseModel';
 import { classNames, randomNumber, shuffle } from '../lib/Shared';
 
 class CoursePractice extends Component {
 
   constructor(props) {
     super(props);
+    const languageKey = props.match.params.language;
     this.state = {
       correctCount: 0,
-      languageKey: props.match.params.language,
+      direction: definition[languageKey].practice,
+      languageKey,
       optionKeyList: [],
       questionKey: 0,
       selectedKey: null,
@@ -48,18 +50,19 @@ class CoursePractice extends Component {
     const isSelected = this.state.selectedKey !== null;
     const question = this.props.course[this.state.questionKey];
     const className = classNames('options', { 'result': isSelected });
+    const [firstKey, secondKey] = this.state.direction;
     return (
       <div className='practice'>
         <p>Choose a correct translation for</p>
-        <h3>{question.original}</h3>
+        <h3>{question[firstKey]}</h3>
         <div className={className}>
           {this.state.optionKeyList.map((optionKey, i) => {
-            const { means } = this.props.course[optionKey];
+            const option = this.props.course[optionKey][secondKey];
             const isThisKey = isSelected && optionKey === this.state.selectedKey;
             const isCorrectKey = isSelected && optionKey === this.state.questionKey;
             const className = isCorrectKey ? 'correct' : isThisKey ? 'incorrect' : '';
             return (
-              <div key={i} className={className} onClick={e => this.selectAnswer(optionKey)}>{means}</div>
+              <div key={i} className={className} onClick={e => this.selectAnswer(optionKey)}>{option}</div>
             );
           })}
         </div>

@@ -8,6 +8,7 @@ export const definition = {
       e: 'æ',
       o: 'ø'
     },
+    practice: ['original', 'means'],
     fields: [
       {
         key: 'original',
@@ -37,6 +38,7 @@ export const definition = {
   spanish: {
     title: 'Spanish course /w Andrea',
     description: `I started learning Spanish few years back using a mobile app called Duolingo, thanks to which I was able to improve my language skill while commuting. I took a break from learning when I was living in Australia, but picked it up again with a more serious intent in late 2018 and found myself a tutor via Preply and since then I have been working on my Spanish skill together with <a href='https://preply.com/en/tutor/89731/' target='_blank' rel='noopener noreferrer'>Andrea M.</a> who makes the classes a real joy!`,
+    practice: ['means', 'original'],
     fields: [
       {
         key: 'original',
