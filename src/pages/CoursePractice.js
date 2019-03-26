@@ -53,7 +53,7 @@ class CoursePractice extends Component {
     const [firstKey, secondKey] = this.state.direction;
     return (
       <div className='practice'>
-        <p>Choose a correct translation for</p>
+        <p>Choose the correct translation for</p>
         <h3>{question[firstKey]}</h3>
         <div className={className}>
           {this.state.optionKeyList.map((optionKey, i) => {
