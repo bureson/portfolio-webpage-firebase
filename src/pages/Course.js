@@ -91,13 +91,13 @@ class Course extends Component {
     return (
       <div className='page'>
         <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
-        {this.state.authed && <ul>
+        <ul>
           {Object.keys(definition).map(key => {
             return (
               <li key={key}><Link to={`/course/${key}`}>{definition[key].title}</Link></li>
             )
           })}
-        </ul>}
+        </ul>
         {this.renderCourse()}
       </div>
     )
