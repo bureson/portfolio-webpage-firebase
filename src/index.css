@@ -30,8 +30,11 @@ h3 {
   font-weight: 700;
   margin: 20px 0;
 }
-ul {
+ol, ul {
   margin: 0 0 10px 20px;
+}
+ol li {
+  padding-left: 5px;
 }
 p {
   text-align: justify;
