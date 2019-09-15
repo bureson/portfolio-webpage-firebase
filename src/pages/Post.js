@@ -39,10 +39,12 @@ class Post extends Component {
     this.postRef.off();
   }
 
-  componentWillReceiveProps = (props) => {
-    this.setState({
-      authed: props.authed
-    });
+  componentDidUpdate = () => {
+    if (this.state.authed !== this.props.authed) {
+      this.setState({
+        authed: this.props.authed
+      });
+    }
   }
 
   onDelete = (e, key) => {

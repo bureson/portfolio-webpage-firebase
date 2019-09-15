@@ -23,11 +23,15 @@ class CourseTable extends Component {
     }
   }
 
-  componentWillReceiveProps = (props) => {
-    this.setState({
-      authed: props.authed,
-      languageKey: props.match.params.language
-    })
+  componentDidUpdate = () => {
+    const authed = this.props.authed;
+    const languageKey = this.props.match.params.language;
+    if (this.state.authed !== authed || this.state.languageKey !== languageKey) {
+      this.setState({
+        authed,
+        languageKey
+      })
+    }
   }
 
   filterCourse = () => {

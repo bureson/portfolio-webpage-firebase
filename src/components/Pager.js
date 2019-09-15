@@ -11,11 +11,13 @@ class Pager extends Component {
     }
   }
 
-  componentWillReceiveProps = (props) => {
-    this.setState({
-      itemsCount: props.itemsCount,
-      page: props.currentPage
-    });
+  componentDidUpdate = (prevProps) => {
+    if (prevProps.itemsCount !== this.props.itemsCount || prevProps.currentPage !== this.props.currentPage) {
+      this.setState({
+        itemsCount: this.props.itemsCount,
+        page: this.props.currentPage
+      });
+    }
   }
 
   render = () => {

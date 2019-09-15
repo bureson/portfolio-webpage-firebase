@@ -46,10 +46,12 @@ class AddPost extends Component {
     }
   }
 
-  componentWillReceiveProps = (props) => {
-    this.setState({
-      authed: props.authed
-    });
+  componentDidUpdate = () => {
+    if (this.state.authed !== this.props.authed) {
+      this.setState({
+        authed: this.props.authed
+      });
+    }
   }
 
   onSubmit = (e) => {

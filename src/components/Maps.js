@@ -21,24 +21,26 @@ class Maps extends Component {
     }
   }
 
-  componentWillReceiveProps = (props) => {
-    this.setState({places: props.places});
-    const places = props.places;
-    if (places.length) {
-      const latList = places.map(p => p.lat);
-      const lngList = places.map(p => p.lng);
-      const latDiff = Math.abs(Math.max.apply(null, latList) - Math.min.apply(null, latList));
-      const lngDiff = Math.abs(Math.max.apply(null, lngList) - Math.min.apply(null, lngList));
-      const zoom = this.getZoom(latDiff, lngDiff);
-      const centerLat = (Math.max.apply(null, latList) + Math.min.apply(null, latList)) / 2;
-      const centerLng = (Math.max.apply(null, lngList) + Math.min.apply(null, lngList)) / 2;
-      const map = new window.google.maps.Map(this.refs.map, {zoom, center: {lat: centerLat, lng: centerLng}});
-      places.forEach(({lat, lng}) => {
-        new window.google.maps.Marker({
-          position: {lat, lng},
-          map: map
+  componentDidUpdate = (prevProps) => {
+    if (prevProps.places !== this.props.places) {
+      this.setState({places: this.props.places});
+      const places = this.props.places;
+      if (places.length) {
+        const latList = places.map(p => p.lat);
+        const lngList = places.map(p => p.lng);
+        const latDiff = Math.abs(Math.max.apply(null, latList) - Math.min.apply(null, latList));
+        const lngDiff = Math.abs(Math.max.apply(null, lngList) - Math.min.apply(null, lngList));
+        const zoom = this.getZoom(latDiff, lngDiff);
+        const centerLat = (Math.max.apply(null, latList) + Math.min.apply(null, latList)) / 2;
+        const centerLng = (Math.max.apply(null, lngList) + Math.min.apply(null, lngList)) / 2;
+        const map = new window.google.maps.Map(this.refs.map, {zoom, center: {lat: centerLat, lng: centerLng}});
+        places.forEach(({lat, lng}) => {
+          new window.google.maps.Marker({
+            position: {lat, lng},
+            map: map
+          });
         });
-      });
+      }
     }
   }
 

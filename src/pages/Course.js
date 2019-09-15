@@ -32,18 +32,20 @@ class Course extends Component {
     this.courseRef.off();
   }
 
-  componentWillReceiveProps = (props) => {
-    const languageKey = props.match.params.language;
+  componentDidUpdate = () => {
+    const languageKey = this.props.match.params.language;
     const languageHasChanged = languageKey !== this.state.languageKey;
-    this.setState({
-      authed: props.authed,
-      ...languageHasChanged && {
-        course: [],
-        languageKey,
-        loading: true
-      }
-    });
-    languageHasChanged && this.loadData(languageKey);
+    if (this.state.authed !== this.props.authed || languageHasChanged) {
+      this.setState({
+        authed: this.props.authed,
+        ...languageHasChanged && {
+          course: [],
+          languageKey,
+          loading: true
+        }
+      });
+      languageHasChanged && this.loadData(languageKey);
+    }
   }
 
   loadData = (languageKey) => {

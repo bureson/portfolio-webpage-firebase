@@ -29,6 +29,7 @@
     "react-router-dom": "^5.0.1",
     "react-scripts": "^3.1.1",
     "react-test-renderer": "^16.9.0",
+    "reading-time": "^1.2.0",
     "recharts": "^1.7.1",
     "showdown": "^1.9.0"
   },

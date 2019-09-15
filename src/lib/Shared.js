@@ -1,3 +1,5 @@
+const readTime = require('reading-time');
+
 export const classNames = (...args) => {
   const classNameList = args.reduce((list, arg) => {
     const type = typeof arg;
@@ -69,7 +71,8 @@ export const randomNumber = (max) => {
 }
 
 export const readingTime = (string) => {
-  return Math.ceil(string.split(' ').filter(w => w.length >= 4).length / 200);
+  const { minutes } = readTime(string);
+  return Math.ceil(minutes);
 }
 
 export const shuffle = (list) => {
