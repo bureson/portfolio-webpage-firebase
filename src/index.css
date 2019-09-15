@@ -40,6 +40,24 @@ p {
   text-align: justify;
   margin: 0 0 10px;
 }
+blockquote {
+  border-left: 3px solid #2c73b0;
+  position: relative;
+  font-size: 1.4em;
+  font-style: italic;
+  margin: 0 0 0 50px;
+  display: block;
+  padding: 15px 50px;
+}
+blockquote::before {
+  /* font-family: Arial; */
+  content: "\201C";
+  color: #2c73b0;
+  font-size: 3em;
+  position: absolute;
+  left: 10px;
+  top: 20px;
+}
 a {
   color: #2c73b0;
   text-decoration: none;
