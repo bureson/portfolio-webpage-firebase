@@ -45,7 +45,7 @@ blockquote {
   position: relative;
   font-size: 1.4em;
   font-style: italic;
-  margin: 0 0 0 50px;
+  margin: 0 0 10px 50px;
   display: block;
   padding: 15px 50px;
 }
