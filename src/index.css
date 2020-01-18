@@ -368,6 +368,10 @@ table td.control a:first-child {
   width: 20%;
   float: right;
 }
+.page #chartdiv {
+  height: 350px;
+  margin-bottom: 20px;
+}
 .page .countries-list {
   margin: 0 -1%;
 }

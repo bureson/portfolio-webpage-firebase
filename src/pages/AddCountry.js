@@ -16,6 +16,7 @@ class AddCountry extends Component {
       date: this.convertTimestamp(Math.floor(Date.now() / 1000)),
       description: '',
       filePath: null,
+      iso: null,
       key: null,
       loading: true,
       name: '',
@@ -36,6 +37,7 @@ class AddCountry extends Component {
             date: this.convertTimestamp(payload.date),
             description: payload.description,
             filePath: payload.photoPath,
+            iso: payload.iso,
             key: countryKey,
             loading: false,
             name: payload.name,
@@ -126,6 +128,7 @@ class AddCountry extends Component {
       name: this.state.name,
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,
       photoPath: this.state.filePath || '',
+      iso: this.state.iso,
       description: this.state.description,
       story: this.state.story,
       timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
@@ -162,6 +165,10 @@ class AddCountry extends Component {
           <div className='input-group'>
             <label htmlFor='date'>Date visited</label>
             <input type='date' id='date' placeholder='Visited' value={this.state.date} onChange={e => this.onChange(e, 'date')} />
+          </div>
+          <div className='input-group'>
+            <label htmlFor='ico'>ISO code</label>
+            <input type='text' id='iso' placeholder='ISO code' value={this.state.iso} onChange={e => this.onChange(e, 'iso')} />
           </div>
           <div className='input-group'>
             <label htmlFor='short-desc'>Short description</label>

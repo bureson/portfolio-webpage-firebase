@@ -16,6 +16,8 @@
   },
   "license": "MIT",
   "dependencies": {
+    "@amcharts/amcharts4": "^4.8.0",
+    "@amcharts/amcharts4-geodata": "^4.1.10",
     "@fortawesome/fontawesome": "^1.1.8",
     "@fortawesome/fontawesome-free-brands": "^5.0.13",
     "@fortawesome/fontawesome-free-regular": "^5.0.13",
@@ -27,11 +29,11 @@
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
     "react-router-dom": "^5.0.1",
-    "react-scripts": "^3.1.1",
+    "react-scripts": "^3.3.0",
     "react-test-renderer": "^16.9.0",
     "reading-time": "^1.2.0",
     "recharts": "^1.7.1",
-    "showdown": "^1.9.0"
+    "showdown": "^1.9.1"
   },
   "scripts": {
     "start": "react-scripts start",
