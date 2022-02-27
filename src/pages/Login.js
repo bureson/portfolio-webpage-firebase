@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 
 class Login extends Component {
 
@@ -14,7 +14,8 @@ class Login extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
-    firebase.auth().signInWithEmailAndPassword(this.state.email, this.state.pw)
+    const auth = getAuth();
+    signInWithEmailAndPassword(auth, this.state.email, this.state.pw)
       .then(result => {
         this.props.history.push('/');
       })

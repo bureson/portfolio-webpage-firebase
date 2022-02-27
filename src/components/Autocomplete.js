@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
+import { getDatabase, ref, set, push, child } from 'firebase/database';
 
 import { convertTimestamp } from '../lib/Shared';
 
@@ -41,17 +41,16 @@ class Autocomplete extends Component {
   }
 
   onSubmit = (e) => {
-    const placeRef = firebase.database().ref('place');
-    placeRef.push({
+    const db = getDatabase();
+    const placeKey = push(child(ref(db), 'place')).key;
+    set(ref(db, `place/${placeKey}`), {
       name: this.state.name,
       country: this.state.country,
       lat: this.state.lat,
       lng: this.state.lng,
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,
       timestamp: Math.floor(Date.now() / 1000)
-    }).catch(e => {
-      console.log(e);
-    });
+    }).catch(console.log);
   }
 
   render = () => {

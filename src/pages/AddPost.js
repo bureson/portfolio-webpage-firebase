@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
+import { getDatabase, ref, onValue, set } from 'firebase/database';
 import { Converter } from 'showdown';
 
 import Attachments from '../components/Attachments';
@@ -24,7 +24,9 @@ class AddPost extends Component {
   componentDidMount = () => {
     const postKey = this.props.match.params.post;
     if (postKey) {
-      firebase.database().ref('blog').child(postKey).on('value', snapshot => {
+      const db = getDatabase();
+      const postRef = ref(db, 'blog/' + postKey);
+      onValue(postRef, snapshot => {
         const payload = snapshot.val();
         if (payload) {
           document.title = `Edit ${payload.title} | Ondrej Bures`;
@@ -57,19 +59,16 @@ class AddPost extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     const key = this.state.key || this.state.title.replace(/\s+/g, '-').toLowerCase();
-    firebase.database().ref(`blog/${key}`).set({
+    const db = getDatabase();
+    set(ref(db, `blog/${key}`), {
       title: this.state.title,
       perex: this.state.perex || '',
       body: this.state.body || '',
       public: this.state.public,
       timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
-    }, error => {
-      if (error) {
-        console.log(error);
-      } else {
-        this.props.history.push(`/blog/${key}`);
-      }
-    });
+    }).then(() => {
+      this.props.history.push(`/blog/${key}`);
+    }).catch(console.log);
   }
 
   onChange = (e, key) => {

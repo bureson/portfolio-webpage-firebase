@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Redirect, Route, Switch } from 'react-router-dom';
-import firebase from 'firebase/app';
-import 'firebase/auth';
-import 'firebase/database';
-import 'firebase/storage';
+import { getAuth, onAuthStateChanged } from 'firebase/auth';
 
 import AddCountry from './AddCountry';
 import AddPost from './AddPost';
@@ -28,7 +25,8 @@ class Index extends Component {
   }
 
   componentDidMount = () => {
-    this.removeListener = firebase.auth().onAuthStateChanged((user) => {
+    const auth = getAuth();
+    onAuthStateChanged(auth, (user) => {
       if (user) {
         this.setState({
           authed: !user.isAnonymous,
@@ -39,11 +37,7 @@ class Index extends Component {
           authed: false
         })
       }
-    })
-  }
-
-  componentWillUnmount = () => {
-    this.removeListener();
+    });
   }
 
   render = () => {

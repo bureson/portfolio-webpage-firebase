@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase/app';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { getDatabase, ref, remove } from 'firebase/database';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
@@ -61,7 +61,9 @@ class CourseTable extends Component {
   onDelete = (e, key) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to delete the item?')) {
-      firebase.database().ref(this.state.languageKey).child(key).remove();
+      const db = getDatabase();
+      const wordRef = ref(db, `${this.state.languageKey}/${key}`);
+      remove(wordRef);
     }
   }
 

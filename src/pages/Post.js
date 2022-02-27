@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase/app';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { getDatabase, ref, onValue, remove } from 'firebase/database';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
@@ -22,8 +22,9 @@ class Post extends Component {
 
   componentDidMount = () => {
     const postKey = this.props.match.params.post;
-    this.postRef = firebase.database().ref('blog').child(postKey);
-    this.postRef.on('value', snapshot => {
+    const db = getDatabase();
+    const postRef = ref(db, 'blog/' + postKey);
+    onValue(postRef, snapshot => {
       const payload = snapshot.val();
       document.title = `${payload ? payload.title : 'Not found'} | Ondrej Bures`;
       this.setState({
@@ -35,10 +36,6 @@ class Post extends Component {
     });
   }
 
-  componentWillUnmount = () => {
-    this.postRef.off();
-  }
-
   componentDidUpdate = () => {
     if (this.state.authed !== this.props.authed) {
       this.setState({
@@ -47,10 +44,13 @@ class Post extends Component {
     }
   }
 
-  onDelete = (e, key) => {
+  onDelete = (e) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to remove the post?')) {
-      firebase.database().ref('blog').child(key).remove();
+      const db = getDatabase();
+      const postKey = this.state.post.key;
+      const postRef = ref(db, 'blog/' + postKey);
+      remove(postRef);
       this.props.history.push('/blog');
     }
   }
@@ -78,7 +78,7 @@ class Post extends Component {
           </div>
           {this.state.authed && <div className='page-controls'>
             <Link to={`/blog/${this.state.post.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
-            <button onClick={(e) => this.onDelete(e, this.state.post.key)}><FontAwesomeIcon icon={faTrash} /></button>
+            <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
           </div>}
         </div>
         <div><em dangerouslySetInnerHTML={{__html: perexHtml}} /></div>

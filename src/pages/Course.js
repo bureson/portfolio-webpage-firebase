@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link, Route, Switch } from 'react-router-dom';
-import firebase from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
 import { Converter } from 'showdown';
 
 import { definition } from '../lib/CourseModel';
@@ -28,10 +28,6 @@ class Course extends Component {
     this.loadData(this.state.languageKey);
   }
 
-  componentWillUnmount = () => {
-    this.courseRef.off();
-  }
-
   componentDidUpdate = () => {
     const languageKey = this.props.match.params.language;
     const languageHasChanged = languageKey !== this.state.languageKey;
@@ -49,8 +45,9 @@ class Course extends Component {
   }
 
   loadData = (languageKey) => {
-    this.courseRef = firebase.database().ref(languageKey);
-    this.courseRef.on('value', snapshot => {
+    const db = getDatabase();
+    const courseRef = ref(db, languageKey);
+    onValue(courseRef, snapshot => {
       const payload = snapshot.val() || {};
       const course = Object.keys(payload)
             .sort((a, b) => payload[b].timestamp - payload[a].timestamp)

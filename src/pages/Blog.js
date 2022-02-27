@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
 import { Converter } from 'showdown';
 
 import { convertTimestamp, readingTime } from '../lib/Shared';
@@ -19,8 +19,9 @@ class Blog extends Component {
 
   componentDidMount = () => {
     document.title = 'Blog | Ondrej Bures';
-    this.blogRef = firebase.database().ref('blog');
-    this.blogRef.on('value', snapshot => {
+    const db = getDatabase();
+    const blogRef = ref(db, 'blog');
+    onValue(blogRef, snapshot => {
       const payload = snapshot.val() || {};
       const blog = Object.keys(payload)
             .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
@@ -30,10 +31,6 @@ class Blog extends Component {
         loading: false
       });
     });
-  }
-
-  componentWillUnmount = () => {
-    this.blogRef.off();
   }
 
   componentDidUpdate = () => {

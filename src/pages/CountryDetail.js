@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import firebase from 'firebase/app';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { getDatabase, ref, onValue, remove } from 'firebase/database';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
@@ -23,8 +23,9 @@ class CountryDetail extends Component {
 
   componentDidMount = () => {
     const countryKey = this.props.match.params.country;
-    this.countryRef = firebase.database().ref('country').child(countryKey);
-    this.countryRef.on('value', snapshot => {
+    const db = getDatabase();
+    const countryRef = ref(db, 'country/' + countryKey);
+    onValue(countryRef, snapshot => {
       const payload = snapshot.val();
       document.title = `${payload ? payload.name : 'Not found'} | Ondrej Bures`;
       this.setState({
@@ -36,10 +37,6 @@ class CountryDetail extends Component {
     });
   }
 
-  componentWillUnmount = () => {
-    this.countryRef.off();
-  }
-
   componentDidUpdate = () => {
     if (this.state.authed !== this.props.authed) {
       this.setState({
@@ -48,10 +45,13 @@ class CountryDetail extends Component {
     }
   }
 
-  onDelete = (e, key) => {
+  onDelete = (e) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to remove the country?')) {
-      firebase.database().ref('country').child(key).remove();
+      const db = getDatabase();
+      const countryKey = this.state.country.key;
+      const countryRef = ref(db, 'country/' + countryKey);
+      remove(countryRef);
       this.props.history.push('/countries');
     }
   }
@@ -79,7 +79,7 @@ class CountryDetail extends Component {
           </div>
           {this.state.authed && <div className='page-controls'>
             <Link to={`/countries/${this.state.country.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
-            <button onClick={(e) => this.onDelete(e, this.state.country.key)}><FontAwesomeIcon icon={faTrash} /></button>
+            <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
           </div>}
         </div>
         {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}

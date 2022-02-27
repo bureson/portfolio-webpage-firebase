@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
@@ -29,7 +30,9 @@ class AddCountry extends Component {
   componentDidMount = () => {
     const countryKey = this.props.match.params.country;
     if (countryKey) {
-      firebase.database().ref('country').child(countryKey).on('value', snapshot => {
+      const db = getDatabase();
+      const countryRef = databaseRef(db, 'country/' + countryKey);
+      onValue(countryRef, snapshot => {
         const payload = snapshot.val();
         if (payload) {
           document.title = `Edit ${payload.name} | Ondrej Bures`;
@@ -72,9 +75,11 @@ class AddCountry extends Component {
 
   onFileUpload = (e) => {
     const file = e.target.files[0];
-    const storageRef = firebase.storage().ref();
-    const uploadTask = storageRef.child(`country/${file.name}`).put(file);
-    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+    const storage = getStorage();
+    const fileRef = storageRef(storage, `country/${file.name}`);
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    uploadTask.on('state_changed', (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log('Upload is ' + Math.round(progress) + '% done');
         this.setState({
@@ -83,9 +88,9 @@ class AddCountry extends Component {
       }, (error) => {
         console.log(error); // Note: eventually handle error
       }, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+        getDownloadURL(uploadTask.snapshot.ref).then(filePath => {
           this.setState({
-            filePath: downloadURL,
+            filePath,
             progress: null
           });
         });
@@ -109,14 +114,16 @@ class AddCountry extends Component {
     e.preventDefault();
     const urlTokens = decodeURIComponent(this.state.filePath).split('/');
     const fileName = urlTokens[urlTokens.length - 1].split('?')[0];
-    const storageRef = firebase.storage().ref();
-    const fileRef = storageRef.child(`country/${fileName}`);
-    fileRef.delete().then(() => {
+    const storage = getStorage();
+    const fileRef = storageRef(storage, `country/${fileName}`);
+    deleteObject(fileRef).then(() => {
       this.setState({
         filePath: null
       });
       if (this.state.key) {
-        firebase.database().ref(`country/${this.state.key}/photoPath`).set(null);
+        const db = getDatabase();
+        const photoRef = databaseRef(db, `country/${this.state.key}/photoPath`);
+        set(photoRef, null);
       }
     });
   }
@@ -124,7 +131,8 @@ class AddCountry extends Component {
   onSubmit = (e) => {
     e.preventDefault();
     const key = this.state.key || this.state.name.replace(/\s+/g, '-').toLowerCase();
-    firebase.database().ref(`country/${key}`).set({
+    const db = getDatabase();
+    set(databaseRef(db, `country/${key}`), {
       name: this.state.name,
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,
       photoPath: this.state.filePath || '',
@@ -134,9 +142,7 @@ class AddCountry extends Component {
       timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
     }).then(() => {
       this.props.history.push('/countries');
-    }).catch(e => {
-      console.log(e);
-    });
+    }).catch(console.log);
   }
 
   render = () => {
@@ -176,7 +182,7 @@ class AddCountry extends Component {
           </div>
           <div className='input-group'>
             <label htmlFor='photo'>Main photo</label>
-            {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={e => this.onFileUpload(e)} />}
+            {!(isLoading || hasUrl) && <input type='file' id='photo' onChange={this.onFileUpload} />}
             {isLoading && <progress value={this.state.progress} max='100' />}
             {hasUrl && <p>
               <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>

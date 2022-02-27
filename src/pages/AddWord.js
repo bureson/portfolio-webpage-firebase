@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
+import { getDatabase, ref, set, push, child } from 'firebase/database';
 
 import { definition } from '../lib/CourseModel';
 import Dropdown from '../components/Dropdown';
@@ -78,15 +78,11 @@ class AddWord extends Component {
         [key]: this.state[key] || defaultByType(type)
       };
     }, {});
-    const ref = this.state.wordKey ? `${this.state.languageKey}/${this.state.wordKey}` : this.state.languageKey;
-    const method = this.state.wordKey ? 'set' : 'push';
-    firebase.database().ref(ref)[method](item, error => {
-      if (error) {
-        console.log(error);
-      } else {
-        this.props.history.push(`/course/${this.state.languageKey}`);
-      }
-    });
+    const db = getDatabase();
+    const wordKey = this.state.wordKey || push(child(ref(db), this.state.languageKey)).key;
+    set(ref(db, `${this.state.languageKey}/${wordKey}`), item).then(() => {
+      this.props.history.push(`/course/${this.state.languageKey}`);
+    }).catch(console.log);
   }
 
   render = () => {

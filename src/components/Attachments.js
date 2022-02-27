@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
-import 'firebase/database';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { getDatabase, ref as databaseRef, onValue, query, orderByChild, equalTo, push, child, set, remove } from 'firebase/database';
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
 class Attachments extends Component {
@@ -18,8 +18,9 @@ class Attachments extends Component {
   }
 
   componentDidMount = () => {
-    this.attachmentRef = firebase.database().ref('attachment');
-    this.attachmentRef.orderByChild('post').equalTo(this.state.post).on('value', snapshot => {
+    const db = getDatabase();
+    const attachmentRef = query(databaseRef(db, 'attachment'), orderByChild('post'), equalTo(this.state.post));
+    onValue(attachmentRef, snapshot => {
       const payload = snapshot.val() || {};
       const attachments = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
@@ -29,10 +30,6 @@ class Attachments extends Component {
         loading: false
       });
     });
-  }
-
-  componentWillUnmount = () => {
-    this.attachmentRef.off();
   }
 
   componentDidUpdate = () => {
@@ -51,9 +48,11 @@ class Attachments extends Component {
 
   onFileUpload = (e) => {
     const file = e.target.files[0];
-    const storageRef = firebase.storage().ref();
-    const uploadTask = storageRef.child(`attachment/${file.name}`).put(file);
-    uploadTask.on(firebase.storage.TaskEvent.STATE_CHANGED, (snapshot) => {
+    const storage = getStorage();
+    const fileRef = storageRef(storage, `attachment/${file.name}`);
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    uploadTask.on('state_changed', (snapshot) => {
         const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
         console.log('Upload is ' + Math.round(progress) + '% done');
         this.setState({
@@ -62,35 +61,35 @@ class Attachments extends Component {
       }, error => {
         console.log(error); // Note: eventually handle error
       }, () => {
-        uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
-          const attachmentRef = firebase.database().ref('attachment');
-          attachmentRef.push({
+        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
+          const db = getDatabase();
+          const attachmentKey = push(child(databaseRef(db), 'attachment')).key;
+          set(databaseRef(db, `attachment/${attachmentKey}`), {
             name: file.name,
             post: this.state.post,
             url: downloadURL,
             size: uploadTask.snapshot.totalBytes,
             timestamp: Math.floor(Date.now() / 1000)
-          }, error => {
-            if (error) {
-              console.log(error);
-            }
-          });
-          this.setState({
-            progress: null
-          });
+          }).then(() => {
+            this.setState({
+              progress: null
+            });
+          }).catch(console.log);
         });
       }
     );
   }
 
   onDelete = (e, attachment) => {
+    e.preventDefault();
     if (window.confirm('Are you sure you want to remove the attachment?')) {
-      e.preventDefault();
-      const {key, name} = attachment;
-      const storageRef = firebase.storage().ref();
-      const fileRef = storageRef.child(`attachment/${name}`);
-      fileRef.delete().then(() => {
-        firebase.database().ref(`attachment/${key}`).remove();
+      const { key, name } = attachment;
+      const storage = getStorage();
+      const fileRef = storageRef(storage, `attachment/${name}`);
+      deleteObject(fileRef).then(() => {
+        const db = getDatabase();
+        const attachmentRef = databaseRef(db, `attachment/${key}`);
+        remove(attachmentRef);
       });
     }
   }

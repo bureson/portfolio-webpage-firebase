@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import firebase from 'firebase/app';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import { getDatabase, ref, onValue, query, orderByChild, equalTo, remove } from 'firebase/database';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
 import Autocomplete from '../components/Autocomplete';
@@ -21,21 +21,18 @@ class Places extends Component {
   }
 
   componentDidMount = () => {
-    this.placeRef = firebase.database().ref('place');
-    this.placeRef.orderByChild('country').equalTo(this.state.country).on('value', snapshot => {
+    const db = getDatabase();
+    const placeRef = query(ref(db, 'place'), orderByChild('country'), equalTo(this.state.country));
+    onValue(placeRef, snapshot => {
       const payload = snapshot.val() || {};
       const places = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
-            .map(key => Object.assign({key}, payload[key]));
+            .map(key => Object.assign({ key }, payload[key]));
       this.setState({
         places,
         loading: false
       });
     });
-  }
-
-  componentWillUnmount = () => {
-    this.placeRef.off();
   }
 
   componentDidUpdate = () => {
@@ -47,9 +44,11 @@ class Places extends Component {
   }
 
   onDelete = (e, key) => {
+    e.preventDefault();
     if (window.confirm('Are you sure you want to remove the place?')) {
-      e.preventDefault();
-      firebase.database().ref('place').child(key).remove();
+      const db = getDatabase();
+      const placeRef = ref(db, `place/${key}`);
+      remove(placeRef);
     }
   }
 

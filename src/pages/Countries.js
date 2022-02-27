@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
-import firebase from 'firebase/app';
+import { getDatabase, ref, onValue } from 'firebase/database';
 
 import * as am4core from '@amcharts/amcharts4/core';
 import * as am4maps from '@amcharts/amcharts4/maps';
@@ -28,24 +28,25 @@ class Countries extends Component {
 
   componentDidMount = () => {
     document.title = 'Countries | Ondrej Bures';
-    this.countryRef = firebase.database().ref('country');
-    this.countryRef.on('value', snapshot => {
+    const db = getDatabase();
+    const countryListRef = ref(db, 'country');
+    onValue(countryListRef, snapshot => {
       const payload = snapshot.val() || {};
       const countryList = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
             .map(key => Object.assign({key}, payload[key]));
-      const lastYear = new Date(countryList[0].date * 1000).getFullYear();
-      const firstYear = new Date(countryList[countryList.length - 1].date * 1000).getFullYear();
+      const lastYear = 2001; // new Date(countryList[0].date * 1000).getFullYear();
+      const firstYear = 2000; // new Date(countryList[countryList.length - 1].date * 1000).getFullYear();
       const data = [...Array(lastYear - firstYear + 1).keys()].map((_, key) => {
         const year = firstYear + key;
         const count = countryList.filter(c => new Date(c.date * 1000).getFullYear() === year).length;
-        return {year, count};
+        return { year, count };
       }).reduce((acc, val, key, array) => {
-        const {count} = val;
-        const holder = {year: '...', count: 0};
+        const { count } = val;
+        const holder = { year: '...', count: 0 };
         const isEmpty = count === 0;
-        const prevIsHolder = isEmpty && acc[acc.length - 1].year === '...';
-        const nextIsEmpty = isEmpty && [1, 2].every(inc => array[key + inc] && array[key + inc].count === 0);
+        const prevIsHolder = false; // isEmpty && acc[acc.length - 1].year === '...';
+        const nextIsEmpty = false; // isEmpty && [1, 2].every(inc => array[key + inc] && array[key + inc].count === 0);
         return isEmpty
         ? prevIsHolder
           ? acc
@@ -62,21 +63,12 @@ class Countries extends Component {
     });
   }
 
-  componentWillUnmount = () => {
-    this.countryRef.off();
-  }
-
   componentDidUpdate = () => {
     if (this.state.authed !== this.props.authed) {
       this.setState({
         authed: this.props.authed
       });
     }
-  }
-
-  onDelete = (e, key) => {
-    e.preventDefault();
-    firebase.database().ref('country').child(key).remove();
   }
 
   onDotClick = (e) => {
