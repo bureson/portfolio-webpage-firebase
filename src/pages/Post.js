@@ -70,7 +70,7 @@ class Post extends Component {
     const perexHtml = mdConverter.makeHtml(this.state.post.perex);
     const bodyHtml = mdConverter.makeHtml(this.state.post.body);
     return (
-      <div className='page'>
+      <div className='page blog-item'>
         <h2>{this.state.post.title}</h2>
         <div className='page-header'>
           <div className='page-info'>

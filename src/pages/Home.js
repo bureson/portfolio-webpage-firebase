@@ -20,7 +20,9 @@ class Home extends Component {
         <div className='welcome'>
           <h2>Welcome</h2>
           <p>
-            I'm a full-stack developer from Czech Republic who currently resides in Copenhagen, Denmark.
+            I'm a full-stack developer from the Czech Republic who moved back to the homeland after living in Copenhagen, Denmark for 3 years.
+          &nbsp;I'm still working for my danish employer <a href='https://www.culturedrivers.com/' target='_blank' rel='noopener noreferrer'>CultureDrivers</a>
+          &nbsp;where we recently established 4 day work week.
           </p>
           <p>
             I have built this webpage with the main intention of providing a shelter to a small project called <em>Word of the day</em>
@@ -32,6 +34,9 @@ class Home extends Component {
             Additionally, as I'm also a keen traveller and because I was missing a nice tool where I would be able to track a list of visited countries
             &nbsp;that I've visited so far, during one of the long scandinavian nights I've decided to create my own tracking tool right here.
             &nbsp;You can see the list in the <em>Countries</em> section.
+          </p>
+          <p>
+            Feel free to follow me or reach out to me on any of the following social platforms:
           </p>
           <p>
             <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /></a>
