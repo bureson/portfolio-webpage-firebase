@@ -100,7 +100,7 @@ class Countries extends Component {
 
   renderChart () {
     return (
-      <ResponsiveContainer height={200}>
+      <ResponsiveContainer height={200} className='recharts-container'>
         <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}} onClick={this.onDotClick}>
           <XAxis dataKey='year'/>
           <Tooltip/>

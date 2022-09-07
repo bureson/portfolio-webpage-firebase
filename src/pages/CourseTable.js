@@ -102,35 +102,37 @@ class CourseTable extends Component {
             <Link to={`/course/${this.state.languageKey}/practice`}><button>Test yourself</button></Link>
           </div>
         </div>
-        <table>
-          <thead>
-            <tr>
-              {availableCourseFields.map(({ key, title }) => {
+        <div className='table-container'>
+          <table>
+            <thead>
+              <tr>
+                {availableCourseFields.map(({ key, title }) => {
+                  return (
+                    <th key={key}>{title}</th>
+                  );
+                })}
+                {this.state.authed && <th>Control</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {pageContent.map((item, index) => {
                 return (
-                  <th key={key}>{title}</th>
-                );
+                  <tr key={index}>
+                    {availableCourseFields.map(({ key, type }) => {
+                      return (
+                        <td key={key}>{valueByType(item[key], type)}</td>
+                      );
+                    })}
+                    {this.state.authed && <td className='control'>
+                      <Link to={`/course/${this.state.languageKey}/edit/${item.key}`} className='button'><FontAwesomeIcon icon={faEdit} /></Link>
+                      <button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button>
+                    </td>}
+                  </tr>
+                )
               })}
-              {this.state.authed && <th>Control</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {pageContent.map((item, index) => {
-              return (
-                <tr key={index}>
-                  {availableCourseFields.map(({ key, type }) => {
-                    return (
-                      <td key={key}>{valueByType(item[key], type)}</td>
-                    );
-                  })}
-                  {this.state.authed && <td className='control'>
-                    <Link to={`/course/${this.state.languageKey}/edit/${item.key}`} className='button'><FontAwesomeIcon icon={faEdit} /></Link>
-                    <button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button>
-                  </td>}
-                </tr>
-              )
-            })}
-          </tbody>
-        </table>
+            </tbody>
+          </table>
+        </div>
         <Pager itemsCount={filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
       </div>
     )

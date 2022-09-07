@@ -57,33 +57,35 @@ class Places extends Component {
       <div className='places'>
         <h3>Visited places</h3>
         <Maps places={this.state.places} />
-        <table>
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Visited</th>
-              <th>Latitude</th>
-              <th>Longitude</th>
-              {this.state.authed && <th>Controls</th>}
-            </tr>
-          </thead>
-          <tbody>
-            {this.state.places.map((place, index) => {
-              return (
-                <tr key={index}>
-                  <td>{place.name}</td>
-                  <td>{convertTimestamp(place.date)}</td>
-                  <td>{place.lat.toString().substring(0, 9)}</td>
-                  <td>{place.lng.toString().substring(0, 9)}</td>
-                  {this.state.authed && <td>
-                    <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>
-                  </td>}
-                </tr>
-              )
-            })}
-            {this.state.authed && <Autocomplete country={this.state.country} />}
-          </tbody>
-        </table>
+        <div className='table-container'>
+          <table>
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Visited</th>
+                <th>Latitude</th>
+                <th>Longitude</th>
+                {this.state.authed && <th>Controls</th>}
+              </tr>
+            </thead>
+            <tbody>
+              {this.state.places.map((place, index) => {
+                return (
+                  <tr key={index}>
+                    <td>{place.name}</td>
+                    <td>{convertTimestamp(place.date)}</td>
+                    <td>{place.lat.toString().substring(0, 9)}</td>
+                    <td>{place.lng.toString().substring(0, 9)}</td>
+                    {this.state.authed && <td>
+                      <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>
+                    </td>}
+                  </tr>
+                )
+              })}
+              {this.state.authed && <Autocomplete country={this.state.country} />}
+            </tbody>
+          </table>
+        </div>
       </div>
     )
   }

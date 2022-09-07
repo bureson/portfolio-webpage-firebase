@@ -91,13 +91,9 @@ class Course extends Component {
       <div className='page'>
         <div className='course-nav'>
         {Object.keys(definition).map(key => {
-            const languageKeyMap = {
-              'danish': 'dk',
-              'spanish': 'es'
-            };
-            const countryKey = languageKeyMap[key];
+            const courseDef = definition[key];
             return (
-                <Link to={`/course/${key}`}><div className={countryKey} style={{backgroundImage: `url(https://countryflagsapi.com/png/${countryKey})`}}></div></Link>
+                <Link to={`/course/${key}`}><div className={courseDef.countryIso} style={{backgroundImage: `url(https://countryflagsapi.com/png/${courseDef.countryIso})`}}></div></Link>
             );
         })}
         </div>

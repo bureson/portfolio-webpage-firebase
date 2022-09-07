@@ -60,7 +60,11 @@ class Menu extends Component {
                       <span>blog</span>
                   </Link>
               </li>
-              {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>log out</Link></li>}
+              {this.props.authed && <li>
+                  <Link to='/' onClick={this.onLogout}>
+                      <span>log out</span>
+                  </Link>
+              </li>}
           </ul>
           <p className='social'>
               <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /></a>
