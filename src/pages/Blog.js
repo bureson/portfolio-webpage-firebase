@@ -55,7 +55,7 @@ class Blog extends Component {
         {availablePostList.map((post, index) => {
           const perexHtml = mdConverter.makeHtml(post.perex);
           return (
-            <div key={index}>
+            <div key={index} className='blog-post'>
               <h2>{!post.public && '*'}<Link to={`/blog/${post.key}`}>{post.title}</Link></h2>
               <p><strong>Posted in {convertTimestamp(post.timestamp)}, reading time ~{readingTime(post.body)} minutes</strong></p>
               <div dangerouslySetInnerHTML={{__html: perexHtml}} />
@@ -72,9 +72,11 @@ class Blog extends Component {
       <div className='page'>
         <h2>Blog</h2>
         <div className='page-header'>
-          <div className='page-info'>
-            List of {availablePostList.length} posts
-          </div>
+          <p>
+            Feel free to read through a total of {availablePostList.length} stories that were significant and memorable enough in my life
+            &nbsp;to make me make an effort of writing them down.
+          </p>
+          <div className='page-info'></div>
           <div className='page-controls'>
             {this.state.authed && <Link to={'/blog/add'}><button>Add new post</button></Link>}
           </div>

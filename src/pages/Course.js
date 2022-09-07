@@ -89,14 +89,19 @@ class Course extends Component {
     });
     return (
       <div className='page'>
-        <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
-        <ul>
-          {Object.keys(definition).map(key => {
+        <div className='course-nav'>
+        {Object.keys(definition).map(key => {
+            const languageKeyMap = {
+              'danish': 'dk',
+              'spanish': 'es'
+            };
+            const countryKey = languageKeyMap[key];
             return (
-              <li key={key}><Link to={`/course/${key}`}>{definition[key].title}</Link></li>
-            )
-          })}
-        </ul>
+                <Link to={`/course/${key}`}><div className={countryKey} style={{backgroundImage: `url(https://countryflagsapi.com/png/${countryKey})`}}></div></Link>
+            );
+        })}
+        </div>
+        <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
         {this.renderCourse()}
       </div>
     )

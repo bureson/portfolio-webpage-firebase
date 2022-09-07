@@ -35,6 +35,8 @@ class Login extends Component {
   render() {
     return (
       <div>
+        <h2>Login</h2>
+        <p>This website is so fancy it has its own administration!</p>
         <form onSubmit={e => this.onSubmit(e)}>
           <div className='input-group'>
             <label htmlFor='email'>E-mail:</label>

@@ -1,6 +1,12 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
+import { faSignInAlt, faLanguage, faMap, faNewspaper } from '@fortawesome/fontawesome-free-solid';
+import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads } from '@fortawesome/fontawesome-free-brands';
+
+import firebaseLogo from '../assets/firebase-logo.png';
+import reactLogo from '../assets/react-logo.png';
 
 class Menu extends Component {
 
@@ -35,17 +41,41 @@ class Menu extends Component {
   render = () => {
     return (
       <nav className={this.state.isOpen ? 'open' : 'closed'}>
-        <button className='hamburger' onClick={e => this.toggleMenu(e)}>
-          <div></div>
-          <div></div>
-          <div></div>
-        </button>
-        <ul>
-          <li><Link to='/course' onClick={e => this.navigate(e)}>Course</Link></li>
-          <li><Link to='/countries' onClick={e => this.navigate(e)}>Countries</Link></li>
-          <li><Link to='/blog' onClick={e => this.navigate(e)}>Blog</Link></li>
-          {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>Log out</Link></li>}
-        </ul>
+          <ul className='main-nav'>
+              <li>
+                  <Link to='/course'>
+                      <FontAwesomeIcon icon={faLanguage} className='responsive-placeholder' />
+                      <span>course</span>
+                  </Link>
+              </li>
+              <li>
+                  <Link to='/countries'>
+                      <FontAwesomeIcon icon={faMap} className='responsive-placeholder' />
+                      <span>countries</span>
+                  </Link>
+              </li>
+              <li>
+                  <Link to='/blog'>
+                      <FontAwesomeIcon icon={faNewspaper} className='responsive-placeholder' />
+                      <span>blog</span>
+                  </Link>
+              </li>
+              {this.props.authed && <li><Link to='/' onClick={e => this.onLogout(e)}>log out</Link></li>}
+          </ul>
+          <p className='social'>
+              <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /></a>
+              <a href='https://www.instagram.com/ondrej_bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faInstagram} /></a>
+              <a href='https://www.linkedin.com/in/ondrej-bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faLinkedin} /></a>
+              <a href='https://github.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGithubSquare} /></a>
+              <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGoodreads} /></a>
+          </p>
+          <div className='powered-by'>
+            <ul>
+                <li><a href='https://reactjs.org/' target='_blank' rel='noopener noreferrer'><img src={reactLogo} alt='react' /></a></li>
+                <li><a href='https://firebase.google.com/' target='_blank' rel='noopener noreferrer'><img src={firebaseLogo} alt='firebase' /></a></li>
+                <li><Link to={'/login'}><FontAwesomeIcon icon={faSignInAlt} /></Link></li>
+            </ul>
+        </div>
       </nav>
     )
   }

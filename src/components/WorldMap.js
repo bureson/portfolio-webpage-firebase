@@ -54,12 +54,12 @@ class WorldMap extends Component {
       });
       series.include = includedCountries;
 
-      series.fill = am4core.color('#2c73b0');
+      series.fill = am4core.color('#f72fd9');
       series.setStateOnChildren = true;
       series.calculateVisualCenter = true;
 
       const mapPolygonTemplate = series.mapPolygons.template;
-      mapPolygonTemplate.fill = am4core.color('#2c73b0');
+      mapPolygonTemplate.fill = am4core.color('#f72fd9');
       mapPolygonTemplate.fillOpacity = 0.8;
       mapPolygonTemplate.nonScalingStroke = true;
       mapPolygonTemplate.tooltipPosition = 'fixed'
@@ -79,7 +79,7 @@ class WorldMap extends Component {
       });
 
       const hoverState = mapPolygonTemplate.states.create('hover');
-      hoverState.properties.fill = am4core.color('#30628e');
+      hoverState.properties.fill = am4core.color('#f72fd9');
 
       mapPolygonTemplate.tooltipText = 'Visited {title} in {customData}';
       series.data = JSON.parse(JSON.stringify(group.data));

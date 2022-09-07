@@ -104,7 +104,7 @@ class Countries extends Component {
         <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}} onClick={this.onDotClick}>
           <XAxis dataKey='year'/>
           <Tooltip/>
-          <Line type='monotone' dataKey='count' stroke='#2c73b0' activeDot={{r: 8}}/>
+          <Line type='monotone' dataKey='count' stroke='#f72fd9' activeDot={{r: 8}}/>
         </LineChart>
       </ResponsiveContainer>
     )
@@ -143,9 +143,14 @@ class Countries extends Component {
       <div className='page'>
         <h2>Countries log</h2>
         <div className='page-header'>
-          <div className='page-info'>
-            <p>{this.state.countryList.length} countries visited</p>
-          </div>
+          <p>
+            I never saw myself as a big traveller, but it all started in summer of 2013 after my master's degree graduation. A friend of mine inspired me to try surfing in Indonesia.
+            &nbsp;I got hooked up almost immediatelly and this new passion eventually led me to Morocco, Sri Lanka, Hawaii (USA) or Australia. In 2014 I visited a total of 7 countries
+            &nbsp;and slowly started adopting a challenge to visit 30 countries before turning 30 years old. With a little time to spare I completed this challenge in January 2019 in
+            &nbsp;Tanzania. Until this day I have visited {this.state.countryList.length} countries. You can see their overview in the grid below with the date of my visit and a little note
+            &nbsp;that usually sums my impression of the country.
+          </p>
+          <div className='page-info'></div>
           <div className='page-controls'>
             {this.state.filterYear && <button onClick={this.clearFilter}>Clear filter: {this.state.filterYear}</button>}
             <Dropdown selected={`Shown on ${this.state.display}`} optionList={[{ key: 'map' }, { key: 'chart' }]} select={this.selectDisplay} />
