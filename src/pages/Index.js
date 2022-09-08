@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Link, Redirect, Route, Switch } from 'react-router-dom';
+import { Link, Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/fontawesome-free-solid';
@@ -24,8 +24,12 @@ class Index extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      authed: false
+      authed: false,
+      clickCount: 0,
+      timeout: null
     }
+
+    this.navigateLogin = this.navigateLogin.bind(this);
   }
 
   componentDidMount = () => {
@@ -44,11 +48,37 @@ class Index extends Component {
     });
   }
 
+  navigateLogin () {
+    // Note: a little easter egg to navigate to login page in order to
+    // avoid polluting UI with elements irrelevant to the user
+    if (this.state.timeout) clearTimeout(this.state.timeout);
+    if (!this.state.authed) {
+      const clickCount = this.state.clickCount + 1;
+      if (clickCount >= 5) {
+        this.setState({
+          clickCount: 0,
+          timeout: null
+        });
+        this.props.history.push('/login')
+      } else {
+        this.setState({
+          clickCount,
+          timeout: setTimeout(() => {
+            this.setState({
+              clickCount: 0,
+              timeout: null
+            })
+          }, 500)
+        });
+      }
+    }
+  }
+
   render = () => {
     const defaultCourse = Object.keys(definition).find(key => definition[key].default);
     return (
       <GalaxyFlight>
-        <div className='container'>
+        <div className='container' onClick={this.navigateLogin}>
           <div className='navigation'>
             <Link className='home-link' to='/'>
               <FontAwesomeIcon icon={faHome} className='responsive-placeholder' />
@@ -82,4 +112,4 @@ class Index extends Component {
   }
 }
 
-export default Index;
+export default withRouter(Index);

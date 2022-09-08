@@ -248,7 +248,7 @@ table td.control a:first-child {
   box-sizing: border-box;
   max-width: 1240px;
   margin: 0 auto;
-  padding: 50px 15px;
+  padding: 50px 15px 0;
   width: 100%;
 }
 .navigation {
@@ -605,7 +605,7 @@ table td.control a:first-child {
   height: 20px;
 }
 .powered-by ul li img {
-  width: 20px;
+  width: 30px;
   filter: gray;
   -webkit-filter: grayscale(1);
   filter: grayscale(1);
@@ -637,11 +637,28 @@ table td.control a:first-child {
 		background-position: 0% 50%;
 	}
 }
+
+@media (max-width: 1408px) {
+  .navigation nav {
+    top: 80px;
+  }
+  .navigation nav ul li {
+    margin: 0 0 20px;
+  }
+  .welcome {
+    margin: 0 50px;
+  }
+  .social {
+    margin: 40px 0;
+  }
+}
+
 @media (max-width: 768px) {
   .navigation a.home-link h1 {
     display: none;
   }
   .navigation nav {
+    top: 120px;
     margin: 0 0 50px;
   }
   .navigation nav ul {

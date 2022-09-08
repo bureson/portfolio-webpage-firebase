@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
-import { faSignInAlt, faLanguage, faMap, faNewspaper } from '@fortawesome/fontawesome-free-solid';
+import { faLanguage, faMap, faNewspaper } from '@fortawesome/fontawesome-free-solid';
 import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads } from '@fortawesome/fontawesome-free-brands';
 
 import firebaseLogo from '../assets/firebase-logo.png';
@@ -77,7 +77,6 @@ class Menu extends Component {
             <ul>
                 <li><a href='https://reactjs.org/' target='_blank' rel='noopener noreferrer'><img src={reactLogo} alt='react' /></a></li>
                 <li><a href='https://firebase.google.com/' target='_blank' rel='noopener noreferrer'><img src={firebaseLogo} alt='firebase' /></a></li>
-                <li><Link to={'/login'}><FontAwesomeIcon icon={faSignInAlt} /></Link></li>
             </ul>
         </div>
       </nav>
