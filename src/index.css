@@ -687,6 +687,9 @@ table td.control a:first-child {
     margin: 0 0 10px;
     text-align: center;
   }
+  .page-header .page-controls button {
+    margin: 10px 10px 0 0;
+  }
   .welcome {
     margin: 0;
     border: 0;

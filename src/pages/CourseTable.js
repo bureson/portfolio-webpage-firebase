@@ -34,6 +34,22 @@ class CourseTable extends Component {
     }
   }
 
+  highlight = (text) => {
+    const partList = text.split(new RegExp(`(${this.state.search})`, 'gi'));
+    return (
+      <span>
+        {partList.map((part, i) => {
+          const isSearchPart = part.toLowerCase() === this.state.search.toLowerCase();
+          const backgroundColor = isSearchPart ? ' yellow' : '';
+          return (
+            <span key={i} style={{ backgroundColor }}>{part}</span>
+          );
+        })}
+      </span>
+    );
+  }
+
+
   filterCourse = () => {
     const courseFields = definition[this.state.languageKey].fields;
     const searchFields = courseFields.filter(({ search }) => search).map(({ key }) => key);
@@ -118,9 +134,12 @@ class CourseTable extends Component {
               {pageContent.map((item, index) => {
                 return (
                   <tr key={index}>
-                    {availableCourseFields.map(({ key, type }) => {
+                    {availableCourseFields.map(({ key, type, search }) => {
+                      const value = valueByType(item[key], type);
                       return (
-                        <td key={key}>{valueByType(item[key], type)}</td>
+                        <td key={key}>
+                          {search ? this.highlight(value) : value}
+                        </td>
                       );
                     })}
                     {this.state.authed && <td className='control'>
