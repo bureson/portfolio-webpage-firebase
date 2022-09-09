@@ -431,7 +431,7 @@ table td.control a:first-child {
   margin-bottom: 50px;
 }
 .page #chartdiv {
-  height: 350px;
+  height: 430px;
   margin-bottom: 20px;
 }
 .page .recharts-container {
@@ -694,6 +694,9 @@ table td.control a:first-child {
     margin: 0;
     border: 0;
     padding: 0;
+  }
+  .page #chartdiv {
+    height: 200px;
   }
   .page .countries-list .country {
     width: 98%;
