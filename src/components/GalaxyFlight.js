@@ -224,7 +224,7 @@ const GalaxyFlight = (props) => {
         resize();
         step();
         
-    }, [STAR_COUNT]);
+    }, [STAR_COUNT, STAR_COLOR]);
     
     return <React.Fragment>
         <canvas ref={canvasRef} />
