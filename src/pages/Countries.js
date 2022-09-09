@@ -99,12 +99,13 @@ class Countries extends Component {
   }
 
   renderChart () {
+    const stroke = window.getComputedStyle(document.documentElement).getPropertyValue('--contrastColor').trim();
     return (
       <ResponsiveContainer height={200} className='recharts-container'>
         <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}} onClick={this.onDotClick}>
           <XAxis dataKey='year'/>
           <Tooltip/>
-          <Line type='monotone' dataKey='count' stroke='#f72fd9' activeDot={{r: 8}}/>
+          <Line type='monotone' dataKey='count' stroke={stroke} activeDot={{r: 8}}/>
         </LineChart>
       </ResponsiveContainer>
     )

@@ -2,8 +2,9 @@ import React from 'react';
 
 const GalaxyFlight = (props) => {
     const canvasRef = React.useRef(null);
+    const contrastColor = window.getComputedStyle(document.documentElement).getPropertyValue('--contrastColor');
     
-    const STAR_COLOR = '#F1EB9C';
+    const STAR_COLOR = contrastColor; // '#F1EB9C';
     const STAR_SIZE = 3;
     const STAR_MIN_SCALE = 0.2;
     const OVERFLOW_THRESHOLD = 50;

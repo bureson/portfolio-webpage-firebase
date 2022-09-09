@@ -11,6 +11,7 @@ class WorldMap extends Component {
     chart.geodata = am4geodata_worldHigh;
     chart.projection = new am4maps.projections.NaturalEarth1();
     chart.zoomControl = new am4maps.ZoomControl();
+    const contrastColor = '#e9da13';
 
     chart.panEventsEnabled = false;
     chart.homeZoomLevel = 1.12;
@@ -54,12 +55,12 @@ class WorldMap extends Component {
       });
       series.include = includedCountries;
 
-      series.fill = am4core.color('#f72fd9');
+      series.fill = am4core.color(contrastColor);
       series.setStateOnChildren = true;
       series.calculateVisualCenter = true;
 
       const mapPolygonTemplate = series.mapPolygons.template;
-      mapPolygonTemplate.fill = am4core.color('#f72fd9');
+      mapPolygonTemplate.fill = am4core.color(contrastColor);
       mapPolygonTemplate.fillOpacity = 0.8;
       mapPolygonTemplate.nonScalingStroke = true;
       mapPolygonTemplate.tooltipPosition = 'fixed'
@@ -79,7 +80,7 @@ class WorldMap extends Component {
       });
 
       const hoverState = mapPolygonTemplate.states.create('hover');
-      hoverState.properties.fill = am4core.color('#f72fd9');
+      hoverState.properties.fill = am4core.color(contrastColor);
 
       mapPolygonTemplate.tooltipText = 'Visited {title} in {customData}';
       series.data = JSON.parse(JSON.stringify(group.data));

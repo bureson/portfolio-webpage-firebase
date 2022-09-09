@@ -394,7 +394,7 @@ table td.control a:first-child {
 }
 .blog-item img {
   width: 100%;
-  min-height: 300px;
+  min-height: 180px;
   background: linear-gradient(-45deg, #f8f8ff, #cac9cd, #9b9a9c, #6d6a6a);
 	background-size: 400% 400%;
 	animation: gradient 3s ease infinite;
