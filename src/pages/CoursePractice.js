@@ -55,7 +55,7 @@ class CoursePractice extends Component {
       <div className='practice'>
         <p>Choose the correct translation for</p>
         <h3>{question[firstKey]}</h3>
-        <div className={className}>
+        <div key={this.state.questionKey} className={className}>
           {this.state.optionKeyList.map((optionKey, i) => {
             const option = this.props.course[optionKey][secondKey];
             const isThisKey = isSelected && optionKey === this.state.selectedKey;
