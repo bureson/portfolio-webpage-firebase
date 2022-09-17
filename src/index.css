@@ -337,6 +337,19 @@ table td.control a:first-child {
   vertical-align: top;
   display: inline-block;
 }
+.content a {
+  background-size: 0 2px;
+  background-position: 0 100%;
+  line-height: 2em;
+  display: inline-block;
+  background-repeat: no-repeat;
+  text-decoration: none;
+  background-image: linear-gradient(currentcolor,currentcolor);
+  transition: background-size .3s ease-in-out;
+}
+.content a:hover {
+  background-size: 100% 2px;
+}
 .social {
   margin: 80px 0;
 }
@@ -430,6 +443,9 @@ table td.control a:first-child {
 .page .blog-post {
   margin-bottom: 50px;
 }
+.page .blog-post h2 {
+  margin: 0 0 10px;
+}
 .page #chartdiv {
   height: 430px;
   margin-bottom: 20px;
@@ -444,6 +460,9 @@ table td.control a:first-child {
   content: '';
   display: block;
   clear: both;
+}
+.page .countries-list a {
+  display: block;
 }
 .page .countries-list .country {
   background: rgba(255, 255, 255, 0.25);

@@ -4,7 +4,7 @@ const GalaxyFlight = (props) => {
     const canvasRef = React.useRef(null);
     const contrastColor = window.getComputedStyle(document.documentElement).getPropertyValue('--contrastColor');
     
-    const STAR_COLOR = contrastColor; // '#F1EB9C';
+    const STAR_COLOR = contrastColor;
     const STAR_SIZE = 3;
     const STAR_MIN_SCALE = 0.2;
     const OVERFLOW_THRESHOLD = 50;
@@ -153,7 +153,7 @@ const GalaxyFlight = (props) => {
                 context.beginPath();
                 context.lineCap = 'round';
                 context.lineWidth = STAR_SIZE * star.z * scale;
-                context.globalAlpha = 0.5 + 0.5*Math.random();
+                context.globalAlpha = 0.5 + 0.5 * Math.random();
                 context.strokeStyle = STAR_COLOR;
 
                 context.beginPath();
