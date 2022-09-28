@@ -5,6 +5,7 @@ import { initializeApp } from 'firebase/app';
 
 import './index.css';
 import Index from './pages/Index';
+import RouteChangeListener from './components/RouteChangeListener';
 import reportWebVitals from './reportWebVitals';
 
 const config = {
@@ -20,6 +21,7 @@ initializeApp(config);
 ReactDOM.render(
   <React.StrictMode>
     <Router>
+      <RouteChangeListener />
       <Route component={Index} path='/' />
     </Router>
   </React.StrictMode>,
