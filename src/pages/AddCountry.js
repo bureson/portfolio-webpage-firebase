@@ -20,6 +20,7 @@ class AddCountry extends Component {
       iso: null,
       key: null,
       loading: true,
+      magnet: false,
       name: '',
       progress: null,
       story: '',
@@ -43,6 +44,7 @@ class AddCountry extends Component {
             iso: payload.iso,
             key: countryKey,
             loading: false,
+            magnet: !!payload.magnet,
             name: payload.name,
             preview: false,
             story: payload.story,
@@ -98,16 +100,20 @@ class AddCountry extends Component {
     );
   }
 
-  onChange = (e, key) => {
-    this.setState({
-      [key]: e.target.value
-    })
+  onChange = (key) => {
+    return (e) => {
+      this.setState({
+        [key]: e.target.value
+      });
+    };
   }
 
-  onToggle = (e) => {
-    this.setState({
-      preview: !this.state.preview
-    });
+  onToggle = (prop) => {
+    return (e) => {
+      this.setState({
+        [prop]: !this.state[prop]
+      });
+    }
   }
 
   onDelete = (e) => {
@@ -137,6 +143,7 @@ class AddCountry extends Component {
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,
       photoPath: this.state.filePath || '',
       iso: this.state.iso,
+      magnet: this.state.magnet,
       description: this.state.description,
       story: this.state.story,
       timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
@@ -166,19 +173,23 @@ class AddCountry extends Component {
           <h2>Add new country</h2>
           <div className='input-group'>
             <label htmlFor='country'>Country</label>
-            <input type='text' id='country' placeholder='Country name' value={this.state.name} onChange={e => this.onChange(e, 'name')} />
+            <input type='text' id='country' placeholder='Country name' value={this.state.name} onChange={this.onChange('name')} />
           </div>
           <div className='input-group'>
             <label htmlFor='date'>Date visited</label>
-            <input type='date' id='date' placeholder='Visited' value={this.state.date} onChange={e => this.onChange(e, 'date')} />
+            <input type='date' id='date' placeholder='Visited' value={this.state.date} onChange={this.onChange('date')} />
           </div>
           <div className='input-group'>
             <label htmlFor='ico'>ISO code</label>
-            <input type='text' id='iso' placeholder='ISO code' value={this.state.iso} onChange={e => this.onChange(e, 'iso')} />
+            <input type='text' id='iso' placeholder='ISO code' value={this.state.iso} onChange={this.onChange('iso')} />
           </div>
           <div className='input-group'>
             <label htmlFor='short-desc'>Short description</label>
-            <textarea id='short-desc' placeholder='Description' onChange={e => this.onChange(e, 'description')} value={this.state.description} />
+            <textarea id='short-desc' placeholder='Description' onChange={this.onChange('description')} value={this.state.description} />
+          </div>
+          <div className='input-group'>
+            <label htmlFor='story-preview'>Has magnet</label>
+            <input type='checkbox' checked={this.state.magnet} onChange={this.onToggle('magnet')} />
           </div>
           <div className='input-group'>
             <label htmlFor='photo'>Main photo</label>
@@ -191,11 +202,11 @@ class AddCountry extends Component {
           </div>
           <div className='input-group'>
             <label htmlFor='short-desc'>Story</label>
-            <textarea id='short-desc' rows='10' placeholder='Story' onChange={e => this.onChange(e, 'story')} value={this.state.story} />
+            <textarea id='short-desc' rows='10' placeholder='Story' onChange={this.onChange('story')} value={this.state.story} />
           </div>
           <div className='input-group'>
             <label htmlFor='story-preview'>Preview</label>
-            <input type='checkbox' checked={this.state.preview} onChange={this.onToggle} />
+            <input type='checkbox' checked={this.state.preview} onChange={this.onToggle('preview')} />
           </div>
           {this.state.preview && <div dangerouslySetInnerHTML={{__html: storyHtml}} />}
           <button type='submit' value='Submit'>Submit</button>

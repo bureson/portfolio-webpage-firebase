@@ -440,6 +440,9 @@ table td.control a:first-child {
 .table-container {
   overflow-x: auto;
 }
+.page {
+  padding-bottom: 50px;
+}
 .page .blog-post {
   margin-bottom: 50px;
 }
@@ -469,9 +472,29 @@ table td.control a:first-child {
   border-radius: 3px;
   border: 1px solid #e2e0e0;
   box-sizing: border-box;
+  position: relative;
   float: left;
   margin: 20px 1% 0;
   width: 23%;
+}
+.page .countries-list .country .ribbon {
+  position: absolute;
+  right: 10px;
+  top: -3px;
+  filter: drop-shadow(1px 2px 2px #000);
+  box-shadow: 0px 0px 4px 2px #000);
+}
+.page .countries-list .country .ribbon > .content {
+  color: white;
+  font-size: 1.25rem;
+  text-align: center;
+  font-weight: 400;
+  background-color: #fd9c2e;
+  background-image: linear-gradient(45deg, rgba(#000, 0) 0%, rgba(#fff, 0.25) 100%);
+  padding: 8px 2px 4px;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), 50% 100%, 0 calc(100% - 8px));
+  width: 32px;
+  min-height: 36px;
 }
 .page .countries-list .country h3 {
   display: block;
