@@ -93,7 +93,7 @@ class Course extends Component {
         {Object.keys(definition).map(key => {
             const courseDef = definition[key];
             return (
-                <Link to={`/course/${key}`}><div className={courseDef.countryIso} style={{backgroundImage: `url(https://countryflagsapi.com/png/${courseDef.countryIso})`}}></div></Link>
+                <Link to={`/course/${key}`}><div className={courseDef.countryIso}></div></Link>
             );
         })}
         </div>
