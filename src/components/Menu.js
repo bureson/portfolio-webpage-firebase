@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
 import { faLanguage, faMap, faNewspaper } from '@fortawesome/fontawesome-free-solid';
-import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads } from '@fortawesome/fontawesome-free-brands';
+import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads, faYoutubeSquare } from '@fortawesome/fontawesome-free-brands';
 
 import firebaseLogo from '../assets/firebase-logo.png';
 import reactLogo from '../assets/react-logo.png';
@@ -69,9 +69,12 @@ class Menu extends Component {
           <p className='social'>
               <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /></a>
               <a href='https://www.instagram.com/ondrej_bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faInstagram} /></a>
+              <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGoodreads} /></a>
+              <br />
               <a href='https://www.linkedin.com/in/ondrej-bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faLinkedin} /></a>
               <a href='https://github.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGithubSquare} /></a>
-              <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGoodreads} /></a>
+              <br />
+              <a href='https://youtube.com/@czeBuri' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faYoutubeSquare} /></a>
           </p>
           <div className='powered-by'>
             <ul>
