@@ -3,6 +3,14 @@
     "default": "portfolio-project-f7f88",
     "portfolio-project": "portfolio-project-f7f88"
   },
-  "targets": {},
+  "targets": {
+    "portfolio-project-f7f88": {
+      "hosting": {
+        "production": [
+          "portfolio-project-f7f88",
+        ]
+      }
+    }
+  },
   "etags": {}
 }
