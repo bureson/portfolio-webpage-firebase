@@ -95,7 +95,7 @@ class Attachments extends Component {
   }
 
   render = () => {
-    const isLoading = this.state.progress;
+    const isLoading = this.state.progress !== null;
     return (
       <div className='input-group'>
         <label htmlFor='file'>Attachments</label>
