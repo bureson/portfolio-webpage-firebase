@@ -59,7 +59,7 @@ class Dropdown extends Component {
         {this.state.active && <div className='options'>
           {this.props.optionList.map((option) => {
             return (
-              <button key={option.key} onClick={(e) => this.select(e, option)}>{option.key}</button>
+              <button key={option.key} onClick={(e) => this.select(e, option)}>{option.title || option.key}</button>
             );
           })}
         </div>}

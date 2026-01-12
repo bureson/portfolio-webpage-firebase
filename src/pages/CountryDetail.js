@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
-import { convertTimestamp } from '../lib/Shared';
+import { convertTimestamp, readingTime } from '../lib/Shared';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import Places from '../components/Places';
@@ -26,13 +26,20 @@ class CountryDetail extends Component {
     const db = getDatabase();
     const countryRef = ref(db, 'country/' + countryKey);
     onValue(countryRef, snapshot => {
-      const payload = snapshot.val();
-      document.title = `${payload ? payload.name : 'Not found'} | Ondrej Bures`;
-      this.setState({
-        country: payload ? Object.assign({
-          key: countryKey
-        }, payload) : null,
-        loading: false
+      const countryPayload = snapshot.val();
+      document.title = `${countryPayload ? countryPayload.name : 'Not found'} | Ondrej Bures`;
+      const postRef = ref(db, 'blog/' + countryPayload.blogPostKey);
+      onValue(postRef, snapshot => {
+        const postPayload = snapshot.val();
+        this.setState({
+          country: countryPayload ? Object.assign({
+            key: countryKey
+          }, countryPayload) : null,
+          post: postPayload ? Object.assign({
+            key: countryPayload.blogPostKey
+          }, postPayload) : null,
+          loading: false
+        });
       });
     });
   }
@@ -83,6 +90,12 @@ class CountryDetail extends Component {
           </div>}
         </div>
         {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
+        {this.state.post && <div className='related-post'>
+          <p>There is a related blog post to this country:</p>
+          <Link to={`/blog/${this.state.post.key}`}><h2>{this.state.post.title}</h2></Link>
+          <p><strong>Posted in {convertTimestamp(this.state.post.timestamp)}, reading time ~{readingTime(this.state.post.body)} minutes</strong></p>
+          <p>{this.state.post.perex}</p>
+        </div>}
         <Places authed={this.state.authed} country={this.state.country.key} />
         <div dangerouslySetInnerHTML={{__html: storyHtml}} />
       </div>

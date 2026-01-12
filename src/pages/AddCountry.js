@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
+import Dropdown from '../components/Dropdown';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 
@@ -14,6 +15,7 @@ class AddCountry extends Component {
     super(props);
     this.state = {
       authed: props.authed,
+      blogPostList: [],
       date: this.convertTimestamp(Math.floor(Date.now() / 1000)),
       description: '',
       filePath: null,
@@ -35,22 +37,31 @@ class AddCountry extends Component {
       const countryRef = databaseRef(db, 'country/' + countryKey);
       onValue(countryRef, snapshot => {
         const payload = snapshot.val();
-        if (payload) {
-          document.title = `Edit ${payload.name} | Ondrej Bures`;
-          this.setState({
-            date: this.convertTimestamp(payload.date),
-            description: payload.description,
-            filePath: payload.photoPath,
-            iso: payload.iso,
-            key: countryKey,
-            loading: false,
-            magnet: !!payload.magnet,
-            name: payload.name,
-            preview: false,
-            story: payload.story,
-            timestamp: payload.timestamp
-          });
-        }
+        const blogRef = databaseRef(db, 'blog');
+        onValue(blogRef, blogSnapshot => {
+          const blogPayload = blogSnapshot.val() || {};
+          const blogPostList = Object.keys(blogPayload)
+                .sort((a, b) => blogPayload[b].timestamp - blogPayload[a].timestamp)
+                .map(key => Object.assign({key}, blogPayload[key]));
+          if (payload) {
+            document.title = `Edit ${payload.name} | Ondrej Bures`;
+            this.setState({
+              blogPostList,
+              blogPostKey: payload.blogPostKey,
+              date: this.convertTimestamp(payload.date),
+              description: payload.description,
+              filePath: payload.photoPath,
+              iso: payload.iso,
+              key: countryKey,
+              loading: false,
+              magnet: !!payload.magnet,
+              name: payload.name,
+              preview: false,
+              story: payload.story,
+              timestamp: payload.timestamp
+            });
+          }
+        });
       });
     } else {
       this.setState({
@@ -144,6 +155,7 @@ class AddCountry extends Component {
       photoPath: this.state.filePath || '',
       iso: this.state.iso,
       magnet: this.state.magnet,
+      blogPostKey: this.state.blogPostKey,
       description: this.state.description,
       story: this.state.story,
       timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
@@ -167,6 +179,7 @@ class AddCountry extends Component {
     const storyHtml = mdConverter.makeHtml(this.state.story);
     const isLoading = this.state.progress;
     const hasUrl = this.state.filePath;
+    const select = blogPost => this.setState({ blogPostKey: blogPost.key });
     return (
       <div>
         <form onSubmit={e => this.onSubmit(e)}>
@@ -186,6 +199,10 @@ class AddCountry extends Component {
           <div className='input-group'>
             <label htmlFor='short-desc'>Short description</label>
             <textarea id='short-desc' placeholder='Description' onChange={this.onChange('description')} value={this.state.description} />
+          </div>
+          <div className='input-group'>
+            <label htmlFor='blog-dropdown'>Related blog post</label>
+            <Dropdown selected={this.state.blogPostKey || 'Choose one ...'} optionList={this.state.blogPostList} select={select} />
           </div>
           <div className='input-group'>
             <label htmlFor='story-preview'>Has magnet</label>

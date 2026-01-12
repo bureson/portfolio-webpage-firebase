@@ -11,13 +11,13 @@ class Maps extends Component {
 
   getZoom = (latDiff, lngDiff) => {
     switch (true) { // NOTE: eventually handle also lngDiff
-      case (latDiff === 0): return 9;
-      case (latDiff < 1): return 8;
-      case (latDiff < 5): return 6;
-      case (latDiff < 10): return 5;
-      case (latDiff < 15): return 4;
-      case (latDiff < 20): return 3;
-      default: return 2;
+      case (latDiff === 0): return 11;
+      case (latDiff < 1): return 10;
+      case (latDiff < 5): return 8;
+      case (latDiff < 10): return 7;
+      case (latDiff < 15): return 6;
+      case (latDiff < 20): return 5;
+      default: return 4;
     }
   }
 

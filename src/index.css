@@ -450,6 +450,9 @@ table td.control a:first-child {
 .page {
   padding-bottom: 50px;
 }
+.page .related-post {
+  margin-top: 20px;
+}
 .page .blog-post {
   margin-bottom: 50px;
 }
@@ -486,22 +489,32 @@ table td.control a:first-child {
 }
 .page .countries-list .country .ribbon {
   position: absolute;
+  filter: drop-shadow(1px 2px 2px #000);
+}
+.page .countries-list .country .ribbon.magnet {
   right: 10px;
   top: -3px;
-  filter: drop-shadow(1px 2px 2px #000);
-  box-shadow: 0px 0px 4px 2px #000);
+}
+.page .countries-list .country .ribbon.blog {
+  right: 35px;
+  top: -3px;
 }
 .page .countries-list .country .ribbon > .content {
   color: white;
   font-size: 1.25rem;
   text-align: center;
   font-weight: 400;
-  background-color: #fd9c2e;
   background-image: linear-gradient(45deg, rgba(#000, 0) 0%, rgba(#fff, 0.25) 100%);
   padding: 8px 2px 4px;
   clip-path: polygon(0 0, 100% 0, 100% calc(100% - 8px), 50% 100%, 0 calc(100% - 8px));
   width: 32px;
   min-height: 36px;
+}
+.page .countries-list .country .ribbon.magnet > .content {
+  background-color: #fd9c2e;
+}
+.page .countries-list .country .ribbon.blog > .content {
+  background-color: #77d520;
 }
 .page .countries-list .country h3 {
   display: block;
@@ -538,7 +551,7 @@ table td.control a:first-child {
 }
 .page .country-cover {
   width: 100%;
-  height: 300px;
+  height: 400px;
   background-size: cover;
   background-position: center;
 }
@@ -629,7 +642,7 @@ table td.control a:first-child {
 }
 .map {
   width: 100%;
-  height: 200px;
+  height: 400px;
 }
 .spinner {
   width: 40px;

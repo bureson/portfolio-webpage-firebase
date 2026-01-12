@@ -111,9 +111,21 @@ class Countries extends Component {
     )
   }
 
-  renderRibbon = () => {
+  renderBlogRibbon = () => {
     return (
-      <div className='ribbon'>
+      <div className='ribbon blog'>
+        <div className='content'>
+          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 16 16">
+            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
+          </svg>
+        </div>
+      </div>
+    )
+  }
+
+  renderMagnetRibbon = () => {
+    return (
+      <div className='ribbon magnet'>
         <div className='content'>
           <svg width='24px' height='24px' aria-hidden='true' focusable='false' data-prefix='far' data-icon='star' className='svg-inline--fa fa-star fa-w-18' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 576 512'>
             <path fill='currentColor' d='M528.1 171.5L382 150.2 316.7 17.8c-11.7-23.6-45.6-23.9-57.4 0L194 150.2 47.9 171.5c-26.2 3.8-36.7 36.1-17.7 54.6l105.7 103-25 145.5c-4.5 26.3 23.2 46 46.4 33.7L288 439.6l130.7 68.7c23.2 12.2 50.9-7.4 46.4-33.7l-25-145.5 105.7-103c19-18.5 8.5-50.8-17.7-54.6zM388.6 312.3l23.7 138.4L288 385.4l-124.3 65.3 23.7-138.4-100.6-98 139-20.2 62.2-126 62.2 126 139 20.2-100.6 98z'></path>
@@ -137,7 +149,8 @@ class Countries extends Component {
           return (
             <Link to={`/countries/${country.key}`} key={index}>
               <div className='country'>
-                {country.magnet && this.renderRibbon()}
+                {country.blogPostKey && this.renderBlogRibbon()}
+                {country.magnet && this.renderMagnetRibbon()}
                 <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
                 <div className='content'>
                   <h3>{country.name}</h3>
@@ -168,6 +181,9 @@ class Countries extends Component {
             On my travels I like to collect small fridge magnets for each country to remind me of places that I've been to when back home. Because I've visited some countries multiple times and
             &nbsp;it's easy to lose track of those that already have a place on my fridge, I came up with a star badge ⭐ so the next time I visit the country I have an easily accessible visual
             &nbsp;cue for myself to remember whether I have a magnet or not. Currently you can find {this.state.countryList.filter(country => country.magnet).length} magnets on my fridge!
+          </p>
+          <p>
+            To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with a pen badge 🖋️.
           </p>
           <div className='page-info'></div>
           <div className='page-controls'>
