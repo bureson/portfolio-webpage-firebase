@@ -450,11 +450,8 @@ table td.control a:first-child {
 .page {
   padding-bottom: 50px;
 }
-.page .related-post {
-  margin-top: 20px;
-}
 .page .blog-post {
-  margin-bottom: 50px;
+  margin: 25px 0;
 }
 .page .blog-post h2 {
   margin: 0 0 10px;

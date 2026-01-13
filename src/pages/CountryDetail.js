@@ -9,6 +9,7 @@ import { convertTimestamp, readingTime } from '../lib/Shared';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import Places from '../components/Places';
+import PostPreview from '../components/PostPreview';
 
 class CountryDetail extends Component {
 
@@ -90,12 +91,7 @@ class CountryDetail extends Component {
           </div>}
         </div>
         {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
-        {this.state.post && <div className='related-post'>
-          <p>There is a related blog post to this country:</p>
-          <Link to={`/blog/${this.state.post.key}`}><h2>{this.state.post.title}</h2></Link>
-          <p><strong>Posted in {convertTimestamp(this.state.post.timestamp)}, reading time ~{readingTime(this.state.post.body)} minutes</strong></p>
-          <p>{this.state.post.perex}</p>
-        </div>}
+        {this.state.post && <PostPreview post={this.state.post} />}
         <Places authed={this.state.authed} country={this.state.country.key} />
         <div dangerouslySetInnerHTML={{__html: storyHtml}} />
       </div>
