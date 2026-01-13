@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
-import { Converter } from 'showdown';
 
-import { convertTimestamp, readingTime } from '../lib/Shared';
 import Loader from '../components/Loader';
 import PostPreview from '../components/PostPreview';
 
