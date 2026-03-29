@@ -3,7 +3,7 @@
   "version": "1.2.0",
   "private": true,
   "dependencies": {
-    "@amcharts/amcharts4": "^4.10.26",
+    "@amcharts/amcharts4": "^4.10.28",
     "@amcharts/amcharts4-geodata": "^4.1.23",
     "@fortawesome/fontawesome": "^1.1.8",
     "@fortawesome/fontawesome-free-brands": "^5.0.13",
