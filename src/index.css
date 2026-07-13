@@ -1694,6 +1694,25 @@ button.primary:hover {
   border-color: var(--contrastColor);
   color: var(--contrastColor);
 }
+.quiz-foot button.next {
+  /* Note: the fill doubles as the auto-advance countdown, its duration
+     mirrors the 1200ms timeout in CoursePractice */
+  animation: next-fill 1200ms linear forwards;
+  background-image: linear-gradient(rgba(232, 193, 90, 0.3), rgba(232, 193, 90, 0.3));
+  background-position: 0 0;
+  background-repeat: no-repeat;
+  background-size: 0% 100%;
+  border-color: rgba(232, 193, 90, 0.6);
+  color: var(--contrastColor);
+}
+.quiz-foot button.next:hover {
+  border-color: var(--contrastColor);
+}
+@keyframes next-fill {
+  to {
+    background-size: 100% 100%;
+  }
+}
 .dot-trail {
   display: flex;
   justify-content: center;

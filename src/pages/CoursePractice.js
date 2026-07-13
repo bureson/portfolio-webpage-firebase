@@ -57,14 +57,15 @@ class CoursePractice extends Component {
       bestStreak: 0,
       current: 0,
       queue,
-      streak: 0
-    }, this.generateOptions);
+      streak: 0,
+      ...this.buildOptions(queue, 0)
+    });
   }
 
-  generateOptions = () => {
+  buildOptions = (queue, current) => {
     const course = this.props.course;
     const [, secondKey] = this.state.direction;
-    const questionKey = this.state.queue[this.state.current];
+    const questionKey = queue[current];
     // Note: also keep the option texts distinct, a duplicate of the correct
     // translation would render as a second, "wrong" copy of the right answer
     const seenTextList = new Set([(course[questionKey][secondKey] || '').trim().toLowerCase()]);
@@ -74,10 +75,10 @@ class CoursePractice extends Component {
       seenTextList.add(text);
       return true;
     }).slice(0, 3);
-    this.setState({
+    return {
       optionKeyList: shuffle([questionKey, ...wrongKeyList]),
       selectedKey: null
-    });
+    };
   }
 
   nextQuestion = () => {
@@ -85,7 +86,12 @@ class CoursePractice extends Component {
     if (current >= this.state.queue.length) {
       this.setState({ current }, this.savePersonalBest);
     } else {
-      this.setState({ current }, this.generateOptions);
+      // Note: advance and regenerate the options in one state update, a render
+      // in between would paint the previous answer states onto the new tiles
+      this.setState({
+        current,
+        ...this.buildOptions(this.state.queue, current)
+      });
     }
   }
 
@@ -111,6 +117,12 @@ class CoursePractice extends Component {
       answers: [...this.state.answers, { questionKey, selectedKey: null, correct: false }],
       streak: 0
     }, this.nextQuestion);
+  }
+
+  advanceNow = (e) => {
+    e.preventDefault();
+    if (this.timeout) clearTimeout(this.timeout);
+    this.nextQuestion();
   }
 
   onKeyDown = (e) => {
@@ -231,7 +243,9 @@ class CoursePractice extends Component {
           </div>
           <div className='quiz-foot'>
             <div>press A–D or click</div>
-            <button onClick={this.skipQuestion}>skip →</button>
+            {isSelected
+              ? <button className='next' onClick={this.advanceNow}>next →</button>
+              : <button onClick={this.skipQuestion}>skip →</button>}
           </div>
         </div>
         {this.renderDotTrail()}
