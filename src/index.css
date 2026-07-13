@@ -30,9 +30,12 @@ html {
 }
 canvas {
   position: fixed;
+  top: 0;
+  left: 0;
   background: linear-gradient(160deg, #080d18 0%, #0b1426 55%, #0d1a33 100%);
   z-index: -1;
   height: 100vh;
+  height: 100lvh; /* cover the space revealed when the mobile URL bar collapses */
   width: 100vw;
 }
 h1 {
@@ -1530,6 +1533,7 @@ button.primary:hover {
 }
 .page-title .pills {
   display: flex;
+  flex-wrap: wrap;
   gap: 10px;
 }
 .practice-page {
@@ -1893,6 +1897,19 @@ button.primary:hover {
   color: var(--contrastColor);
   background: none;
 }
+.pager ul li button:disabled {
+  border-color: rgba(236, 229, 195, 0.1);
+  color: rgba(236, 229, 195, 0.25);
+  cursor: default;
+}
+.pager ul li.gap span {
+  color: rgba(236, 229, 195, 0.4);
+  display: block;
+  font-size: 12.5px;
+  line-height: 28px;
+  min-width: 16px;
+  text-align: center;
+}
 .pager ul li.active button {
   background: var(--contrastColor);
   border-color: var(--contrastColor);
@@ -2097,5 +2114,16 @@ button.primary:hover {
   }
   .responsive-placeholder {
     display: block;
+  }
+  .page-title {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+  .page-title > div:first-child {
+    margin: 0 0 14px;
+  }
+  .page-title .pills {
+    margin: 0 0 22px;
   }
 }

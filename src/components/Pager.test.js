@@ -1,39 +1,55 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { render, screen, fireEvent } from '@testing-library/react';
 
 import Pager from './Pager';
 
+const pageLabels = () => screen.getAllByRole('listitem').map(li => li.textContent);
+
 describe('component/Pager', () => {
-  it('renders without crashing', () => {
-    const wrapper = shallow(<Pager itemsCount={20} currentPage={2} perPage={5} />);
-    expect(wrapper.find('li')).toHaveLength(6);
-    expect(Number(wrapper.find('li.active button').text())).toBe(3);
+  it('renders all pages when there are few', () => {
+    render(<Pager itemsCount={20} currentPage={2} perPage={5} />);
+    expect(pageLabels()).toEqual(['<', '1', '2', '3', '4', '>']);
+    expect(screen.getByText('3').closest('li')).toHaveClass('active');
+  });
+
+  it('collapses trailing pages into dots', () => {
+    render(<Pager itemsCount={100} currentPage={0} perPage={5} />);
+    expect(pageLabels()).toEqual(['<', '1', '2', '3', '4', '…', '20', '>']);
+  });
+
+  it('shows dots on both sides in the middle', () => {
+    render(<Pager itemsCount={100} currentPage={9} perPage={5} />);
+    expect(pageLabels()).toEqual(['<', '1', '…', '9', '10', '11', '…', '20', '>']);
+  });
+
+  it('collapses leading pages into dots near the end', () => {
+    render(<Pager itemsCount={100} currentPage={19} perPage={5} />);
+    expect(pageLabels()).toEqual(['<', '1', '…', '17', '18', '19', '20', '>']);
   });
 
   it('updates active page', () => {
-    const wrapper = shallow(<Pager itemsCount={20} currentPage={2} perPage={5} />);
-    wrapper.setProps({currentPage: 3});
-    expect(Number(wrapper.find('li.active button').text())).toBe(4);
-  });
-
-  it('updates pages count', () => {
-    const wrapper = shallow(<Pager itemsCount={100} currentPage={2} perPage={5} />);
-    wrapper.setProps({itemsCount: 30});
-    expect(wrapper.find('li')).toHaveLength(8);
+    const { rerender } = render(<Pager itemsCount={20} currentPage={2} perPage={5} />);
+    rerender(<Pager itemsCount={20} currentPage={3} perPage={5} />);
+    expect(screen.getByText('4').closest('li')).toHaveClass('active');
   });
 
   it('navigates', () => {
     const onPageChange = jest.fn();
-    const clickEv = {preventDefault: () => {}};
-    const wrapper = shallow(<Pager itemsCount={20} currentPage={1} perPage={5} onPageChange={onPageChange}/>);
+    render(<Pager itemsCount={20} currentPage={1} perPage={5} onPageChange={onPageChange} />);
 
-    wrapper.find('li.active button').simulate('click', clickEv);
-    expect(onPageChange).toHaveBeenLastCalledWith(clickEv, 1);
+    fireEvent.click(screen.getByText('2'));
+    expect(onPageChange).toHaveBeenLastCalledWith(expect.anything(), 1);
 
-    wrapper.find('li').first().find('button').simulate('click', clickEv);
-    expect(onPageChange).toHaveBeenLastCalledWith(clickEv, 0);
+    fireEvent.click(screen.getByText('<'));
+    expect(onPageChange).toHaveBeenLastCalledWith(expect.anything(), 0);
 
-    wrapper.find('li').last().find('button').simulate('click', clickEv);
-    expect(onPageChange).toHaveBeenLastCalledWith(clickEv, 3);
+    fireEvent.click(screen.getByText('>'));
+    expect(onPageChange).toHaveBeenLastCalledWith(expect.anything(), 2);
+  });
+
+  it('disables prev on the first page and next on the last', () => {
+    render(<Pager itemsCount={100} currentPage={0} perPage={5} />);
+    expect(screen.getByText('<')).toBeDisabled();
+    expect(screen.getByText('>')).not.toBeDisabled();
   });
 });
