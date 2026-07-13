@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { ResponsiveContainer, LineChart, Line, XAxis, Tooltip } from 'recharts';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
+import { continentOf, continentSize } from '../lib/Continents';
 import { convertTimestamp, sortBy } from '../lib/Shared';
-import Dropdown from '../components/Dropdown';
 import Loader from '../components/Loader';
-import WorldMap from '../components/WorldMap';
 
 class Countries extends Component {
 
@@ -15,8 +13,6 @@ class Countries extends Component {
     this.state = {
       authed: props.authed,
       countryList: [],
-      display: 'map',
-      filterYear: null,
       loading: true,
       sortBy: 'date',
       sortDirection: 'desc'
@@ -32,29 +28,8 @@ class Countries extends Component {
       const countryList = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
             .map(key => Object.assign({key}, payload[key]));
-      const lastYear = new Date(countryList[0].date * 1000).getFullYear();
-      const firstYear = new Date(countryList[countryList.length - 1].date * 1000).getFullYear();
-      const data = [...Array(lastYear - firstYear + 1).keys()].map((_, key) => {
-        const year = firstYear + key;
-        const count = countryList.filter(c => new Date(c.date * 1000).getFullYear() === year).length;
-        return { year, count };
-      }).reduce((acc, val, key, array) => {
-        const { count } = val;
-        const holder = { year: '...', count: 0 };
-        const isEmpty = count === 0;
-        const prevIsHolder = isEmpty && acc[acc.length - 1].year === holder.year;
-        const nextIsEmpty = isEmpty && [1, 2].every(inc => array[key + inc] && array[key + inc].count === 0);
-        return isEmpty
-        ? prevIsHolder
-          ? acc
-          : nextIsEmpty
-            ? acc.concat(holder)
-            : acc.concat(val)
-        : acc.concat(val);
-      }, []);
       this.setState({
         countryList,
-        data: data,
         loading: false
       });
     });
@@ -68,47 +43,11 @@ class Countries extends Component {
     }
   }
 
-  onDotClick = (e) => {
-    const filterYear = e
-      ? e.activeLabel === this.state.filterYear
-        ? null
-        : e.activeLabel
-      : null;
-    this.setState({
-      filterYear
-    });
-  }
-
-  clearFilter = (e) => {
-    this.setState({
-      filterYear: null
-    });
-  }
-
-  selectDisplay = ({ key }) => {
-    this.setState({
-      display: key
-    });
-  }
-
   selectSorter = ({ key, direction }) => {
     this.setState({
       sortBy: key,
       sortDirection: direction
     });
-  }
-
-  renderChart () {
-    const stroke = window.getComputedStyle(document.documentElement).getPropertyValue('--contrastColor').trim();
-    return (
-      <ResponsiveContainer height={200} className='recharts-container'>
-        <LineChart data={this.state.data} margin={{top: 20, right: 20, left: 20, bottom: 20}} onClick={this.onDotClick}>
-          <XAxis dataKey='year'/>
-          <Tooltip/>
-          <Line type='monotone' dataKey='count' stroke={stroke} activeDot={{r: 8}}/>
-        </LineChart>
-      </ResponsiveContainer>
-    )
   }
 
   renderBlogRibbon = () => {
@@ -138,19 +77,15 @@ class Countries extends Component {
   renderCountries = () => {
     if (this.state.loading) return <Loader />;
 
-    const filteredCountryList = this.state.filterYear
-      ? this.state.countryList.filter(c => new Date(c.date * 1000).getFullYear() === this.state.filterYear)
-      : this.state.countryList;
-    const sortedCountryList = filteredCountryList.sort(sortBy(this.state.sortBy, this.state.sortDirection));
+    const sortedCountryList = this.state.countryList.sort(sortBy(this.state.sortBy, this.state.sortDirection));
     return (
       <div className='countries-list'>
-        {this.state.display === 'map' ? <WorldMap countryList={this.state.countryList} /> : this.renderChart()}
         {sortedCountryList.map((country, index) => {
           return (
             <Link to={`/countries/${country.key}`} key={index}>
               <div className='country'>
-                {country.blogPostKey && this.renderBlogRibbon()}
                 {country.magnet && this.renderMagnetRibbon()}
+                {country.blogPostKey && this.renderBlogRibbon()}
                 <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
                 <div className='content'>
                   <h3>{country.name}</h3>
@@ -166,31 +101,72 @@ class Countries extends Component {
   }
 
   render = () => {
+    const magnetCount = this.state.countryList.filter(country => country.magnet).length;
+    const continentCount = (continent) => this.state.countryList.filter(country => continentOf(country.iso) === continent).length;
     return (
       <div className='page'>
-        <h2>Countries log</h2>
-        <div className='page-header'>
-          <p>
-            I never saw myself as a big traveller, but it all started in summer of 2013 after my master's degree graduation. A friend of mine inspired me to try surfing in Indonesia.
-            &nbsp;I got hooked up almost immediatelly and this new passion eventually led me to Morocco, Sri Lanka, Hawaii (USA) or Australia. In 2014 I visited a total of 7 countries
-            &nbsp;and slowly started adopting a challenge to visit 30 countries before turning 30 years old. With a little time to spare I completed this challenge in January 2019 in
-            &nbsp;Tanzania. Until this day I have visited {this.state.countryList.length} countries. You can see their overview in the grid below with the date of my visit and a little note
-            &nbsp;that usually sums my impression of the country.
-          </p>
-          <p>
-            On my travels I like to collect small fridge magnets for each country to remind me of places that I've been to when back home. Because I've visited some countries multiple times and
-            &nbsp;it's easy to lose track of those that already have a place on my fridge, I came up with a star badge ⭐ so the next time I visit the country I have an easily accessible visual
-            &nbsp;cue for myself to remember whether I have a magnet or not. Currently you can find {this.state.countryList.filter(country => country.magnet).length} magnets on my fridge!
-          </p>
-          <p>
-            To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with a pen badge 🖋️.
-          </p>
-          <div className='page-info'></div>
-          <div className='page-controls'>
-            {this.state.filterYear && <button onClick={this.clearFilter}>Clear filter: {this.state.filterYear}</button>}
-            <Dropdown selected={`Shown on ${this.state.display}`} optionList={[{ key: 'map' }, { key: 'chart' }]} select={this.selectDisplay} />
-            <Dropdown selected={`Sorted by ${this.state.sortBy}`} optionList={[{ key: 'date', direction: 'desc' }, { key: 'name', dirrection: 'asc' }]} select={this.selectSorter} />
-            {this.state.authed && <Link to={'/countries/add'}><button>Add new country</button></Link>}
+        <div className='countries-header'>
+          <div className='info'>
+            <p className='kicker'>The tracker</p>
+            <h2>Countries log</h2>
+            <p>
+              I never saw myself as a big traveller, but it all started in summer of 2013 after my master's degree graduation. A friend of mine inspired me to try surfing in Indonesia.
+              &nbsp;I got hooked up almost immediatelly and this new passion eventually led me to Morocco, Sri Lanka, Hawaii (USA) or Australia. In 2014 I visited a total of 7 countries
+              &nbsp;and slowly started adopting a challenge to visit 30 countries before turning 30 years old. With a little time to spare I completed this challenge in January 2019 in
+              &nbsp;Tanzania. Until this day I have visited {this.state.countryList.length} countries. You can see their overview in the grid below with the date of my visit and a little note
+              &nbsp;that usually sums my impression of the country.
+            </p>
+            <p>
+              On my travels I like to collect small fridge magnets for each country to remind me of places that I've been to when back home. Because I've visited some countries multiple times and
+              &nbsp;it's easy to lose track of those that already have a place on my fridge, I came up with a star badge ⭐ so the next time I visit the country I have an easily accessible visual
+              &nbsp;cue for myself to remember whether I have a magnet or not. Currently you can find {magnetCount} magnets on my fridge!
+            </p>
+            <p>
+              To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with a pen badge 🖋️.
+            </p>
+          </div>
+          <div className='stats'>
+            <div className='stat'>
+              <div className='value'>{this.state.countryList.length}</div>
+              <div className='label'>countries</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>7<span>/7</span> <span className='check'>✓</span></div>
+              <div className='label'>continents</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>{continentCount('europe')}<span>/{continentSize('europe')}</span></div>
+              <div className='label'>europe</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>{continentCount('asia')}<span>/{continentSize('asia')}</span></div>
+              <div className='label'>asia</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>{continentCount('africa')}<span>/{continentSize('africa')}</span></div>
+              <div className='label'>africa</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>{continentCount('americas')}<span>/{continentSize('americas')}</span></div>
+              <div className='label'>americas</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>{magnetCount} <span className='check'>★</span></div>
+              <div className='label'>fridge magnets</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>30<span>/30</span></div>
+              <div className='label'>challenge · 2019</div>
+            </div>
+          </div>
+        </div>
+        <div className='filter-bar'>
+          <div className='pills'>
+            <button className={this.state.sortBy === 'date' ? 'active' : ''} onClick={() => this.selectSorter({ key: 'date', direction: 'desc' })}>Sorted by date</button>
+            <button className={this.state.sortBy === 'name' ? 'active' : ''} onClick={() => this.selectSorter({ key: 'name', direction: 'asc' })}>A–Z</button>
+          </div>
+          <div className='pills'>
+            {this.state.authed && <Link to={'/countries/add'}><button>+ Add new country</button></Link>}
           </div>
         </div>
         {this.renderCountries()}

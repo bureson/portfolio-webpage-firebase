@@ -11,6 +11,7 @@ import Countries from './Countries';
 import CountryDetail from './CountryDetail';
 import Course from './Course';
 import { definition } from '../lib/CourseModel';
+import Footer from '../components/Footer';
 import GalaxyFlight from '../components/GalaxyFlight';
 import Home from './Home';
 import Login from './Login';
@@ -106,6 +107,7 @@ class Index extends Component {
               <Route component={NoMatch} />
             </Switch>
           </div>
+          <Footer />
         </div>
       </GalaxyFlight>
     )

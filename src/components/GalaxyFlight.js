@@ -2,9 +2,9 @@ import React from 'react';
 
 const GalaxyFlight = (props) => {
     const canvasRef = React.useRef(null);
-    const contrastColor = window.getComputedStyle(document.documentElement).getPropertyValue('--contrastColor');
-    
-    const STAR_COLOR = contrastColor;
+    const starColor = window.getComputedStyle(document.documentElement).getPropertyValue('--starColor');
+
+    const STAR_COLOR = starColor;
     const STAR_SIZE = 3;
     const STAR_MIN_SCALE = 0.2;
     const OVERFLOW_THRESHOLD = 50;
@@ -24,7 +24,7 @@ const GalaxyFlight = (props) => {
         let pointerX,
             pointerY;
 
-        let velocity = { x: 0, y: 0, tx: 0, ty: 0, z: 0.002 };
+        let velocity = { x: 0, y: 0, tx: 0, ty: 0, z: 0.0008 };
 
         let touchInput = false;
 

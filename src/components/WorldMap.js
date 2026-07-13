@@ -11,7 +11,7 @@ class WorldMap extends Component {
     chart.geodata = am4geodata_worldHigh;
     chart.projection = new am4maps.projections.NaturalEarth1();
     chart.zoomControl = new am4maps.ZoomControl();
-    const contrastColor = '#e9da13';
+    const contrastColor = '#e8c15a';
 
     chart.panEventsEnabled = false;
     chart.homeZoomLevel = 1.12;

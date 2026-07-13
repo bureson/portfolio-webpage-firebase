@@ -1,32 +1,140 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router-dom';
+import { getDatabase, ref, onValue } from 'firebase/database';
+
+import { convertTimestamp, randomNumber, readingTime } from '../lib/Shared';
+import Loader from '../components/Loader';
 
 class Home extends Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      blog: [],
+      countryList: [],
+      loadingBlog: true,
+      loadingCountries: true,
+      loadingCourse: true,
+      word: null
+    }
+  }
+
   componentDidMount = () => {
     document.title = 'Portfolio | Ondrej Bures';
+    const db = getDatabase();
+    onValue(ref(db, 'danish'), snapshot => {
+      const payload = snapshot.val() || {};
+      const keyList = Object.keys(payload);
+      const key = keyList[randomNumber(keyList.length)];
+      this.setState({
+        word: key && payload[key],
+        loadingCourse: false
+      });
+    });
+    onValue(ref(db, 'country'), snapshot => {
+      const payload = snapshot.val() || {};
+      const countryList = Object.keys(payload)
+            .sort((a, b) => payload[b].date - payload[a].date)
+            .map(key => Object.assign({key}, payload[key]));
+      this.setState({
+        countryList,
+        loadingCountries: false
+      });
+    });
+    onValue(ref(db, 'blog'), snapshot => {
+      const payload = snapshot.val() || {};
+      const blog = Object.keys(payload)
+            .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
+            .map(key => Object.assign({key}, payload[key]))
+            .filter(post => post.public);
+      this.setState({
+        blog,
+        loadingBlog: false
+      });
+    });
+  }
+
+  renderWord = () => {
+    if (this.state.loadingCourse) {
+      return <Loader />
+    }
+    const word = this.state.word;
+    if (!word) return null;
+    return (
+      <React.Fragment>
+        <div className='word'>{word.original}</div>
+        {word.prons && <div className='meta'>[{word.prons}]</div>}
+        <p>{word.means}</p>
+      </React.Fragment>
+    )
+  }
+
+  renderCountries = () => {
+    if (this.state.loadingCountries) {
+      return <Loader />
+    }
+    return (
+      <div className='country-grid'>
+        {this.state.countryList.slice(0, 2).map(country => {
+          return (
+            <Link className='row-link' to={`/countries/${country.key}`} key={country.key}>
+              <div className='country-tile'>
+                <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+                <div className='title'>{country.name}</div>
+                <div className='meta'>{convertTimestamp(country.date)}</div>
+              </div>
+            </Link>
+          )
+        })}
+      </div>
+    )
+  }
+
+  renderPosts = () => {
+    if (this.state.loadingBlog) {
+      return <Loader />
+    }
+    return this.state.blog.slice(0, 2).map(post => {
+      return (
+        <Link className='row-link' to={`/blog/${post.key}`} key={post.key}>
+          <div className='post'>
+            <div className='title'>{post.title}</div>
+            <div className='meta'>{convertTimestamp(post.timestamp)} · ~{readingTime(post.body)} min read</div>
+          </div>
+        </Link>
+      )
+    })
   }
 
   render = () => {
     return (
-      <div>
-        <div className='welcome'>
-          <h2>Welcome</h2>
-          <p>
-            I'm a full-stack developer from the Czech Republic who moved back to the homeland after living in Copenhagen, Denmark for 3 years.
-            &nbsp;I'm still working for my danish employer <a href='https://www.culturedrivers.com/' target='_blank' rel='noopener noreferrer'>CultureDrivers</a>
-            &nbsp;where we recently established 4 day work week.
+      <div className='page home'>
+        <div className='home-hero'>
+          <p className='kicker'>Prague, Czech Republic · Full-stack developer</p>
+          <h1>I build software, collect countries, and write a blog about it.</h1>
+          <p className='lede'>
+            Back home after three years in Copenhagen, still working the four-day week
+            at <a href='https://www.culturedrivers.com/' target='_blank' rel='noopener noreferrer'>CultureDrivers</a>.
+            This site is where my side collections live.
           </p>
-          <p>
-            Initially I have built this webpage with the intention of providing a shelter to a small project called <em>Word of the day</em>
-            &nbsp;that me and my colleague Ian have been running since June 2017. Every single work day (including holidays!) he provides
-            &nbsp;me with a new word which needs to be either descriptive or iconic for danish culture or special for that very day. You
-            &nbsp;can see the list of all the words after navigating yourself to the <em>Course</em> section.
-          </p>
-          <p>
-            Over time this site became home to other collections that I want to keep track of. As I'm a keen traveller and because of lack of a nice 
-            &nbsp;tool to track a list of visited countries that I've visited so far, during one of the long scandinavian nights I've decided 
-            &nbsp;to create my own tracking tool right here. You can see the list in the <em>Countries</em> section.
-          </p>
+        </div>
+        <div className='home-cards'>
+          <div className='home-card'>
+            <p className='kicker'>Word of the day</p>
+            {this.renderWord()}
+            <Link className='more' to='/course'>One word every workday since June 2017 →</Link>
+          </div>
+          <div className='home-card'>
+            <p className='kicker'>{this.state.loadingCountries ? 'Countries' : `Countries (${this.state.countryList.length})`}</p>
+            {this.renderCountries()}
+            {/* <p>A homemade tracker of every country I've set foot in — built during a long Scandinavian night.</p> */}
+            <Link className='more' to='/countries'>See the full map →</Link>
+          </div>
+          <div className='home-card'>
+            <p className='kicker'>{this.state.loadingBlog ? 'Blog' : `Blog (${this.state.blog.length})`}</p>
+            {this.renderPosts()}
+            <Link className='more' to='/blog'>All posts →</Link>
+          </div>
         </div>
       </div>
     )

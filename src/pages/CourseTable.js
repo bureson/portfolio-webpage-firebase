@@ -40,9 +40,9 @@ class CourseTable extends Component {
       <span>
         {partList.map((part, i) => {
           const isSearchPart = part.toLowerCase() === this.state.search.toLowerCase();
-          const backgroundColor = isSearchPart ? ' yellow' : '';
+          const style = isSearchPart ? { backgroundColor: '#e8c15a', color: '#080d18' } : {};
           return (
-            <span key={i} style={{ backgroundColor }}>{part}</span>
+            <span key={i} style={style}>{part}</span>
           );
         })}
       </span>
@@ -107,18 +107,16 @@ class CourseTable extends Component {
     });
     return (
       <div>
-        <p dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(description)}} />
-        <div className='page-header'>
-          <div className='page-info'>
-            List of {this.props.course.length} phrases
-          </div>
-          <div className='page-controls'>
+        <p className='course-desc' dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(description)}} />
+        <div className='filter-bar'>
+          <div className='count'>{this.props.course.length} phrases</div>
+          <div className='pills'>
             <Search value={this.state.search} onChange={this.onFilterChange} />
-            {this.state.authed && <Link to={`/course/${this.state.languageKey}/add`}><button>Add new phrase</button></Link>}
-            <Link to={`/course/${this.state.languageKey}/practice`}><button>Test yourself</button></Link>
+            {this.state.authed && <Link to={`/course/${this.state.languageKey}/add`}><button>+ Add phrase</button></Link>}
+            <Link to={`/course/${this.state.languageKey}/practice`}><button className='primary'>Test yourself</button></Link>
           </div>
         </div>
-        <div className='table-container'>
+        <div className='course-table table-container'>
           <table>
             <thead>
               <tr>
@@ -151,8 +149,8 @@ class CourseTable extends Component {
               })}
             </tbody>
           </table>
+          <Pager itemsCount={filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
         </div>
-        <Pager itemsCount={filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
       </div>
     )
   }

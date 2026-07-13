@@ -81,7 +81,7 @@ class Course extends Component {
     if (!definition[this.state.languageKey]) {
       return <NoMatch />;
     }
-    const { title } = definition[this.state.languageKey];
+    const { title, kicker } = definition[this.state.languageKey];
     const mdConverter = new Converter({
       noHeaderId: true,
       underline: true,
@@ -89,15 +89,25 @@ class Course extends Component {
     });
     return (
       <div className='page'>
-        <div className='course-nav'>
-        {Object.keys(definition).map(key => {
-            const courseDef = definition[key];
-            return (
-                <Link to={`/course/${key}`}><div className={courseDef.countryIso}></div></Link>
-            );
-        })}
+        <div className='page-title'>
+          <div>
+            <p className='kicker'>{kicker}</p>
+            <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
+          </div>
+          <div className='pills'>
+            {Object.keys(definition).map(key => {
+              const courseDef = definition[key];
+              return (
+                <Link to={`/course/${key}`} key={key}>
+                  <button className={key === this.state.languageKey ? 'active' : ''}>
+                    <span className={`flag ${courseDef.countryIso}`}></span>
+                    {courseDef.nativeName}
+                  </button>
+                </Link>
+              );
+            })}
+          </div>
         </div>
-        <h2 dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(title)}} />
         {this.renderCourse()}
       </div>
     )

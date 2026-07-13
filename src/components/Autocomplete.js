@@ -55,13 +55,11 @@ class Autocomplete extends Component {
 
   render = () => {
     return (
-      <tr>
-        <td><input ref='autocomplete' /></td>
-        <td><input type='date' value={this.state.date} onChange={e => this.onChange(e, 'date')} /></td>
-        <td>{this.state.lat.toString().substring(0, 9)}</td>
-        <td>{this.state.lng.toString().substring(0, 9)}</td>
-        <td><button onClick={e => this.onSubmit(e)}>Submit</button></td>
-      </tr>
+      <React.Fragment>
+        <input ref='autocomplete' placeholder='Add a place ...' />
+        <input type='date' value={this.state.date} onChange={e => this.onChange(e, 'date')} />
+        <button onClick={e => this.onSubmit(e)}>+ Add</button>
+      </React.Fragment>
     )
   }
 

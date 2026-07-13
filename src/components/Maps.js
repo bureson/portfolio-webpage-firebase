@@ -9,37 +9,34 @@ class Maps extends Component {
     };
   }
 
-  getZoom = (latDiff, lngDiff) => {
-    switch (true) { // NOTE: eventually handle also lngDiff
-      case (latDiff === 0): return 11;
-      case (latDiff < 1): return 10;
-      case (latDiff < 5): return 8;
-      case (latDiff < 10): return 7;
-      case (latDiff < 15): return 6;
-      case (latDiff < 20): return 5;
-      default: return 4;
-    }
-  }
-
   componentDidUpdate = (prevProps) => {
     if (prevProps.places !== this.props.places) {
       this.setState({places: this.props.places});
       const places = this.props.places;
       if (places.length) {
-        const latList = places.map(p => p.lat);
-        const lngList = places.map(p => p.lng);
-        const latDiff = Math.abs(Math.max.apply(null, latList) - Math.min.apply(null, latList));
-        const lngDiff = Math.abs(Math.max.apply(null, lngList) - Math.min.apply(null, lngList));
-        const zoom = this.getZoom(latDiff, lngDiff);
-        const centerLat = (Math.max.apply(null, latList) + Math.min.apply(null, latList)) / 2;
-        const centerLng = (Math.max.apply(null, lngList) + Math.min.apply(null, lngList)) / 2;
-        const map = new window.google.maps.Map(this.refs.map, {zoom, center: {lat: centerLat, lng: centerLng}});
+        const map = new window.google.maps.Map(this.refs.map, {controlSize: 24});
+        const bounds = new window.google.maps.LatLngBounds();
         places.forEach(({lat, lng}) => {
+          bounds.extend({lat, lng});
           new window.google.maps.Marker({
             position: {lat, lng},
             map: map
           });
         });
+        if (places.length === 1) {
+          map.setCenter(bounds.getCenter());
+          map.setZoom(11);
+        } else {
+          // Note: fitBounds derives the zoom from both axes and the actual
+          // container size, the padding is tuned for the compact card map
+          map.fitBounds(bounds, 24);
+          // Note: when the pins sit close together fitBounds would dive to
+          // street level, cap the initial zoom at city scale
+          const listener = map.addListener('idle', () => {
+            if (map.getZoom() > 12) map.setZoom(12);
+            window.google.maps.event.removeListener(listener);
+          });
+        }
       }
     }
   }

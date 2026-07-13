@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { getDatabase, ref, onValue, set } from 'firebase/database';
+import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/fontawesome-free-solid';
 import { Converter } from 'showdown';
 
 import Attachments from '../components/Attachments';
@@ -11,13 +14,15 @@ class AddPost extends Component {
     super(props);
     this.state = {
       authed: props.authed,
-      key: null,
-      title: '',
-      perex: '',
       body: '',
+      coverPath: null,
+      key: null,
+      perex: '',
       preview: false,
+      progress: null,
       public: false,
-      timestamp: null
+      timestamp: null,
+      title: ''
     }
   }
 
@@ -25,7 +30,7 @@ class AddPost extends Component {
     const postKey = this.props.match.params.post;
     if (postKey) {
       const db = getDatabase();
-      const postRef = ref(db, 'blog/' + postKey);
+      const postRef = databaseRef(db, 'blog/' + postKey);
       onValue(postRef, snapshot => {
         const payload = snapshot.val();
         if (payload) {
@@ -34,6 +39,7 @@ class AddPost extends Component {
             key: postKey,
             loading: false,
             title: payload.title,
+            coverPath: payload.coverPath,
             perex: payload.perex,
             body: payload.body,
             public: payload.public,
@@ -42,6 +48,7 @@ class AddPost extends Component {
         }
       });
     } else {
+      document.title = 'Add post | Ondrej Bures';
       this.setState({
         loading: false
       });
@@ -56,12 +63,55 @@ class AddPost extends Component {
     }
   }
 
+  onFileUpload = (e) => {
+    const file = e.target.files[0];
+    const storage = getStorage();
+    const fileRef = storageRef(storage, `blog-cover/${file.name}`);
+    const uploadTask = uploadBytesResumable(fileRef, file);
+
+    uploadTask.on('state_changed', (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        this.setState({
+          progress: Math.round(progress)
+        });
+      }, (error) => {
+        console.log(error); // Note: eventually handle error
+      }, () => {
+        getDownloadURL(uploadTask.snapshot.ref).then(coverPath => {
+          this.setState({
+            coverPath,
+            progress: null
+          });
+        });
+      }
+    );
+  }
+
+  onDeleteCover = (e) => {
+    e.preventDefault();
+    const urlTokens = decodeURIComponent(this.state.coverPath).split('/');
+    const fileName = urlTokens[urlTokens.length - 1].split('?')[0];
+    const storage = getStorage();
+    const fileRef = storageRef(storage, `blog-cover/${fileName}`);
+    deleteObject(fileRef).then(() => {
+      this.setState({
+        coverPath: null
+      });
+      if (this.state.key) {
+        const db = getDatabase();
+        const coverRef = databaseRef(db, `blog/${this.state.key}/coverPath`);
+        set(coverRef, null);
+      }
+    });
+  }
+
   onSubmit = (e) => {
     e.preventDefault();
     const key = this.state.key || this.state.title.replace(/\s+/g, '-').toLowerCase();
     const db = getDatabase();
-    set(ref(db, `blog/${key}`), {
+    set(databaseRef(db, `blog/${key}`), {
       title: this.state.title,
+      coverPath: this.state.coverPath || '',
       perex: this.state.perex || '',
       body: this.state.body || '',
       public: this.state.public,
@@ -93,9 +143,12 @@ class AddPost extends Component {
       openLinksInNewWindow: true
     });
     const bodyHtml = mdConverter.makeHtml(this.state.body);
+    const isUploading = this.state.progress;
+    const hasCover = this.state.coverPath;
     return (
-      <div>
-        <h2>Add post</h2>
+      <div className='page'>
+        <p className='kicker'>Administration</p>
+        <h2>{this.state.key ? 'Edit post' : 'Add post'}</h2>
         <form onSubmit={e => this.onSubmit(e)}>
           <div className='input-group'>
             <label htmlFor='title'>Title</label>
@@ -106,11 +159,20 @@ class AddPost extends Component {
             <textarea id='perex' rows='5' placeholder='Perex' onChange={e => this.onChange(e, 'perex')} value={this.state.perex} />
           </div>
           <div className='input-group'>
+            <label htmlFor='cover'>Cover photo</label>
+            {!(isUploading || hasCover) && <input type='file' id='cover' onChange={this.onFileUpload} />}
+            {isUploading && <progress value={this.state.progress} max='100' />}
+            {hasCover && <div className='file-preview'>
+              <div className='thumb' style={{backgroundImage: `url(${this.state.coverPath})`}}></div>
+              <button onClick={this.onDeleteCover}><FontAwesomeIcon icon={faTrash} /></button>
+            </div>}
+          </div>
+          <div className='input-group'>
             <label htmlFor='public'>Public</label>
             <input id='public' type='checkbox' checked={this.state.public} onChange={e => this.onToggle(e, 'public')} />
           </div>
           <div className='input-group'>
-            <label htmlFor='public'>Preview</label>
+            <label htmlFor='preview'>Preview</label>
             <input id='preview' type='checkbox' checked={this.state.preview} onChange={e => this.onToggle(e, 'preview')} />
           </div>
           {this.state.key && <Attachments post={this.state.key} />}

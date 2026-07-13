@@ -77,23 +77,50 @@ class CountryDetail extends Component {
       openLinksInNewWindow: true
     });
     const storyHtml = mdConverter.makeHtml(this.state.country.story);
+    const country = this.state.country;
+    const hasPost = !!this.state.post;
     return (
-      <div className='page'>
-        <h2>{this.state.country.name}</h2>
-        <div className='page-header'>
-          <div className='page-info'>
-            <p><strong>Conquered in {convertTimestamp(this.state.country.date)}</strong></p>
-            <p><em>{this.state.country.description}</em></p>
+      <div className='page country-detail'>
+        <div className='country-hero'>
+          <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+          <div className='shade'></div>
+          <div className='hero-overlay'>
+            <div>
+              <div className='meta-row'>
+                <p className='kicker'>Conquered · {convertTimestamp(country.date)}</p>
+              </div>
+              <h2>{country.name}</h2>
+            </div>
+            <div className='actions'>
+              <div className='badges'>
+                {country.magnet && <div className='badge'>★</div>}
+                {hasPost && <div className='badge'>✎</div>}
+              </div>
+              {this.state.authed && <div className='controls'>
+                <Link to={`/countries/${country.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
+                <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
+              </div>}
+            </div>
           </div>
-          {this.state.authed && <div className='page-controls'>
-            <Link to={`/countries/${this.state.country.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
-            <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
-          </div>}
         </div>
-        {this.state.country.photoPath && <div className='country-cover' style={{backgroundImage: `url(${this.state.country.photoPath})`}} />}
-        {this.state.post && <PostPreview post={this.state.post} />}
-        <Places authed={this.state.authed} country={this.state.country.key} />
-        <div dangerouslySetInnerHTML={{__html: storyHtml}} />
+        <div className='detail-grid'>
+          <div className='side-stack'>
+            {country.description && <div className='notes-card'>
+              <p className='kicker'>Notes</p>
+              <p>{country.description}</p>
+            </div>}
+            {hasPost && <PostPreview post={this.state.post} featured label='From the blog' hideCover />}
+            {!hasPost && this.state.authed && <div className='nudge-card'>
+              <div className='icon'>✎</div>
+              <div>
+                <div className='title'>No story yet</div>
+                <div className='text'>This trip doesn't have a blog post. <Link to='/blog/add'>Write one →</Link></div>
+              </div>
+            </div>}
+          </div>
+          <Places authed={this.state.authed} country={country.key} />
+        </div>
+        {country.story && <div className='country-story' dangerouslySetInnerHTML={{__html: storyHtml}} />}
       </div>
     )
   }

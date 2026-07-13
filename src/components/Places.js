@@ -54,38 +54,28 @@ class Places extends Component {
 
   render = () => {
     return (
-      <div className='places'>
-        <h3>Visited places</h3>
-        <Maps places={this.state.places} />
-        <div className='table-container'>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Visited</th>
-                <th>Latitude</th>
-                <th>Longitude</th>
-                {this.state.authed && <th>Controls</th>}
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.places.map((place, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{place.name}</td>
-                    <td>{convertTimestamp(place.date)}</td>
-                    <td>{place.lat.toString().substring(0, 9)}</td>
-                    <td>{place.lng.toString().substring(0, 9)}</td>
-                    {this.state.authed && <td>
-                      <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>
-                    </td>}
-                  </tr>
-                )
-              })}
-              {this.state.authed && <Autocomplete country={this.state.country} />}
-            </tbody>
-          </table>
+      <div className='places-card'>
+        <div className='head'>
+          <p className='kicker'>Visited places</p>
+          <span className='count'>{this.state.places.length} pins</span>
         </div>
+        <Maps places={this.state.places} />
+        <div className='place-grid'>
+          {this.state.places.map((place, index) => {
+            return (
+              <div className='place' key={index}>
+                <div className='name'>{place.name}</div>
+                <div className='meta'>
+                  {convertTimestamp(place.date)}
+                  {this.state.authed && <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>}
+                </div>
+              </div>
+            )
+          })}
+        </div>
+        {this.state.authed && <div className='add'>
+          <Autocomplete country={this.state.country} />
+        </div>}
       </div>
     )
   }

@@ -44,9 +44,11 @@ class Blog extends Component {
     if (this.state.loading) {
       return <Loader />
     }
+    const [featured, ...postList] = availablePostList;
     return (
       <div>
-        {availablePostList.map((post, index) => {
+        {featured && <PostPreview post={featured} featured />}
+        {postList.map(post => {
           return <PostPreview key={post.key} post={post} />
         })}
       </div>
@@ -57,16 +59,12 @@ class Blog extends Component {
     const availablePostList = this.state.authed ? this.state.blog : this.state.blog.filter(post => post.public);
     return (
       <div className='page'>
-        <h2>Blog</h2>
-        <div className='page-header'>
-          <p>
-            Feel free to read through a total of {availablePostList.length} stories that were significant and memorable enough in my life
-            &nbsp;to make me make an effort of writing them down.
-          </p>
-          <div className='page-info'></div>
-          <div className='page-controls'>
-            {this.state.authed && <Link to={'/blog/add'}><button>Add new post</button></Link>}
+        <div className='page-title'>
+          <div>
+            <p className='kicker'>Occasional writing</p>
+            <h2>Blog</h2>
           </div>
+          {this.state.authed && <Link to={'/blog/add'}><button>Add new post</button></Link>}
         </div>
         {this.renderBlog(availablePostList)}
       </div>
