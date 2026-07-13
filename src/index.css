@@ -960,7 +960,9 @@ button.primary:hover {
   background: rgba(236, 229, 195, 0.03);
   border: 1px solid var(--borderColor);
   border-radius: 14px;
-  overflow: hidden;
+  /* Note: keeps the radius clipping while allowing the table to scroll
+     sideways on narrow screens */
+  overflow-x: auto;
 }
 .course-table table {
   border: 0;
@@ -1216,7 +1218,7 @@ button.primary:hover {
 }
 .page .countries-list .country {
   background: rgba(236, 229, 195, 0.05);
-  border-radius: 14px;
+  border-radius: 12px;
   border: 1px solid var(--borderColor);
   box-sizing: border-box;
   overflow: hidden;
@@ -1260,10 +1262,13 @@ button.primary:hover {
   width: 14px;
 }
 .page .countries-list .country h3 {
-  display: block;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 15.5px;
+  font-weight: 600;
+  line-height: 1.4;
   margin: 0;
 }
 .page .countries-list .country small {
@@ -1271,26 +1276,50 @@ button.primary:hover {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-}
-.page .countries-list .country p {
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font-size: 11px;
+  line-height: 1.4;
+  opacity: 0.5;
+  margin-top: 2px;
 }
 .page .countries-list a .country {
   color: var(--primaryColor);
 }
 .page .countries-list .country .photo {
-  border-radius: 3px 3px 0 0;
   width: 100%;
   height: 200px;
   overflow: hidden;
-  background-size: cover;
+  background-color: rgba(236, 229, 195, 0.06);
   background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 .page .countries-list .country .content {
-  padding: 10px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 16px;
+}
+.page .countries-list .country .content .code {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(232, 193, 90, 0.35);
+  border-radius: 9px;
+  color: var(--primaryColor);
+  flex: none;
+  font-family: var(--monoFont);
+  font-size: 12.5px;
+  font-weight: 500;
+  height: 40px;
+  width: 40px;
+}
+.page .countries-list .country .content .info {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* Note: reserve two name lines plus the date so the cards stay uniform */
+  min-height: 61px;
+  min-width: 0;
 }
 .country-hero {
   position: relative;

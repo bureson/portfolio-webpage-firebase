@@ -88,9 +88,11 @@ class Countries extends Component {
                 {country.blogPostKey && this.renderBlogRibbon()}
                 <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
                 <div className='content'>
-                  <h3>{country.name}</h3>
-                  <small>{convertTimestamp(country.date)}</small>
-                  <p>{country.description}</p>
+                  <div className='code'>{(country.iso || '').toUpperCase()}</div>
+                  <div className='info'>
+                    <h3>{country.name}</h3>
+                    <small>{convertTimestamp(country.date)}</small>
+                  </div>
                 </div>
               </div>
             </Link>
