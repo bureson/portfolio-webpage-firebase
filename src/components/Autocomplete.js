@@ -41,6 +41,9 @@ class Autocomplete extends Component {
   }
 
   onSubmit = (e) => {
+    if (!this.state.name) {
+      return;
+    }
     const db = getDatabase();
     const placeKey = push(child(ref(db), 'place')).key;
     set(ref(db, `place/${placeKey}`), {
@@ -50,15 +53,28 @@ class Autocomplete extends Component {
       lng: this.state.lng,
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,
       timestamp: Math.floor(Date.now() / 1000)
-    }).catch(console.log);
+    }).then(() => this.props.onClose()).catch(console.log);
   }
 
   render = () => {
     return (
       <React.Fragment>
-        <input ref='autocomplete' placeholder='Add a place ...' />
-        <input type='date' value={this.state.date} onChange={e => this.onChange(e, 'date')} />
-        <button onClick={e => this.onSubmit(e)}>+ Add</button>
+        <div className='dialog-body'>
+          <div className='field-grid place-row'>
+            <div className='field'>
+              <label>Place</label>
+              <input ref='autocomplete' placeholder='Search a place ...' />
+            </div>
+            <div className='field'>
+              <label>Date</label>
+              <input type='date' value={this.state.date} onChange={e => this.onChange(e, 'date')} />
+            </div>
+          </div>
+        </div>
+        <div className='dialog-foot'>
+          <button onClick={this.props.onClose}>Cancel</button>
+          <button className='primary' disabled={!this.state.name} onClick={e => this.onSubmit(e)}>Save place</button>
+        </div>
       </React.Fragment>
     )
   }

@@ -4,6 +4,7 @@ import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads,
 
 import firebaseLogo from '../assets/firebase-logo.png';
 import reactLogo from '../assets/react-logo.png';
+import goatcounterLogo from '../assets/goatcounter.png';
 
 class Footer extends Component {
 
@@ -22,6 +23,7 @@ class Footer extends Component {
             <ul>
                 <li><a href='https://reactjs.org/' target='_blank' rel='noopener noreferrer'><img src={reactLogo} alt='react' /></a></li>
                 <li><a href='https://firebase.google.com/' target='_blank' rel='noopener noreferrer'><img src={firebaseLogo} alt='firebase' /></a></li>
+                <li><a href='https://ondrejbures.goatcounter.com/' target='_blank' rel='noopener noreferrer'><img src={goatcounterLogo} alt='goatcounter' /></a></li>
                 <li><span>est. 2017</span></li>
             </ul>
         </div>

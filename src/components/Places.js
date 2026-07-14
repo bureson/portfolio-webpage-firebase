@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/fontawesome-free-solid';
 
 import Autocomplete from '../components/Autocomplete';
+import Dialog from '../components/Dialog';
 import Maps from '../components/Maps';
 
 import { convertTimestamp } from '../lib/Shared';
@@ -16,6 +17,7 @@ class Places extends Component {
       authed: props.authed,
       country: props.country,
       places: [],
+      dialog: false,
       loading: true
     }
   }
@@ -60,22 +62,20 @@ class Places extends Component {
           <span className='count'>{this.state.places.length} pins</span>
         </div>
         <Maps places={this.state.places} />
-        <div className='place-grid'>
-          {this.state.places.map((place, index) => {
+        {(!!this.state.places.length || this.state.authed) && <div className='chips'>
+          {this.state.places.map(place => {
             return (
-              <div className='place' key={index}>
-                <div className='name'>{place.name}</div>
-                <div className='meta'>
-                  {convertTimestamp(place.date)}
-                  {this.state.authed && <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>}
-                </div>
+              <div className='chip' key={place.key} title={convertTimestamp(place.date, 'dd:mm:yyyy')}>
+                <span>{place.name}</span>
+                {this.state.authed && <button onClick={(e) => this.onDelete(e, place.key)}><FontAwesomeIcon icon={faTrash} /></button>}
               </div>
             )
           })}
-        </div>
-        {this.state.authed && <div className='add'>
-          <Autocomplete country={this.state.country} />
+          {this.state.authed && <button className='chip add' onClick={() => this.setState({dialog: true})}>+</button>}
         </div>}
+        {this.state.dialog && <Dialog kicker='Visited places' title='Add a place' onClose={() => this.setState({dialog: false})}>
+          <Autocomplete country={this.state.country} onClose={() => this.setState({dialog: false})} />
+        </Dialog>}
       </div>
     )
   }

@@ -32,42 +32,43 @@ class AddCountry extends Component {
 
   componentDidMount = () => {
     const countryKey = this.props.match.params.country;
-    if (countryKey) {
-      const db = getDatabase();
-      const countryRef = databaseRef(db, 'country/' + countryKey);
-      onValue(countryRef, snapshot => {
-        const payload = snapshot.val();
-        const blogRef = databaseRef(db, 'blog');
-        onValue(blogRef, blogSnapshot => {
-          const blogPayload = blogSnapshot.val() || {};
-          const blogPostList = Object.keys(blogPayload)
-                .sort((a, b) => blogPayload[b].timestamp - blogPayload[a].timestamp)
-                .map(key => Object.assign({key}, blogPayload[key]));
+    const db = getDatabase();
+    const blogRef = databaseRef(db, 'blog');
+    onValue(blogRef, blogSnapshot => {
+      const blogPayload = blogSnapshot.val() || {};
+      const blogPostList = Object.keys(blogPayload)
+            .sort((a, b) => blogPayload[b].timestamp - blogPayload[a].timestamp)
+            .map(key => Object.assign({key}, blogPayload[key]));
+      if (countryKey) {
+        const countryRef = databaseRef(db, 'country/' + countryKey);
+        onValue(countryRef, snapshot => {
+          const payload = snapshot.val();
           if (payload) {
             document.title = `Edit ${payload.name} | Ondrej Bures`;
             this.setState({
               blogPostList,
               blogPostKey: payload.blogPostKey,
               date: this.convertTimestamp(payload.date),
-              description: payload.description,
+              description: payload.description || '',
               filePath: payload.photoPath,
-              iso: payload.iso,
+              iso: payload.iso || '',
               key: countryKey,
               loading: false,
               magnet: !!payload.magnet,
               name: payload.name,
               preview: false,
-              story: payload.story,
+              story: payload.story || '',
               timestamp: payload.timestamp
             });
           }
         });
-      });
-    } else {
-      this.setState({
-        loading: false
-      });
-    }
+      } else {
+        this.setState({
+          blogPostList,
+          loading: false
+        });
+      }
+    });
   }
 
   componentDidUpdate = () => {
@@ -153,11 +154,11 @@ class AddCountry extends Component {
       name: this.state.name,
       date: Math.floor(Date.parse(this.state.date) / 1000) || 0,
       photoPath: this.state.filePath || '',
-      iso: this.state.iso,
+      iso: this.state.iso || '',
       magnet: this.state.magnet,
-      blogPostKey: this.state.blogPostKey,
-      description: this.state.description,
-      story: this.state.story,
+      blogPostKey: this.state.blogPostKey || null,
+      description: this.state.description || '',
+      story: this.state.story || '',
       timestamp: this.state.timestamp || Math.floor(Date.now() / 1000)
     }).then(() => {
       this.props.history.push('/countries');

@@ -13,6 +13,7 @@ class Countries extends Component {
     this.state = {
       authed: props.authed,
       countryList: [],
+      diveCounts: {},
       loading: true,
       sortBy: 'date',
       sortDirection: 'desc'
@@ -31,6 +32,18 @@ class Countries extends Component {
       this.setState({
         countryList,
         loading: false
+      });
+    });
+    const diveListRef = ref(db, 'dive-log');
+    onValue(diveListRef, snapshot => {
+      const payload = snapshot.val() || {};
+      const diveCounts = Object.keys(payload).reduce((counts, key) => {
+        const country = payload[key].country;
+        counts[country] = (counts[country] || 0) + 1;
+        return counts;
+      }, {});
+      this.setState({
+        diveCounts
       });
     });
   }
@@ -54,8 +67,9 @@ class Countries extends Component {
     return (
       <div className='ribbon blog'>
         <div className='content'>
-          <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px" fill="currentColor" viewBox="0 0 16 16">
-            <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001m-.644.766a.5.5 0 0 0-.707 0L1.95 11.756l-.764 3.057 3.057-.764L14.44 3.854a.5.5 0 0 0 0-.708z"/>
+          <svg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' viewBox='0 0 16 16'>
+            <rect x='2.75' y='1.75' width='10.5' height='12.5' rx='1.5' />
+            <path d='M5.5 5.25h5M5.5 8h5M5.5 10.75h3' />
           </svg>
         </div>
       </div>
@@ -74,6 +88,19 @@ class Countries extends Component {
     )
   }
 
+  renderDiveRibbon = () => {
+    return (
+      <div className='ribbon dive'>
+        <div className='content'>
+          <svg xmlns='http://www.w3.org/2000/svg' width='24px' height='24px' fill='none' stroke='currentColor' strokeWidth='1.5' strokeLinecap='round' viewBox='0 0 16 16'>
+            <path d='M1.2 5.5q1.7-2.2 3.4 0t3.4 0t3.4 0t3.4 0' />
+            <path d='M1.2 10.5q1.7-2.2 3.4 0t3.4 0t3.4 0t3.4 0' />
+          </svg>
+        </div>
+      </div>
+    )
+  }
+
   renderCountries = () => {
     if (this.state.loading) return <Loader />;
 
@@ -84,8 +111,11 @@ class Countries extends Component {
           return (
             <Link to={`/countries/${country.key}`} key={index}>
               <div className='country'>
-                {country.magnet && this.renderMagnetRibbon()}
-                {country.blogPostKey && this.renderBlogRibbon()}
+                <div className='ribbons'>
+                  {country.magnet && this.renderMagnetRibbon()}
+                  {country.blogPostKey && this.renderBlogRibbon()}
+                  {!!this.state.diveCounts[country.key] && this.renderDiveRibbon()}
+                </div>
                 <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
                 <div className='content'>
                   <div className='code'>{(country.iso || '').toUpperCase()}</div>
@@ -124,7 +154,7 @@ class Countries extends Component {
               &nbsp;cue for myself to remember whether I have a magnet or not. Currently you can find {magnetCount} magnets on my fridge!
             </p>
             <p>
-              To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with a pen badge 🖋️.
+              To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with an article badge 📄.
             </p>
           </div>
           <div className='stats'>
@@ -155,6 +185,10 @@ class Countries extends Component {
             <div className='stat'>
               <div className='value'>{magnetCount} <span className='check'>★</span></div>
               <div className='label'>fridge magnets</div>
+            </div>
+            <div className='stat'>
+              <div className='value'>{Object.values(this.state.diveCounts).reduce((sum, count) => sum + count, 0)} <span className='check'>≋</span></div>
+              <div className='label'>dives logged</div>
             </div>
             <div className='stat'>
               <div className='value'>30<span>/30</span></div>

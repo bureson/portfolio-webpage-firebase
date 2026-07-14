@@ -5,6 +5,9 @@
     "attachment": {
       ".indexOn": ["post"]
     },
+    "dive-log": {
+      ".indexOn": ["country"]
+    },
     "place": {
       ".indexOn": ["country"]
     }
