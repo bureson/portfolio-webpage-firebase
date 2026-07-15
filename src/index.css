@@ -1629,15 +1629,17 @@ button.chip.add:hover {
 }
 .dive-card .top {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: baseline;
-  gap: 16px;
+  gap: 8px 16px;
   margin: 0 0 14px;
 }
 .dive-card .ident {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 12px;
+  gap: 6px 12px;
   min-width: 0;
 }
 .dive-card .no {
@@ -3118,6 +3120,9 @@ button.chip.add:hover {
   }
   .dive-grid {
     grid-template-columns: 1fr;
+  }
+  .dive-card .site {
+    white-space: normal;
   }
   .flight-map .hint {
     display: none;
