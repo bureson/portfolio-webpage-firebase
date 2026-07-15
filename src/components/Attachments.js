@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getDatabase, ref as databaseRef, onValue, query, orderByChild, equalTo, push, child, set, remove } from 'firebase/database';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 class Attachments extends Component {
 
@@ -20,7 +20,7 @@ class Attachments extends Component {
   componentDidMount = () => {
     const db = getDatabase();
     const attachmentRef = query(databaseRef(db, 'attachment'), orderByChild('post'), equalTo(this.state.post));
-    onValue(attachmentRef, snapshot => {
+    this.unsubscribe = onValue(attachmentRef, snapshot => {
       const payload = snapshot.val() || {};
       const attachments = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
@@ -38,6 +38,10 @@ class Attachments extends Component {
         authed: this.props.authed
       });
     }
+  }
+
+  componentWillUnmount = () => {
+    this.unsubscribe && this.unsubscribe();
   }
 
   convertTimestamp = (timestamp) => {

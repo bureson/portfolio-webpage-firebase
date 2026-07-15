@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import { readingTime, convertTimestamp } from '../lib/Shared';
+import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 
@@ -33,7 +34,7 @@ class Post extends Component {
       this.setState({
         blogList
       });
-    });
+    }, { onlyOnce: true });
   }
 
   componentDidUpdate = (prevProps) => {
@@ -62,7 +63,7 @@ class Post extends Component {
         }, payload) : null,
         loading: false
       });
-    });
+    }, { onlyOnce: true });
     const countryRef = query(ref(db, 'country'), orderByChild('blogPostKey'), equalTo(postKey));
     onValue(countryRef, snapshot => {
       const payload = snapshot.val() || {};
@@ -70,7 +71,7 @@ class Post extends Component {
       this.setState({
         countryList
       });
-    });
+    }, { onlyOnce: true });
   }
 
   onDelete = (e) => {
@@ -140,7 +141,7 @@ class Post extends Component {
       <div className='page post-page'>
         {post.coverPath
           ? <div className='post-hero'>
-              <div className='photo' style={{backgroundImage: `url(${post.coverPath})`}}></div>
+              <LazyPhoto className='photo' src={post.coverPath} />
               <div className='shade'></div>
               <div className='hero-overlay'>
                 {this.renderMetaRow(post)}

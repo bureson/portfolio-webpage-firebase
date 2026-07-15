@@ -1,15 +1,9 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { getAuth, signOut } from 'firebase/auth';
-import { faLanguage, faMap, faNewspaper, faSignOutAlt } from '@fortawesome/fontawesome-free-solid';
+import { faLanguage, faMap, faNewspaper, faPlane } from '@fortawesome/free-solid-svg-icons';
 
 class Menu extends Component {
-
-  onLogout = (e) => {
-    const auth = getAuth();
-    signOut(auth);
-  }
 
   isActive = (prefix) => {
     const path = this.props.location.pathname;
@@ -33,17 +27,17 @@ class Menu extends Component {
                   </Link>
               </li>
               <li>
+                  <Link className={this.isActive('/flights')} to='/flights'>
+                      <FontAwesomeIcon icon={faPlane} className='responsive-placeholder' />
+                      <span>flights</span>
+                  </Link>
+              </li>
+              <li>
                   <Link className={this.isActive('/blog')} to='/blog'>
                       <FontAwesomeIcon icon={faNewspaper} className='responsive-placeholder' />
                       <span>blog</span>
                   </Link>
               </li>
-              {this.props.authed && <li>
-                  <Link to='/' onClick={this.onLogout}>
-                      <FontAwesomeIcon icon={faSignOutAlt} className='responsive-placeholder' />
-                      <span className='plain'>log out</span>
-                  </Link>
-              </li>}
           </ul>
       </nav>
     )

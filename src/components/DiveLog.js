@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getDatabase, ref, onValue, query, orderByChild, equalTo, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import DiveDialog from './DiveDialog';
 import { convertTimestamp } from '../lib/Shared';
@@ -23,7 +23,7 @@ class DiveLog extends Component {
   componentDidMount = () => {
     const db = getDatabase();
     const diveRef = query(ref(db, 'dive-log'), orderByChild('country'), equalTo(this.state.country));
-    onValue(diveRef, snapshot => {
+    this.unsubscribe = onValue(diveRef, snapshot => {
       const payload = snapshot.val() || {};
       const dives = Object.keys(payload)
             .sort((a, b) => payload[a].date - payload[b].date || payload[a].no - payload[b].no)
@@ -41,6 +41,10 @@ class DiveLog extends Component {
         authed: this.props.authed
       });
     }
+  }
+
+  componentWillUnmount = () => {
+    this.unsubscribe && this.unsubscribe();
   }
 
   onDelete = (e, key) => {

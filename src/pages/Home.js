@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 import { convertTimestamp, randomNumber, readingTime } from '../lib/Shared';
+import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 
 class Home extends Component {
@@ -30,7 +31,7 @@ class Home extends Component {
         word: key && payload[key],
         loadingCourse: false
       });
-    });
+    }, { onlyOnce: true });
     onValue(ref(db, 'country'), snapshot => {
       const payload = snapshot.val() || {};
       const countryList = Object.keys(payload)
@@ -40,7 +41,7 @@ class Home extends Component {
         countryList,
         loadingCountries: false
       });
-    });
+    }, { onlyOnce: true });
     onValue(ref(db, 'blog'), snapshot => {
       const payload = snapshot.val() || {};
       const blog = Object.keys(payload)
@@ -51,7 +52,7 @@ class Home extends Component {
         blog,
         loadingBlog: false
       });
-    });
+    }, { onlyOnce: true });
   }
 
   renderWord = () => {
@@ -79,7 +80,7 @@ class Home extends Component {
           return (
             <Link className='row-link' to={`/countries/${country.key}`} key={country.key}>
               <div className='country-tile'>
-                <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+                <LazyPhoto className='photo' src={country.photoPath} />
                 <div className='title'>{country.name}</div>
                 <div className='meta'>{convertTimestamp(country.date)}</div>
               </div>

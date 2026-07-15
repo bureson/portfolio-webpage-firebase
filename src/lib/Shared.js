@@ -2,6 +2,10 @@ const readTime = require('reading-time');
 
 export const classNames = (...args) => {
   const classNameList = args.reduce((list, arg) => {
+    // skip optional class names (undefined props, short-circuited expressions)
+    if (!arg) {
+      return list;
+    }
     const type = typeof arg;
     switch (type) {
       case 'string':

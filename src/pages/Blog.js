@@ -20,7 +20,7 @@ class Blog extends Component {
     document.title = 'Blog | Ondrej Bures';
     const db = getDatabase();
     const blogRef = ref(db, 'blog');
-    onValue(blogRef, snapshot => {
+    this.unsubscribe = onValue(blogRef, snapshot => {
       const payload = snapshot.val() || {};
       const blog = Object.keys(payload)
             .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
@@ -38,6 +38,10 @@ class Blog extends Component {
         authed: this.props.authed
       });
     }
+  }
+
+  componentWillUnmount = () => {
+    this.unsubscribe && this.unsubscribe();
   }
 
   renderBlog = (availablePostList) => {

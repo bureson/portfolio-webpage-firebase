@@ -1,6 +1,16 @@
-import { convertTimestamp, defaultByType, readingTime, similarity, sortBy } from './Shared';
+import { classNames, convertTimestamp, defaultByType, readingTime, similarity, sortBy } from './Shared';
 
 describe('component/Shared', () => {
+  describe('classNames', () => {
+    it('joins strings and truthy object keys', () => {
+      expect(classNames('dialog', { wide: true, open: false })).toBe('dialog wide');
+    });
+
+    it('skips undefined optional class names', () => {
+      expect(classNames('dialog', undefined)).toBe('dialog');
+    });
+  });
+
   describe('convertTimestamp', () => {
     it('converts to full date', () => {
       expect(convertTimestamp(608544000, 'dd:mm:yyyy')).toBe('14 April 1989');

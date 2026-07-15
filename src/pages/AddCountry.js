@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import Dropdown from '../components/Dropdown';
@@ -61,14 +61,14 @@ class AddCountry extends Component {
               timestamp: payload.timestamp
             });
           }
-        });
+        }, { onlyOnce: true });
       } else {
         this.setState({
           blogPostList,
           loading: false
         });
       }
-    });
+    }, { onlyOnce: true });
   }
 
   componentDidUpdate = () => {

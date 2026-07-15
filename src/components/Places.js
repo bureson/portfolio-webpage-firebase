@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { getDatabase, ref, onValue, query, orderByChild, equalTo, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 
 import Autocomplete from '../components/Autocomplete';
 import Dialog from '../components/Dialog';
@@ -25,7 +25,7 @@ class Places extends Component {
   componentDidMount = () => {
     const db = getDatabase();
     const placeRef = query(ref(db, 'place'), orderByChild('country'), equalTo(this.state.country));
-    onValue(placeRef, snapshot => {
+    this.unsubscribe = onValue(placeRef, snapshot => {
       const payload = snapshot.val() || {};
       const places = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
@@ -43,6 +43,10 @@ class Places extends Component {
         authed: this.props.authed
       });
     }
+  }
+
+  componentWillUnmount = () => {
+    this.unsubscribe && this.unsubscribe();
   }
 
   onDelete = (e, key) => {

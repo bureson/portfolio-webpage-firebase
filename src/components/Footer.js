@@ -1,12 +1,19 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads, faYoutubeSquare } from '@fortawesome/fontawesome-free-brands';
+import { getAuth, signOut } from 'firebase/auth';
+import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads, faYoutubeSquare } from '@fortawesome/free-brands-svg-icons';
+import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import firebaseLogo from '../assets/firebase-logo.png';
 import reactLogo from '../assets/react-logo.png';
 import goatcounterLogo from '../assets/goatcounter.png';
 
 class Footer extends Component {
+
+  onLogout = (e) => {
+    const auth = getAuth();
+    signOut(auth);
+  }
 
   render = () => {
     return (
@@ -18,6 +25,7 @@ class Footer extends Component {
             <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /><span>Facebook</span></a>
             <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGoodreads} /><span>Goodreads</span></a>
             <a href='https://youtube.com/@czeBuri' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faYoutubeSquare} /><span>YouTube</span></a>
+            {this.props.authed && <button className='logout' onClick={this.onLogout}><FontAwesomeIcon icon={faSignOutAlt} /><span>log out</span></button>}
         </p>
         <div className='powered-by'>
             <ul>

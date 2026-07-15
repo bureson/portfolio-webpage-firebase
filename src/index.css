@@ -111,6 +111,22 @@ a:visited {
 img {
   max-width: 100%;
 }
+.lazy-photo {
+  position: relative;
+  overflow: hidden;
+}
+.lazy-photo .img {
+  position: absolute;
+  inset: 0;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  opacity: 0;
+  transition: opacity 400ms ease-in-out;
+}
+.lazy-photo .img.loaded {
+  opacity: 1;
+}
 button, .button {
   background: none;
   border-radius: 999px;
@@ -414,6 +430,24 @@ table td.control a:first-child {
 .footer .social svg {
   width: 18px !important;
   height: 18px !important;
+}
+.footer .social .logout {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--primaryColor);
+  font-size: 13px;
+  opacity: 0.7;
+  padding: 0;
+  transition: opacity 300ms ease-in-out;
+}
+.footer .social .logout:hover {
+  background: none;
+  color: var(--primaryColor);
+  opacity: 1;
 }
 .tabs {
   margin-left: 0;
@@ -838,66 +872,66 @@ table td.control a:first-child {
 }
 .page > h2,
 .page-title h2,
-.countries-header h2 {
+.page-head h2 {
   font-size: 52px;
   line-height: 1.05;
   margin: 0 0 22px;
 }
-.countries-header {
-  display: flex;
-  align-items: center;
-  gap: 48px;
+/* shared page header: kicker, then title with borderless stats on the
+   same row (countries, flights) */
+.page-head {
   margin: 0 0 10px;
 }
-.countries-header .info {
-  flex: 1;
-  min-width: 0;
+.page-head .kicker {
+  margin: 0 0 12px;
 }
-.countries-header .info p:not(.kicker) {
+.page-head .title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px 48px;
+  flex-wrap: wrap;
+  margin: 0 0 22px;
+}
+.page-head .title-row h2 {
+  margin: 0;
+}
+.page-head .info p:not(.kicker) {
   font-size: 15.5px;
   line-height: 1.7;
-  max-width: 720px;
+  max-width: 840px;
   opacity: 0.8;
 }
-.countries-header .stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 14px;
-  flex: none;
-  width: 340px;
+.page-head .stats {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 20px 36px;
+  text-align: right;
 }
-.countries-header .stat {
-  background: rgba(236, 229, 195, 0.05);
-  border: 1px solid var(--borderColor);
-  border-radius: 12px;
-  padding: 16px 20px;
-}
-.countries-header .stat:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-}
-.countries-header .stat .value {
+.page-head .stat .value {
   color: var(--brightColor);
-  font-size: 30px;
+  font-size: 26px;
   font-weight: 700;
-  line-height: 1.3;
+  line-height: 1.2;
+  white-space: nowrap;
 }
-.countries-header .stat .value span {
-  font-size: 17px;
+.page-head .stat .value span {
+  font-size: 15px;
   opacity: 0.5;
 }
-.countries-header .stat .value .check {
+.page-head .stat .value .check {
   color: var(--contrastColor);
-  font-size: 20px;
+  font-size: 17px;
   opacity: 1;
 }
-.countries-header .stat .label {
+.page-head .stat .label {
   font-family: var(--monoFont);
-  font-size: 11px;
+  font-size: 11.5px;
   letter-spacing: 0.1em;
   line-height: 18px;
   text-transform: uppercase;
   opacity: 0.5;
-  margin-top: 4px;
 }
 .filter-bar {
   display: flex;
@@ -952,7 +986,7 @@ button.primary:hover {
 .course-desc {
   font-size: 15.5px;
   line-height: 1.7;
-  max-width: 760px;
+  max-width: 840px;
   opacity: 0.8;
   margin: 0 0 10px;
 }
@@ -1415,9 +1449,9 @@ button.primary:hover {
 }
 .detail-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 2fr 1fr;
   gap: 24px;
-  align-items: start;
+  align-items: stretch;
   margin: 0 0 40px;
 }
 .detail-grid .blog-featured {
@@ -1427,6 +1461,11 @@ button.primary:hover {
   display: flex;
   flex-direction: column;
   gap: 24px;
+}
+/* the notes prose absorbs spare height so both columns end flush,
+   whatever combination of blog / flights cards is present */
+.detail-grid .side-stack .notes-card {
+  flex: 1;
 }
 .notes-card {
   background: rgba(236, 229, 195, 0.05);
@@ -1440,46 +1479,16 @@ button.primary:hover {
 }
 .notes-card p {
   font-size: 17px;
-  font-style: italic;
   line-height: 1.65;
   opacity: 0.85;
   margin: 0;
-}
-.nudge-card {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border: 1px dashed rgba(236, 229, 195, 0.3);
-  border-radius: 16px;
-  padding: 20px 26px;
-}
-.nudge-card .icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px dashed rgba(232, 193, 90, 0.6);
-  border-radius: 999px;
-  color: var(--contrastColor);
-  flex: none;
-  font-size: 16px;
-  height: 38px;
-  width: 38px;
-}
-.nudge-card .title {
-  color: var(--brightColor);
-  font-size: 14.5px;
-  font-weight: 600;
-}
-.nudge-card .text {
-  font-size: 13px;
-  line-height: 1.5;
-  opacity: 0.75;
-  margin-top: 3px;
 }
 .places-card {
   background: rgba(236, 229, 195, 0.05);
   border: 1px solid var(--borderColor);
   border-radius: 16px;
+  display: flex;
+  flex-direction: column;
   overflow: hidden;
 }
 .places-card .head {
@@ -1499,10 +1508,13 @@ button.primary:hover {
   font-size: 12px;
   opacity: 0.5;
 }
-.places-card .map {
+/* the map grows to keep the card as tall as the story column */
+.places-card .map,
+.places-card .no-map {
   border: 0;
   border-radius: 0;
-  height: 260px;
+  flex: 1;
+  min-height: 260px;
 }
 .places-card .chips {
   display: flex;
@@ -1696,6 +1708,446 @@ button.chip.add:hover {
   border-color: rgba(232, 193, 90, 0.5);
   color: var(--contrastColor);
 }
+.flight-map {
+  position: relative;
+  background: rgba(236, 229, 195, 0.05);
+  border: 1px solid var(--borderColor);
+  border-radius: 16px;
+  overflow: hidden;
+  margin: 0 0 18px;
+}
+.flight-map svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  cursor: grab;
+  touch-action: none;
+}
+.flight-map svg.panning {
+  cursor: grabbing;
+}
+.flight-map .land {
+  fill: rgba(236, 229, 195, 0.07);
+  stroke: rgba(236, 229, 195, 0.16);
+  stroke-width: 0.4;
+  vector-effect: non-scaling-stroke;
+}
+.flight-map .route .glow {
+  fill: none;
+  stroke: rgba(232, 193, 90, 0.16);
+  stroke-width: 4;
+  vector-effect: non-scaling-stroke;
+}
+.flight-map .route .line {
+  fill: none;
+  stroke: var(--contrastColor);
+  transition: stroke-opacity 200ms ease-in-out, stroke-width 200ms ease-in-out;
+  vector-effect: non-scaling-stroke;
+}
+.flight-map .route .hit {
+  fill: none;
+  stroke: transparent;
+  stroke-width: 12;
+  cursor: pointer;
+  vector-effect: non-scaling-stroke;
+}
+.flight-map .route:hover .line {
+  stroke-opacity: 1 !important;
+  stroke-width: 2 !important;
+}
+.flight-map .route:hover .glow {
+  stroke: rgba(232, 193, 90, 0.35);
+}
+.flight-map .airport {
+  fill: var(--brightColor);
+  stroke: rgba(8, 13, 24, 0.9);
+  stroke-width: 0.7;
+}
+.flight-map .airport-label {
+  fill: rgba(236, 229, 195, 0.75);
+  font-family: var(--monoFont);
+  font-size: 7.5px;
+  letter-spacing: 0.06em;
+  text-anchor: middle;
+  paint-order: stroke;
+  stroke: rgba(8, 13, 24, 0.85);
+  stroke-width: 2px;
+}
+.flight-map .hint {
+  position: absolute;
+  right: 14px;
+  bottom: 10px;
+  font-family: var(--monoFont);
+  font-size: 10.5px;
+  color: rgba(236, 229, 195, 0.4);
+  pointer-events: none;
+}
+.flight-map .tooltip {
+  position: absolute;
+  background: #0b1426;
+  border: 1px solid rgba(232, 193, 90, 0.4);
+  border-radius: 8px;
+  color: var(--brightColor);
+  font-family: var(--monoFont);
+  font-size: 12px;
+  padding: 6px 10px;
+  pointer-events: none;
+  transform: translate(-50%, -130%);
+  white-space: nowrap;
+  z-index: 5;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .flight-map .route .line {
+    stroke-dasharray: 600;
+    stroke-dashoffset: 600;
+    animation: route-draw 1.6s ease-out forwards;
+  }
+}
+@keyframes route-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+.flight-timeline {
+  margin: 0 0 24px;
+}
+.flight-timeline .bars {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+.flight-timeline .col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+.flight-timeline .col .bar {
+  display: block;
+  width: 100%;
+  background: rgba(236, 229, 195, 0.25);
+  border: none;
+  border-radius: 3px 3px 0 0;
+  padding: 0;
+}
+.flight-timeline .col .bar:hover {
+  background: rgba(236, 229, 195, 0.5);
+  border: none;
+}
+.flight-timeline .col.empty .bar,
+.flight-timeline .col.empty .bar:hover {
+  background: rgba(236, 229, 195, 0.1);
+  cursor: default;
+}
+.flight-timeline .col.active .bar,
+.flight-timeline .col.active .bar:hover {
+  background: var(--contrastColor);
+}
+.flight-timeline .col .year {
+  font-family: var(--monoFont);
+  font-size: 10.5px;
+  color: rgba(236, 229, 195, 0.45);
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+.flight-timeline .col.active .year {
+  color: var(--contrastColor);
+}
+.flight-list-head {
+  display: flex;
+  justify-content: flex-end;
+  margin: 10px 0 16px;
+}
+.flight-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.flight-card {
+  background: rgba(236, 229, 195, 0.05);
+  border: 1px solid var(--borderColor);
+  border-radius: 14px;
+  padding: 22px 26px;
+  transition: 300ms ease-in-out;
+}
+.flight-card:hover {
+  background: rgba(232, 193, 90, 0.06);
+  border-color: rgba(232, 193, 90, 0.6);
+}
+.flight-card .top {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 20px;
+  margin: 0 0 14px;
+}
+.flight-card .ident {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  min-width: 0;
+}
+.flight-card .ident .title {
+  color: var(--brightColor);
+  font-size: 18px;
+  font-weight: 600;
+}
+.flight-card .ident .date {
+  font-family: var(--monoFont);
+  font-size: 12px;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+.flight-card .metrics {
+  display: flex;
+  align-items: baseline;
+  gap: 22px;
+  flex: none;
+  font-family: var(--monoFont);
+  font-size: 12.5px;
+  opacity: 0.85;
+}
+.flight-card .metrics span {
+  white-space: nowrap;
+}
+.flight-card .metrics .co2 {
+  color: var(--contrastColor);
+}
+.flight-card .metrics button {
+  font-size: 10px;
+  padding: 2px 8px;
+}
+.flight-card .legs,
+.getting-there .legs {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  row-gap: 10px;
+  margin: 0 0 16px;
+}
+.flight-card .leg,
+.getting-there .leg {
+  display: flex;
+  align-items: center;
+}
+.flight-card .airport,
+.getting-there .airport {
+  background: rgba(8, 13, 24, 0.5);
+  border: 1px solid rgba(236, 229, 195, 0.2);
+  border-radius: 9px;
+  color: var(--brightColor);
+  font-family: var(--monoFont);
+  font-size: 13px;
+  font-weight: 500;
+  padding: 7px 13px;
+}
+.flight-card .segment,
+.getting-there .segment {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 10px;
+}
+.flight-card .segment .distance,
+.getting-there .segment .distance {
+  font-family: var(--monoFont);
+  font-size: 10.5px;
+  opacity: 0.45;
+  margin: 0 0 2px;
+  white-space: nowrap;
+}
+.flight-card .segment .dashes,
+.getting-there .segment .dashes {
+  background: repeating-linear-gradient(90deg, rgba(232, 193, 90, 0.7) 0 6px, transparent 6px 11px);
+  height: 1px;
+  position: relative;
+  width: 64px;
+}
+.flight-card .segment .dashes span,
+.getting-there .segment .dashes span {
+  color: var(--contrastColor);
+  font-size: 10px;
+  line-height: 1;
+  position: absolute;
+  right: -2px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.flight-card .gap,
+.getting-there .gap {
+  width: 22px;
+}
+.flight-card .trip-to {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-top: 1px solid rgba(236, 229, 195, 0.1);
+  padding-top: 14px;
+  font-family: var(--monoFont);
+  font-size: 12px;
+}
+.flight-card .trip-to .label {
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.45;
+  margin-right: 6px;
+}
+.flight-card .country-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(232, 193, 90, 0.4);
+  border-radius: 999px;
+  padding: 5px 13px 5px 7px;
+  transition: 300ms ease-in-out;
+}
+.flight-card .country-chip:hover {
+  background: rgba(232, 193, 90, 0.1);
+  border-color: var(--contrastColor);
+}
+.flight-card .country-chip .code {
+  background: rgba(232, 193, 90, 0.9);
+  border-radius: 6px;
+  color: #080d18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 500;
+  height: 20px;
+  width: 20px;
+}
+.getting-there {
+  background: rgba(236, 229, 195, 0.05);
+  border: 1px solid var(--borderColor);
+  border-radius: 16px;
+  overflow: hidden;
+}
+.getting-there .head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(236, 229, 195, 0.1);
+  padding: 14px 22px;
+}
+.getting-there .head .kicker {
+  font-size: 11.5px;
+  margin: 0;
+}
+.getting-there .head .totals {
+  display: flex;
+  gap: 18px;
+  font-family: var(--monoFont);
+  font-size: 12px;
+  color: rgba(236, 229, 195, 0.7);
+}
+.getting-there .head .totals span {
+  white-space: nowrap;
+}
+.getting-there .head .totals .co2 {
+  color: var(--contrastColor);
+}
+.getting-there .head .more {
+  font-family: var(--monoFont);
+  font-size: 12px;
+  color: rgba(236, 229, 195, 0.5);
+  white-space: nowrap;
+}
+.getting-there .head .more:hover {
+  color: var(--contrastColor);
+}
+.getting-there .trip {
+  border-bottom: 1px solid rgba(236, 229, 195, 0.08);
+  padding: 16px 22px;
+}
+.getting-there .trip.open {
+  background: rgba(232, 193, 90, 0.04);
+}
+.getting-there .trip .row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+}
+.getting-there .trip .row.clickable {
+  cursor: pointer;
+}
+.getting-there .trip .ident {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.getting-there .trip .title {
+  color: var(--brightColor);
+  font-size: 15.5px;
+  font-weight: 600;
+}
+.getting-there .trip .date,
+.getting-there .trip .route {
+  font-family: var(--monoFont);
+  font-size: 11.5px;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+.getting-there .trip .metrics {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex: none;
+  font-family: var(--monoFont);
+  font-size: 12px;
+  color: rgba(236, 229, 195, 0.7);
+}
+.getting-there .trip .metrics span {
+  white-space: nowrap;
+}
+.getting-there .trip .metrics .co2 {
+  color: var(--contrastColor);
+}
+.getting-there .trip .metrics .caret {
+  color: rgba(236, 229, 195, 0.5);
+}
+.getting-there .legs {
+  margin: 12px 0 0;
+  row-gap: 8px;
+}
+.getting-there .airport {
+  font-size: 12px;
+  padding: 6px 11px;
+}
+.getting-there .segment {
+  padding: 0 8px;
+}
+.getting-there .segment .distance {
+  font-size: 10px;
+}
+.getting-there .segment .dashes {
+  width: 48px;
+}
+.getting-there .segment .dashes span {
+  font-size: 9px;
+}
+.getting-there .foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px 16px;
+  flex-wrap: wrap;
+  font-family: var(--monoFont);
+  font-size: 12px;
+  color: rgba(236, 229, 195, 0.55);
+  padding: 13px 22px;
+}
+.getting-there .foot a {
+  color: var(--contrastColor);
+  white-space: nowrap;
+}
 .dialog-overlay {
   display: flex;
   align-items: flex-start;
@@ -1715,6 +2167,9 @@ button.chip.add:hover {
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.6);
   width: 100%;
   max-width: 640px;
+}
+.dialog.wide {
+  max-width: 680px;
 }
 .dialog .head {
   display: flex;
@@ -1837,6 +2292,244 @@ button.chip.add:hover {
 .dialog-foot button:disabled {
   cursor: not-allowed;
   opacity: 0.5;
+}
+.dialog-foot .totals {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-right: auto;
+  font-family: var(--monoFont);
+  font-size: 12.5px;
+  color: rgba(236, 229, 195, 0.75);
+}
+.dialog-foot .totals span {
+  white-space: nowrap;
+}
+.dialog-foot .totals .co2 {
+  color: var(--contrastColor);
+}
+.dialog .country-box {
+  cursor: text;
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  background: rgba(236, 229, 195, 0.04);
+  border: 1px solid rgba(236, 229, 195, 0.2);
+  border-radius: 10px;
+  padding: 8px 14px;
+}
+.dialog .country-box:focus-within {
+  border-color: rgba(232, 193, 90, 0.5);
+}
+.dialog .country-box input {
+  background: none;
+  border: none;
+  outline: none;
+  flex: 1;
+  min-width: 150px;
+  padding: 6px 0;
+  width: auto;
+}
+.dialog .country-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  border-color: rgba(232, 193, 90, 0.4);
+  font-size: 12px;
+  padding: 4px 11px 4px 6px;
+}
+.dialog .country-pill .code,
+.dialog .country-suggest .code {
+  background: rgba(232, 193, 90, 0.9);
+  border-radius: 6px;
+  color: #080d18;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 9.5px;
+  font-weight: 500;
+  height: 20px;
+  width: 20px;
+}
+.dialog .country-pill .x {
+  color: rgba(236, 229, 195, 0.5);
+  font-size: 10px;
+  margin-left: 2px;
+}
+.dialog .country-pill:hover .x {
+  color: #e08a8a;
+}
+.dialog .country-suggest {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #0b1426;
+  border: 1px solid rgba(236, 229, 195, 0.25);
+  border-radius: 10px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  z-index: 5;
+}
+.dialog .country-suggest button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: rgba(236, 229, 195, 0.8);
+  font-size: 13px;
+  padding: 9px 14px;
+  text-align: left;
+}
+.dialog .country-suggest button:hover {
+  background: rgba(232, 193, 90, 0.12);
+  color: var(--brightColor);
+}
+.dialog .label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+.dialog .label-row .note {
+  font-family: var(--monoFont);
+  font-size: 11px;
+  color: rgba(236, 229, 195, 0.45);
+}
+.dialog .leg-table {
+  border: 1px solid rgba(236, 229, 195, 0.14);
+  border-radius: 12px;
+  overflow: hidden;
+}
+.dialog .leg-table .leg-row {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr) minmax(0, 1fr) 78px 66px 26px;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid rgba(236, 229, 195, 0.08);
+  padding: 10px 14px;
+}
+.dialog .leg-table .leg-row.dragging {
+  background: rgba(232, 193, 90, 0.06);
+}
+.dialog .leg-table .handle {
+  color: rgba(236, 229, 195, 0.35);
+  cursor: grab;
+  font-family: var(--monoFont);
+  font-size: 12px;
+  user-select: none;
+}
+.dialog .leg-table .code-box {
+  cursor: text;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  background: rgba(8, 13, 24, 0.5);
+  border: 1px solid rgba(236, 229, 195, 0.2);
+  border-radius: 8px;
+  min-width: 0;
+  padding: 8px 12px;
+  transition: 300ms ease-in-out;
+}
+.dialog .leg-table .code-box:focus-within {
+  border-color: rgba(232, 193, 90, 0.5);
+}
+.dialog .leg-table .code-box input {
+  background: none;
+  border: none;
+  outline: none;
+  border-radius: 0;
+  color: var(--brightColor);
+  flex: none;
+  font-family: var(--monoFont);
+  font-size: 13px;
+  height: auto;
+  line-height: 1.3;
+  padding: 0;
+  text-transform: uppercase;
+  width: 42px;
+}
+.dialog .leg-table .code-box .place {
+  font-family: var(--monoFont);
+  font-size: 10.5px;
+  color: rgba(236, 229, 195, 0.45);
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.dialog .leg-table .cell {
+  font-family: var(--monoFont);
+  font-size: 12px;
+  color: rgba(236, 229, 195, 0.7);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.dialog .leg-table .cell.co2 {
+  color: var(--contrastColor);
+}
+.dialog .leg-table .remove {
+  border-color: rgba(236, 229, 195, 0.2);
+  border-radius: 7px;
+  color: rgba(236, 229, 195, 0.5);
+  font-size: 10px;
+  height: 26px;
+  width: 26px;
+  padding: 0;
+}
+.dialog .leg-table .leg-add {
+  display: block;
+  width: 100%;
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: 12.5px;
+  padding: 12px 14px;
+  text-align: left;
+}
+.dialog .leg-table .leg-add span {
+  color: rgba(236, 229, 195, 0.4);
+}
+.dialog .leg-table .leg-add:hover {
+  background: rgba(232, 193, 90, 0.06);
+}
+.dialog .leg-suggest {
+  font-family: var(--monoFont);
+  font-size: 11px;
+  color: rgba(236, 229, 195, 0.45);
+  margin-top: 8px;
+}
+.dialog .leg-suggest button {
+  background: none;
+  border: none;
+  border-radius: 0;
+  font-size: inherit;
+  padding: 0;
+}
+.dialog .leg-suggest button:hover {
+  text-decoration: underline;
+}
+.dialog .return-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dialog .return-row .label {
+  font-family: var(--monoFont);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-right: 6px;
 }
 .page-title .pills {
   display: flex;
@@ -2326,7 +3019,8 @@ button.chip.add:hover {
   .footer .social {
     gap: 16px;
   }
-  .footer .social a span {
+  .footer .social a span,
+  .footer .social .logout span {
     display: none;
   }
   .footer .social svg {
@@ -2338,15 +3032,13 @@ button.chip.add:hover {
   }
   .page > h2,
   .page-title h2,
-  .countries-header h2 {
+  .page-head h2 {
     font-size: 34px;
   }
-  .countries-header {
-    display: block;
-  }
-  .countries-header .stats {
-    width: 100%;
-    margin: 0 0 20px;
+  .page-head .stats {
+    justify-content: flex-start;
+    gap: 20px 24px;
+    text-align: left;
   }
   .blog-featured {
     display: block;
@@ -2427,12 +3119,49 @@ button.chip.add:hover {
   .dive-grid {
     grid-template-columns: 1fr;
   }
+  .flight-map .hint {
+    display: none;
+  }
+  .flight-timeline .col:nth-child(even) .year {
+    visibility: hidden;
+  }
+  .flight-card .top {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .flight-card .metrics {
+    flex-wrap: wrap;
+    gap: 10px 22px;
+  }
   .dialog .field-grid.place-row,
   .dialog .field-grid.site-row {
     grid-template-columns: 1fr;
   }
   .dialog .field-grid.metric-row {
     grid-template-columns: 1fr 1fr;
+  }
+  .dialog .leg-table .leg-row {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px 54px 22px;
+    gap: 8px;
+    padding: 10px;
+  }
+  .dialog .leg-table .handle,
+  .dialog .leg-table .code-box .place,
+  .dialog .leg-table .leg-add span,
+  .dialog .label-row .note {
+    display: none;
+  }
+  .dialog .leg-table .code-box input {
+    width: 100%;
+  }
+  .dialog .return-row {
+    flex-wrap: wrap;
+  }
+  .dialog-foot {
+    flex-wrap: wrap;
+  }
+  .dialog-foot .totals {
+    flex-basis: 100%;
   }
   .practice .options {
     margin: 20px 5%;

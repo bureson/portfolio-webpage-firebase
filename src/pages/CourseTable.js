@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import { definition } from '../lib/CourseModel';

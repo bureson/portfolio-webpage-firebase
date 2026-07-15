@@ -44,10 +44,15 @@ class Course extends Component {
     }
   }
 
+  componentWillUnmount = () => {
+    this.unsubscribeCourse && this.unsubscribeCourse();
+  }
+
   loadData = (languageKey) => {
     const db = getDatabase();
     const courseRef = ref(db, languageKey);
-    onValue(courseRef, snapshot => {
+    this.unsubscribeCourse && this.unsubscribeCourse();
+    this.unsubscribeCourse = onValue(courseRef, snapshot => {
       const payload = snapshot.val() || {};
       const course = Object.keys(payload)
             .sort((a, b) => payload[b].timestamp - payload[a].timestamp)

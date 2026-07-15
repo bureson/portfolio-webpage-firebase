@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import Attachments from '../components/Attachments';
@@ -46,7 +46,7 @@ class AddPost extends Component {
             timestamp: payload.timestamp
           });
         }
-      });
+      }, { onlyOnce: true });
     } else {
       document.title = 'Add post | Ondrej Bures';
       this.setState({

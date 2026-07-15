@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/fontawesome-free-solid';
+import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import { convertTimestamp } from '../lib/Shared';
 import DiveLog from '../components/DiveLog';
+import GettingThere from '../components/GettingThere';
+import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import Places from '../components/Places';
@@ -30,20 +32,27 @@ class CountryDetail extends Component {
     onValue(countryRef, snapshot => {
       const countryPayload = snapshot.val();
       document.title = `${countryPayload ? countryPayload.name : 'Not found'} | Ondrej Bures`;
+      if (!countryPayload) {
+        this.setState({
+          country: null,
+          loading: false
+        });
+        return;
+      }
       const postRef = ref(db, 'blog/' + countryPayload.blogPostKey);
       onValue(postRef, snapshot => {
         const postPayload = snapshot.val();
         this.setState({
-          country: countryPayload ? Object.assign({
+          country: Object.assign({
             key: countryKey
-          }, countryPayload) : null,
+          }, countryPayload),
           post: postPayload ? Object.assign({
             key: countryPayload.blogPostKey
           }, postPayload) : null,
           loading: false
         });
-      });
-    });
+      }, { onlyOnce: true });
+    }, { onlyOnce: true });
   }
 
   componentDidUpdate = () => {
@@ -83,7 +92,7 @@ class CountryDetail extends Component {
     return (
       <div className='page country-detail'>
         <div className='country-hero'>
-          <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+          <LazyPhoto className='photo' src={country.photoPath} />
           <div className='shade'></div>
           <div className='hero-overlay'>
             <div>
@@ -116,13 +125,7 @@ class CountryDetail extends Component {
               <p>{country.description}</p>
             </div>}
             {hasPost && <PostPreview post={this.state.post} featured label='From the blog' hideCover />}
-            {!hasPost && this.state.authed && <div className='nudge-card'>
-              <div className='icon'>✎</div>
-              <div>
-                <div className='title'>No story yet</div>
-                <div className='text'>This trip doesn't have a blog post. <Link to='/blog/add'>Write one →</Link></div>
-              </div>
-            </div>}
+            <GettingThere authed={this.state.authed} country={country.key} />
           </div>
           <Places authed={this.state.authed} country={country.key} />
         </div>

@@ -3,6 +3,7 @@ import { Link, withRouter } from 'react-router-dom';
 import { Converter } from 'showdown';
 
 import { convertTimestamp, readingTime } from '../lib/Shared';
+import LazyPhoto from './LazyPhoto';
 
 class PostPreview extends Component {
 
@@ -32,7 +33,7 @@ class PostPreview extends Component {
             <Link className='more' to={`/blog/${post.key}`}>Read the post →</Link>
           </div>
           {!this.props.hideCover && post.coverPath && <Link className='row-link cover-link' to={`/blog/${post.key}`}>
-            <div className='cover' style={{backgroundImage: `url(${post.coverPath})`}}></div>
+            <LazyPhoto className='cover' src={post.coverPath} />
           </Link>}
         </div>
       )

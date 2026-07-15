@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
-import { continentOf, continentSize } from '../lib/Continents';
 import { convertTimestamp, sortBy } from '../lib/Shared';
+import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 
 class Countries extends Component {
@@ -24,7 +24,7 @@ class Countries extends Component {
     document.title = 'Countries | Ondrej Bures';
     const db = getDatabase();
     const countryListRef = ref(db, 'country');
-    onValue(countryListRef, snapshot => {
+    this.unsubscribeCountries = onValue(countryListRef, snapshot => {
       const payload = snapshot.val() || {};
       const countryList = Object.keys(payload)
             .sort((a, b) => payload[b].date - payload[a].date)
@@ -35,7 +35,7 @@ class Countries extends Component {
       });
     });
     const diveListRef = ref(db, 'dive-log');
-    onValue(diveListRef, snapshot => {
+    this.unsubscribeDives = onValue(diveListRef, snapshot => {
       const payload = snapshot.val() || {};
       const diveCounts = Object.keys(payload).reduce((counts, key) => {
         const country = payload[key].country;
@@ -54,6 +54,11 @@ class Countries extends Component {
         authed: this.props.authed
       });
     }
+  }
+
+  componentWillUnmount = () => {
+    this.unsubscribeCountries && this.unsubscribeCountries();
+    this.unsubscribeDives && this.unsubscribeDives();
   }
 
   selectSorter = ({ key, direction }) => {
@@ -116,7 +121,7 @@ class Countries extends Component {
                   {country.blogPostKey && this.renderBlogRibbon()}
                   {!!this.state.diveCounts[country.key] && this.renderDiveRibbon()}
                 </div>
-                <div className='photo' style={{backgroundImage: `url(${country.photoPath})`}}></div>
+                <LazyPhoto className='photo' src={country.photoPath} />
                 <div className='content'>
                   <div className='code'>{(country.iso || '').toUpperCase()}</div>
                   <div className='info'>
@@ -134,13 +139,32 @@ class Countries extends Component {
 
   render = () => {
     const magnetCount = this.state.countryList.filter(country => country.magnet).length;
-    const continentCount = (continent) => this.state.countryList.filter(country => continentOf(country.iso) === continent).length;
     return (
       <div className='page'>
-        <div className='countries-header'>
-          <div className='info'>
-            <p className='kicker'>The tracker</p>
+        <div className='page-head'>
+          <p className='kicker'>The tracker</p>
+          <div className='title-row'>
             <h2>Countries log</h2>
+            <div className='stats'>
+              <div className='stat'>
+                <div className='value'>{this.state.countryList.length}</div>
+                <div className='label'>countries</div>
+              </div>
+              <div className='stat'>
+                <div className='value'>7<span>/7</span> <span className='check'>✓</span></div>
+                <div className='label'>continents</div>
+              </div>
+              <div className='stat'>
+                <div className='value'>{magnetCount} <span className='check'>★</span></div>
+                <div className='label'>fridge magnets</div>
+              </div>
+              <div className='stat'>
+                <div className='value'>{Object.values(this.state.diveCounts).reduce((sum, count) => sum + count, 0)} <span className='check'>≋</span></div>
+                <div className='label'>dives logged</div>
+              </div>
+            </div>
+          </div>
+          <div className='info'>
             <p>
               I never saw myself as a big traveller, but it all started in summer of 2013 after my master's degree graduation. A friend of mine inspired me to try surfing in Indonesia.
               &nbsp;I got hooked up almost immediatelly and this new passion eventually led me to Morocco, Sri Lanka, Hawaii (USA) or Australia. In 2014 I visited a total of 7 countries
@@ -156,44 +180,6 @@ class Countries extends Component {
             <p>
               To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with an article badge 📄.
             </p>
-          </div>
-          <div className='stats'>
-            <div className='stat'>
-              <div className='value'>{this.state.countryList.length}</div>
-              <div className='label'>countries</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>7<span>/7</span> <span className='check'>✓</span></div>
-              <div className='label'>continents</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>{continentCount('europe')}<span>/{continentSize('europe')}</span></div>
-              <div className='label'>europe</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>{continentCount('asia')}<span>/{continentSize('asia')}</span></div>
-              <div className='label'>asia</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>{continentCount('africa')}<span>/{continentSize('africa')}</span></div>
-              <div className='label'>africa</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>{continentCount('americas')}<span>/{continentSize('americas')}</span></div>
-              <div className='label'>americas</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>{magnetCount} <span className='check'>★</span></div>
-              <div className='label'>fridge magnets</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>{Object.values(this.state.diveCounts).reduce((sum, count) => sum + count, 0)} <span className='check'>≋</span></div>
-              <div className='label'>dives logged</div>
-            </div>
-            <div className='stat'>
-              <div className='value'>30<span>/30</span></div>
-              <div className='label'>challenge · 2019</div>
-            </div>
           </div>
         </div>
         <div className='filter-bar'>

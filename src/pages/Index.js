@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import { Link, Redirect, Route, Switch, withRouter } from 'react-router-dom';
 import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faHome } from '@fortawesome/fontawesome-free-solid';
+import { faHome } from '@fortawesome/free-solid-svg-icons';
 
 import AddCountry from './AddCountry';
 import AddPost from './AddPost';
 import Blog from './Blog';
 import Countries from './Countries';
 import CountryDetail from './CountryDetail';
+import Flights from './Flights';
 import Course from './Course';
 import { definition } from '../lib/CourseModel';
 import Footer from '../components/Footer';
@@ -99,6 +100,7 @@ class Index extends Component {
               <Route exact path='/course/:language/add' render={(props) => <Course {...props} authed={this.state.authed}/>} />
               <Route exact path='/course/:language/edit/:key' render={(props) => <Course {...props} authed={this.state.authed}/>} />
               <Route exact path='/course/:language/practice' render={(props) => <Course {...props} authed={this.state.authed}/>} />
+              <Route exact path='/flights' render={(props) => <Flights {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />
@@ -107,7 +109,7 @@ class Index extends Component {
               <Route component={NoMatch} />
             </Switch>
           </div>
-          <Footer />
+          <Footer authed={this.state.authed} />
         </div>
       </GalaxyFlight>
     )

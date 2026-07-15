@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
 
+import { classNames } from '../lib/Shared';
+
 class Dialog extends Component {
 
   componentDidMount = () => {
@@ -25,7 +27,7 @@ class Dialog extends Component {
   render = () => {
     return (
       <div className='dialog-overlay' onMouseDown={this.onBackdrop}>
-        <div className='dialog'>
+        <div className={classNames('dialog', this.props.className)}>
           <div className='head'>
             <div>
               {this.props.kicker && <p className='kicker'>{this.props.kicker}</p>}
