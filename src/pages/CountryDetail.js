@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Converter } from 'showdown';
 
 import { convertTimestamp } from '../lib/Shared';
+import CountryDialog from '../components/CountryDialog';
 import DiveLog from '../components/DiveLog';
 import GettingThere from '../components/GettingThere';
 import LazyPhoto from '../components/LazyPhoto';
@@ -21,11 +20,16 @@ class CountryDetail extends Component {
     this.state = {
       authed: props.authed,
       country: null,
+      dialog: false,
       loading: true
     }
   }
 
   componentDidMount = () => {
+    this.loadData();
+  }
+
+  loadData = () => {
     const countryKey = this.props.match.params.country;
     const db = getDatabase();
     const countryRef = ref(db, 'country/' + countryKey);
@@ -81,12 +85,6 @@ class CountryDetail extends Component {
     if (!this.state.country) {
       return <NoMatch />
     }
-    const mdConverter = new Converter({
-      noHeaderId: true,
-      underline: true,
-      openLinksInNewWindow: true
-    });
-    const storyHtml = mdConverter.makeHtml(this.state.country.story);
     const country = this.state.country;
     const hasPost = !!this.state.post;
     return (
@@ -112,7 +110,7 @@ class CountryDetail extends Component {
                 </div>}
               </div>
               {this.state.authed && <div className='controls'>
-                <Link to={`/countries/${country.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
+                <button onClick={() => this.setState({dialog: true})}><FontAwesomeIcon icon={faEdit} /></button>
                 <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
               </div>}
             </div>
@@ -129,8 +127,8 @@ class CountryDetail extends Component {
           </div>
           <Places authed={this.state.authed} country={country.key} />
         </div>
-        {country.story && <div className='country-story' dangerouslySetInnerHTML={{__html: storyHtml}} />}
         <DiveLog authed={this.state.authed} country={country.key} countryName={country.name} />
+        {this.state.dialog && <CountryDialog country={country} onClose={() => { this.setState({dialog: false}); this.loadData(); }} />}
       </div>
     )
   }

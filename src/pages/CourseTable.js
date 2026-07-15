@@ -7,6 +7,7 @@ import { Converter } from 'showdown';
 
 import { definition } from '../lib/CourseModel';
 import Pager from '../components/Pager';
+import PhraseDialog from '../components/PhraseDialog';
 import Search from '../components/Search';
 import { valueByType } from '../lib/Shared';
 
@@ -16,6 +17,8 @@ class CourseTable extends Component {
     super(props);
     this.state = {
       authed: props.authed,
+      dialog: false,
+      editing: null,
       languageKey: props.match.params.language,
       page: 0,
       perPage: 20,
@@ -112,7 +115,7 @@ class CourseTable extends Component {
           <div className='count'>{this.props.course.length} phrases</div>
           <div className='pills'>
             <Search value={this.state.search} onChange={this.onFilterChange} />
-            {this.state.authed && <Link to={`/course/${this.state.languageKey}/add`}><button>+ Add phrase</button></Link>}
+            {this.state.authed && <button onClick={() => this.setState({dialog: true, editing: null})}>+ Add phrase</button>}
             <Link to={`/course/${this.state.languageKey}/practice`}><button className='primary'>Test yourself</button></Link>
           </div>
         </div>
@@ -141,7 +144,7 @@ class CourseTable extends Component {
                       );
                     })}
                     {this.state.authed && <td className='control'>
-                      <Link to={`/course/${this.state.languageKey}/edit/${item.key}`} className='button'><FontAwesomeIcon icon={faEdit} /></Link>
+                      <button onClick={() => this.setState({dialog: true, editing: item})}><FontAwesomeIcon icon={faEdit} /></button>
                       <button onClick={(e) => this.onDelete(e, item.key)}><FontAwesomeIcon icon={faTrash} /></button>
                     </td>}
                   </tr>
@@ -151,6 +154,7 @@ class CourseTable extends Component {
           </table>
           <Pager itemsCount={filteredCourse.length} perPage={this.state.perPage} currentPage={this.state.page} onPageChange={this.onPageChange} />
         </div>
+        {this.state.dialog && <PhraseDialog languageKey={this.state.languageKey} course={this.props.course} word={this.state.editing} onClose={() => this.setState({dialog: false, editing: null})} />}
       </div>
     )
   }

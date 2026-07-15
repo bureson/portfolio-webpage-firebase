@@ -3,8 +3,10 @@ import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 import { convertTimestamp, sortBy } from '../lib/Shared';
+import CountryDialog from '../components/CountryDialog';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
+import Search from '../components/Search';
 
 class Countries extends Component {
 
@@ -13,8 +15,10 @@ class Countries extends Component {
     this.state = {
       authed: props.authed,
       countryList: [],
+      dialog: false,
       diveCounts: {},
       loading: true,
+      search: '',
       sortBy: 'date',
       sortDirection: 'desc'
     }
@@ -68,6 +72,13 @@ class Countries extends Component {
     });
   }
 
+  onSearchChange = (e) => {
+    e.preventDefault();
+    this.setState({
+      search: e.target.value
+    });
+  }
+
   renderBlogRibbon = () => {
     return (
       <div className='ribbon blog'>
@@ -109,7 +120,10 @@ class Countries extends Component {
   renderCountries = () => {
     if (this.state.loading) return <Loader />;
 
-    const sortedCountryList = this.state.countryList.sort(sortBy(this.state.sortBy, this.state.sortDirection));
+    const search = this.state.search.toLowerCase();
+    const sortedCountryList = this.state.countryList
+          .filter(country => !search || country.name.toLowerCase().includes(search) || (country.iso || '').toLowerCase().includes(search))
+          .sort(sortBy(this.state.sortBy, this.state.sortDirection));
     return (
       <div className='countries-list'>
         {sortedCountryList.map((country, index) => {
@@ -188,10 +202,12 @@ class Countries extends Component {
             <button className={this.state.sortBy === 'name' ? 'active' : ''} onClick={() => this.selectSorter({ key: 'name', direction: 'asc' })}>A–Z</button>
           </div>
           <div className='pills'>
-            {this.state.authed && <Link to={'/countries/add'}><button>+ Add new country</button></Link>}
+            <Search value={this.state.search} onChange={this.onSearchChange} />
+            {this.state.authed && <button onClick={() => this.setState({dialog: true})}>+ Add new country</button>}
           </div>
         </div>
         {this.renderCountries()}
+        {this.state.dialog && <CountryDialog onClose={() => this.setState({dialog: false})} />}
       </div>
     )
   }

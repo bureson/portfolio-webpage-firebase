@@ -7,7 +7,6 @@ import { definition } from '../lib/CourseModel';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 
-import AddWord from './AddWord';
 import CoursePractice from './CoursePractice';
 import CourseTable from './CourseTable';
 
@@ -75,8 +74,6 @@ class Course extends Component {
     return (
       <Switch>
         <Route exact path={'/course/:language'} render={(props) => <CourseTable {...props} {...courseProps} />} />
-        <Route exact path={'/course/:language/add'} render={(props) => <AddWord {...props} {...courseProps} />} />
-        <Route exact path={'/course/:language/edit/:key'} render={(props) => <AddWord {...props} {...courseProps} />} />
         <Route exact path={'/course/:language/practice'} render={(props) => <CoursePractice {...props} {...courseProps} />} />
       </Switch>
     );

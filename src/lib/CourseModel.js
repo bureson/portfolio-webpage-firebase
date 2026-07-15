@@ -46,6 +46,17 @@ export const definition = {
     praise: '¡Bien hecho!',
     countryIso: 'es',
     description: `I started learning Spanish few years back using a mobile app called Duolingo, thanks to which I was able to improve my language skill while commuting. I took a break from learning when I was living in Australia, but picked it up again with a more serious intent in late 2018 and found myself a tutor via Preply and since then I have been working on my Spanish skill together with <a href='https://preply.com/en/tutor/89731/' target='_blank' rel='noopener noreferrer'>Andrea M.</a> who makes the classes a real joy!`,
+    specialKeys: {
+      a: 'á',
+      e: 'é',
+      i: 'í',
+      o: 'ó',
+      u: 'ú',
+      n: 'ñ',
+      w: 'ü',
+      q: '¿',
+      x: '¡'
+    },
     practice: ['means', 'original'],
     fields: [
       {

@@ -4,7 +4,6 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-import AddCountry from './AddCountry';
 import AddPost from './AddPost';
 import Blog from './Blog';
 import Countries from './Countries';
@@ -92,13 +91,9 @@ class Index extends Component {
             <Switch>
               <Route exact path={this.props.match.path} component={Home} />
               <Route exact path='/countries' render={(props) => <Countries {...props} authed={this.state.authed}/>} />
-              <Route exact path='/countries/add' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
               <Route exact path='/countries/:country' render={(props) => <CountryDetail {...props} authed={this.state.authed}/>} />
-              <Route exact path='/countries/:country/edit' render={(props) => <AddCountry {...props} authed={this.state.authed}/>} />
               <Route exact path='/course' render={() => <Redirect to={`/course/${defaultCourse}`} />} />
               <Route exact path='/course/:language' render={(props) => <Course {...props} authed={this.state.authed}/>} />
-              <Route exact path='/course/:language/add' render={(props) => <Course {...props} authed={this.state.authed}/>} />
-              <Route exact path='/course/:language/edit/:key' render={(props) => <Course {...props} authed={this.state.authed}/>} />
               <Route exact path='/course/:language/practice' render={(props) => <Course {...props} authed={this.state.authed}/>} />
               <Route exact path='/flights' render={(props) => <Flights {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />

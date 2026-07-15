@@ -851,19 +851,6 @@ table td.control a:first-child {
   font-size: 16px;
   font-weight: 600;
 }
-.add-phrase:after {
-  content: '';
-  display: block;
-  clear: both;
-}
-.add-phrase form {
-  width: 70%;
-  float: left;
-}
-.add-phrase .tooltip {
-  width: 20%;
-  float: right;
-}
 .table-container {
   overflow-x: auto;
 }
@@ -1567,13 +1554,6 @@ button.chip.add:hover {
   background: rgba(232, 193, 90, 0.1);
   border-color: var(--contrastColor);
 }
-.country-detail .country-story {
-  font-size: 15.5px;
-  line-height: 1.7;
-  max-width: 720px;
-  opacity: 0.85;
-  margin: 0 0 40px;
-}
 .dive-log {
   margin: 0 0 40px;
 }
@@ -2239,6 +2219,87 @@ button.chip.add:hover {
 }
 .dialog .field-grid.metric-row {
   grid-template-columns: repeat(3, 1fr);
+}
+.dialog .field-grid.phrase-row {
+  grid-template-columns: 1fr 1fr;
+}
+.dialog .field-grid.country-row {
+  grid-template-columns: 1fr 90px 170px;
+}
+.dialog .field-grid.souvenir-row {
+  grid-template-columns: 1fr auto;
+  align-items: start;
+}
+.dialog .field .did-you-mean {
+  color: var(--contrastColor);
+  font-family: var(--monoFont);
+  font-size: 12px;
+  margin: 8px 0 0;
+}
+.dialog .type-chips.special-chars .chip {
+  font-size: 15px;
+  line-height: 1;
+  padding: 8px 14px;
+}
+.dialog .field .dropdown {
+  display: block;
+}
+.dialog .field .dropdown > button {
+  border-radius: 10px;
+  box-sizing: border-box;
+  display: block;
+  text-align: left;
+  width: 100%;
+}
+.dialog .field .dropdown .options {
+  background: #0b1426;
+  border: 1px solid rgba(236, 229, 195, 0.25);
+  border-radius: 10px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  width: 100%;
+}
+.dialog .field .dropdown .options button {
+  border: none;
+  border-radius: 0;
+  display: block;
+  text-align: left;
+  width: 100%;
+}
+.dialog .photo-box {
+  border: 1px solid rgba(236, 229, 195, 0.2);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+.dialog .photo-box img {
+  display: block;
+  height: 160px;
+  object-fit: cover;
+  width: 100%;
+}
+.dialog .photo-box .remove {
+  background: rgba(5, 8, 15, 0.75);
+  border-color: rgba(236, 229, 195, 0.35);
+  color: var(--brightColor);
+  font-size: 12px;
+  padding: 6px 12px;
+  position: absolute;
+  right: 10px;
+  top: 10px;
+}
+.dialog .photo-box .remove:hover {
+  border-color: var(--contrastColor);
+  color: var(--contrastColor);
+}
+.dialog .field progress {
+  width: 100%;
+}
+.dialog .field input[type='file'] {
+  border: 1px dashed rgba(236, 229, 195, 0.3);
+  padding: 18px;
 }
 .dialog .type-chips {
   display: flex;
@@ -3139,11 +3200,16 @@ button.chip.add:hover {
     gap: 10px 22px;
   }
   .dialog .field-grid.place-row,
-  .dialog .field-grid.site-row {
+  .dialog .field-grid.site-row,
+  .dialog .field-grid.phrase-row,
+  .dialog .field-grid.souvenir-row {
     grid-template-columns: 1fr;
   }
   .dialog .field-grid.metric-row {
     grid-template-columns: 1fr 1fr;
+  }
+  .dialog .field-grid.country-row {
+    grid-template-columns: 1fr 90px;
   }
   .dialog .leg-table .leg-row {
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) 62px 54px 22px;
