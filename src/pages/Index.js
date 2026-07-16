@@ -4,8 +4,8 @@ import { getAuth, onAuthStateChanged } from 'firebase/auth';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome } from '@fortawesome/free-solid-svg-icons';
 
-import AddPost from './AddPost';
 import Blog from './Blog';
+import EditPost from './EditPost';
 import Countries from './Countries';
 import CountryDetail from './CountryDetail';
 import Flights from './Flights';
@@ -97,9 +97,8 @@ class Index extends Component {
               <Route exact path='/course/:language/practice' render={(props) => <Course {...props} authed={this.state.authed}/>} />
               <Route exact path='/flights' render={(props) => <Flights {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
-              <Route exact path='/blog/add' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />
-              <Route exact path='/blog/:post/edit' render={(props) => <AddPost {...props} authed={this.state.authed}/>} />
+              <Route exact path='/blog/:post/edit' render={(props) => <EditPost {...props} authed={this.state.authed}/>} />
               <Route exact path='/login' component={Login} />
               <Route component={NoMatch} />
             </Switch>

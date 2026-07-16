@@ -1,8 +1,8 @@
 import { Component } from 'react';
-import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 import Loader from '../components/Loader';
+import NewPostDialog from '../components/NewPostDialog';
 import PostPreview from '../components/PostPreview';
 
 class Blog extends Component {
@@ -12,7 +12,8 @@ class Blog extends Component {
     this.state = {
       authed: props.authed,
       blog: [],
-      loading: true
+      loading: true,
+      showDialog: false
     }
   }
 
@@ -68,9 +69,12 @@ class Blog extends Component {
             <p className='kicker'>Occasional writing</p>
             <h2>Blog</h2>
           </div>
-          {this.state.authed && <Link to={'/blog/add'}><button>Add new post</button></Link>}
+          {this.state.authed && <button onClick={() => this.setState({showDialog: true})}>Add new post</button>}
         </div>
         {this.renderBlog(availablePostList)}
+        {this.state.showDialog && <NewPostDialog existingKeys={this.state.blog.map(post => post.key)}
+                                                 history={this.props.history}
+                                                 onClose={() => this.setState({showDialog: false})} />}
       </div>
     )
   }

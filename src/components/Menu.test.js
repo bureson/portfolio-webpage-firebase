@@ -7,8 +7,8 @@ import Menu from './Menu';
 describe('component/Menu', () => {
   it('renders without crashing when not authed', () => {
     render(<MemoryRouter><Menu authed={false} /></MemoryRouter>);
-    expect(screen.getAllByRole('listitem')).toHaveLength(3);
-    expect(screen.queryByText('flights')).not.toBeInTheDocument();
+    expect(screen.getAllByRole('listitem')).toHaveLength(4);
+    expect(screen.getByText('flights')).toBeInTheDocument();
   });
 
   it('renders the flights link when authed', () => {

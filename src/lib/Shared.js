@@ -79,6 +79,15 @@ export const readingTime = (string) => {
   return Math.ceil(minutes);
 }
 
+export const slugify = (string) => {
+  return string
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // strip diacritics (háčky, accents)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export const shuffle = (list) => {
   for (let i = list.length; i; i--) {
     const j = randomNumber(list.length - 1);

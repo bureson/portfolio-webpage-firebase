@@ -1,17 +1,17 @@
 import React, { Component } from 'react';
-import { getDatabase, ref as databaseRef, onValue, query, orderByChild, equalTo, push, child, set, remove } from 'firebase/database';
-import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTrash } from '@fortawesome/free-solid-svg-icons';
+import { getDatabase, ref as databaseRef, onValue, query, orderByChild, equalTo, remove } from 'firebase/database';
+import { getStorage, ref as storageRef, deleteObject } from 'firebase/storage';
+
+import { uploadAttachment, isImage } from '../lib/Storage';
 
 class Attachments extends Component {
 
   constructor(props) {
     super(props);
+    this.fileInputRef = React.createRef();
     this.state = {
-      authed: props.authed,
       attachments: [],
-      post: props.post,
+      previewKey: null,
       progress: null,
       loading: true
     }
@@ -19,11 +19,11 @@ class Attachments extends Component {
 
   componentDidMount = () => {
     const db = getDatabase();
-    const attachmentRef = query(databaseRef(db, 'attachment'), orderByChild('post'), equalTo(this.state.post));
+    const attachmentRef = query(databaseRef(db, 'attachment'), orderByChild('post'), equalTo(this.props.post));
     this.unsubscribe = onValue(attachmentRef, snapshot => {
       const payload = snapshot.val() || {};
       const attachments = Object.keys(payload)
-            .sort((a, b) => payload[b].date - payload[a].date)
+            .sort((a, b) => payload[b].timestamp - payload[a].timestamp)
             .map(key => Object.assign({key}, payload[key]));
       this.setState({
         attachments,
@@ -32,56 +32,20 @@ class Attachments extends Component {
     });
   }
 
-  componentDidUpdate = () => {
-    if (this.state.authed !== this.props.authed) {
-      this.setState({
-        authed: this.props.authed
-      });
-    }
-  }
-
   componentWillUnmount = () => {
     this.unsubscribe && this.unsubscribe();
   }
 
-  convertTimestamp = (timestamp) => {
-    const date = new Date(timestamp * 1000);
-    const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-    return months[date.getMonth()] + ' ' + date.getFullYear();
-  }
-
   onFileUpload = (e) => {
     const file = e.target.files[0];
-    const storage = getStorage();
-    const fileRef = storageRef(storage, `attachment/${file.name}`);
-    const uploadTask = uploadBytesResumable(fileRef, file);
-
-    uploadTask.on('state_changed', (snapshot) => {
-        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
-        console.log('Upload is ' + Math.round(progress) + '% done');
-        this.setState({
-          progress: Math.round(progress)
-        });
-      }, error => {
+    if (!file) return;
+    e.target.value = null;
+    uploadAttachment(file, this.props.post, progress => this.setState({progress}))
+      .then(() => this.setState({progress: null}))
+      .catch(error => {
         console.log(error); // Note: eventually handle error
-      }, () => {
-        getDownloadURL(uploadTask.snapshot.ref).then(downloadURL => {
-          const db = getDatabase();
-          const attachmentKey = push(child(databaseRef(db), 'attachment')).key;
-          set(databaseRef(db, `attachment/${attachmentKey}`), {
-            name: file.name,
-            post: this.state.post,
-            url: downloadURL,
-            size: uploadTask.snapshot.totalBytes,
-            timestamp: Math.floor(Date.now() / 1000)
-          }).then(() => {
-            this.setState({
-              progress: null
-            });
-          }).catch(console.log);
-        });
-      }
-    );
+        this.setState({progress: null});
+      });
   }
 
   onDelete = (e, attachment) => {
@@ -99,42 +63,28 @@ class Attachments extends Component {
   }
 
   render = () => {
-    const isLoading = this.state.progress !== null;
+    const isUploading = this.state.progress !== null;
     return (
-      <div className='input-group'>
-        <label htmlFor='file'>Attachments</label>
-        <div className='input-container'>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>URL</th>
-                <th>Size</th>
-                <th>Uploaded</th>
-                <th>Controls</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.state.attachments.map((attachment, index) => {
-                return (
-                  <tr key={index}>
-                    <td>{attachment.name}</td>
-                    <td><a href={attachment.url} target='_blank' rel='noopener noreferrer'>Link</a></td>
-                    <td>{Math.round(attachment.size / 1000)} kB</td>
-                    <td>{this.convertTimestamp(attachment.timestamp)}</td>
-                    <td><button onClick={(e) => this.onDelete(e, attachment)}><FontAwesomeIcon icon={faTrash} /></button></td>
-                  </tr>
-                )
-              })}
-              <tr>
-                <td colSpan='5'>
-                  {!(isLoading) && <input type='file' id='attachment' onChange={e => this.onFileUpload(e)} />}
-                  {isLoading && <progress value={this.state.progress} max='100' />}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div className='field files'>
+        <label>Files ({this.state.attachments.length})</label>
+        {isUploading
+          ? <progress value={this.state.progress} max='100' />
+          : <button className='upload' onClick={() => this.fileInputRef.current.click()}>+ Upload file</button>}
+        <input type='file' ref={this.fileInputRef} style={{display: 'none'}} onChange={e => this.onFileUpload(e)} />
+        {this.state.attachments.map(attachment => {
+          return (
+            <div className='file-row' key={attachment.key}
+                 onMouseEnter={() => this.setState({previewKey: attachment.key})}
+                 onMouseLeave={() => this.setState({previewKey: null})}>
+              <button className='name' title='Insert into the post' onClick={() => this.props.onInsert && this.props.onInsert(attachment)}>{attachment.name}</button>
+              <span className='size'>{Math.round(attachment.size / 1000)} kB</span>
+              <button className='remove' title='Delete file' onClick={(e) => this.onDelete(e, attachment)}>✕</button>
+              {this.state.previewKey === attachment.key && isImage(attachment.name) &&
+                <div className='preview-pop'><img src={attachment.url} alt={attachment.name} /></div>}
+            </div>
+          )
+        })}
+        {!!this.state.attachments.length && <div className='hint'>click a file to insert it at the cursor</div>}
       </div>
     )
   }
