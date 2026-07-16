@@ -19,6 +19,9 @@ import Menu from '../components/Menu';
 import NoMatch from '../components/NoMatch';
 // import Starscape from '../components/Starscape';
 import Post from './Post';
+import Projects from './Projects';
+import ProjectDetail from './ProjectDetail';
+import EditProject from './EditProject';
 
 class Index extends Component {
 
@@ -99,6 +102,9 @@ class Index extends Component {
               <Route exact path='/blog' render={(props) => <Blog {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog/:post' render={(props) => <Post {...props} authed={this.state.authed}/>} />
               <Route exact path='/blog/:post/edit' render={(props) => <EditPost {...props} authed={this.state.authed}/>} />
+              <Route exact path='/projects' render={(props) => <Projects {...props} authed={this.state.authed}/>} />
+              <Route exact path='/projects/:project' render={(props) => <ProjectDetail {...props} authed={this.state.authed}/>} />
+              <Route exact path='/projects/:project/edit' render={(props) => <EditProject {...props} authed={this.state.authed}/>} />
               <Route exact path='/login' component={Login} />
               <Route component={NoMatch} />
             </Switch>

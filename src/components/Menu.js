@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faLanguage, faMap, faNewspaper, faPlane } from '@fortawesome/free-solid-svg-icons';
+import { faLanguage, faLaptopCode, faMap, faNewspaper, faPlane } from '@fortawesome/free-solid-svg-icons';
 
 class Menu extends Component {
 
@@ -36,6 +36,12 @@ class Menu extends Component {
                   <Link className={this.isActive('/blog')} to='/blog'>
                       <FontAwesomeIcon icon={faNewspaper} className='responsive-placeholder' />
                       <span>blog</span>
+                  </Link>
+              </li>
+              <li>
+                  <Link className={this.isActive('/projects')} to='/projects'>
+                      <FontAwesomeIcon icon={faLaptopCode} className='responsive-placeholder' />
+                      <span>projects</span>
                   </Link>
               </li>
           </ul>
