@@ -3703,8 +3703,10 @@ button.chip.add:hover {
   .page-title .pills {
     margin: 0 0 22px;
   }
-  /* the admin add button wraps below the title, so it carries the gap */
-  .page-title > button {
+  /* the admin buttons wrap below the title, so they carry the gap — whether they
+     stand alone (blog) or sit in a group (projects) */
+  .page-title > button,
+  .page-title > .admin-actions {
     margin: 0 0 22px;
   }
 }
