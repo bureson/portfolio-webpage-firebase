@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
-import { statusLabel, techList } from '../lib/Projects';
+import { galleryList, statusLabel, techList } from '../lib/Projects';
 import LazyPhoto from './LazyPhoto';
 
 class ProjectRow extends Component {
@@ -14,13 +14,13 @@ class ProjectRow extends Component {
 
   render = () => {
     const project = this.props.project;
-    const cover = (project.gallery || [])[0];
+    const cover = galleryList(project.gallery)[0];
     const tech = techList(project.tech);
     return (
       <div className='project-row' onClick={this.navigate}>
         <div className='shot'>
           {cover
-            ? <LazyPhoto className='photo' src={cover} />
+            ? <LazyPhoto className='photo' src={cover.url} />
             : <div className='no-shot'>no screenshot yet</div>}
         </div>
         <div className='info'>

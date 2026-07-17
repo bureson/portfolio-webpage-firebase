@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove } from 'firebase/database';
+import { getStorage, ref as storageRef, deleteObject } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import { classNames, convertTimestamp } from '../lib/Shared';
-import { statusLabel, techList } from '../lib/Projects';
+import { galleryList, shotStoragePath, statusLabel, techList } from '../lib/Projects';
+import Dialog from '../components/Dialog';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
@@ -19,6 +21,7 @@ class ProjectDetail extends Component {
       authed: props.authed,
       activeShot: 0,
       blogList: [],
+      lightbox: false,
       loading: true,
       project: null
     }
@@ -26,6 +29,7 @@ class ProjectDetail extends Component {
 
   componentDidMount = () => {
     this.loadData(this.props.match.params.project);
+    document.addEventListener('keydown', this.onKeyDown);
     const db = getDatabase();
     onValue(ref(db, 'blog'), snapshot => {
       const payload = snapshot.val() || {};
@@ -36,6 +40,24 @@ class ProjectDetail extends Component {
         blogList
       });
     }, { onlyOnce: true });
+  }
+
+  componentWillUnmount = () => {
+    document.removeEventListener('keydown', this.onKeyDown);
+  }
+
+  // the arrow keys walk the gallery while the lightbox is open; Dialog owns Escape
+  onKeyDown = (e) => {
+    if (!this.state.lightbox) return;
+    if (e.key === 'ArrowLeft') this.onStep(-1);
+    if (e.key === 'ArrowRight') this.onStep(1);
+  }
+
+  // wraps around, so the gallery is a loop in both directions
+  onStep = (delta) => {
+    const length = galleryList(this.state.project && this.state.project.gallery).length;
+    if (length < 2) return;
+    this.setState(state => ({ activeShot: (state.activeShot + delta + length) % length }));
   }
 
   componentDidUpdate = (prevProps) => {
@@ -70,29 +92,52 @@ class ProjectDetail extends Component {
   onDelete = (e) => {
     e.preventDefault();
     if (window.confirm('Are you sure you want to remove the project?')) {
+      // the record is going, so take its shots out of storage with it
+      const storage = getStorage();
+      galleryList(this.state.project.gallery).forEach(shot => {
+        const path = shotStoragePath(shot.url);
+        if (path) {
+          deleteObject(storageRef(storage, path)).catch(console.log);
+        }
+      });
       const db = getDatabase();
       remove(ref(db, 'project/' + this.state.project.key));
       this.props.history.push('/projects');
     }
   }
 
-  renderGallery = (gallery) => {
+  renderGallery = (project) => {
+    const gallery = galleryList(project.gallery);
     if (!gallery.length) return null;
+    const shot = gallery[this.state.activeShot] || gallery[0];
     return (
       <>
-        <div className='project-shot'>
-          <LazyPhoto className='photo' src={gallery[this.state.activeShot] || gallery[0]} />
-        </div>
+        <button className={classNames('project-shot', {centered: shot.centered})}
+                title='View full image' onClick={() => this.setState({lightbox: true})}>
+          <LazyPhoto className='photo' src={shot.url} />
+        </button>
+        {shot.title && <p className='shot-caption'>{shot.title}</p>}
         {gallery.length > 1 && <div className='project-thumbs'>
-          {gallery.map((url, index) => {
+          {gallery.map((item, index) => {
             return (
-              <button key={url} className={classNames('thumb', {active: index === this.state.activeShot})}
-                      onClick={() => this.setState({activeShot: index})}>
-                <img src={url} alt='' />
+              <button key={item.url} className={classNames('thumb', {active: index === this.state.activeShot})}
+                      title={item.title || undefined} onClick={() => this.setState({activeShot: index})}>
+                <img src={item.url} alt='' />
               </button>
             )
           })}
         </div>}
+        {this.state.lightbox && <Dialog className='photo-dialog' kicker={project.title} title={shot.title || 'Screenshot'}
+                                       onClose={() => this.setState({lightbox: false})}>
+          <div className='photo-full'>
+            <img src={shot.url} alt={shot.title || project.title} />
+          </div>
+          {gallery.length > 1 && <div className='photo-nav'>
+            <button onClick={() => this.onStep(-1)}>← prev</button>
+            <span className='count'>{this.state.activeShot + 1} / {gallery.length}</span>
+            <button onClick={() => this.onStep(1)}>next →</button>
+          </div>}
+        </Dialog>}
       </>
     )
   }
@@ -202,7 +247,7 @@ class ProjectDetail extends Component {
           </div>
         </div>
         {project.desc && <p className='perex'>{project.desc}</p>}
-        {this.renderGallery(project.gallery || [])}
+        {this.renderGallery(project)}
         <div className='project-grid'>
           <div>
             <p className='kicker section-label'>The story</p>

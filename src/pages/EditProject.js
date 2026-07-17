@@ -1,13 +1,15 @@
 import React, { Component, Suspense } from 'react';
 import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
-import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
+import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
 import { Converter } from 'showdown';
 
 import Dropdown from '../components/Dropdown';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import { classNames, convertTimestamp } from '../lib/Shared';
-import { statusList, statusLabel } from '../lib/Projects';
+import { galleryList, shotStoragePath, statusList, statusLabel } from '../lib/Projects';
 
 // Note: CodeMirror is admin-only, keep it out of the visitor bundle
 const MarkdownEditor = React.lazy(() => import('../components/MarkdownEditor'));
@@ -68,12 +70,12 @@ class EditProject extends Component {
           appUrl: payload.appUrl || '',
           repoUrl: payload.repoUrl || '',
           tech: Array.isArray(payload.tech) ? payload.tech.join(', ') : payload.tech || '',
-          gallery: payload.gallery || [],
+          gallery: galleryList(payload.gallery),
           milestones: payload.milestones || [],
           postKeys: payload.postKeys || [],
           public: !!payload.public,
           timestamp: payload.timestamp
-        });
+        }, this.loadShotSizes);
       } else {
         document.title = 'Not found | Ondrej Bures';
         this.setState({
@@ -186,10 +188,13 @@ class EditProject extends Component {
     }, this.save);
   }
 
-  uploadImage = (file, path, onProgress) => {
+  // Uploads live under <folder>/<project>/<file name>. Without the project in the
+  // path two projects uploading the same file name overwrite each other, which
+  // breaks the older download url — its token dies with the replaced file.
+  uploadImage = (file, folder, onProgress) => {
     return new Promise((resolve, reject) => {
       const storage = getStorage();
-      const fileRef = storageRef(storage, `${path}/${file.name}`);
+      const fileRef = storageRef(storage, `${folder}/${this.state.key}/${file.name}`);
       const uploadTask = uploadBytesResumable(fileRef, file);
       uploadTask.on('state_changed', (snapshot) => {
           const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
@@ -232,7 +237,7 @@ class EditProject extends Component {
       const [file, ...rest] = queue;
       this.uploadImage(file, 'project-gallery', progress => this.setState({galleryProgress: progress}))
         .then(url => {
-          this.onChange('gallery', [...this.state.gallery, url]);
+          this.onChange('gallery', [...this.state.gallery, {url, centered: false, title: '', size: file.size}]);
           uploadNext(rest);
         })
         .catch(error => {
@@ -244,22 +249,64 @@ class EditProject extends Component {
     uploadNext(files);
   }
 
-  onGalleryRemove = (index) => {
-    const urlTokens = decodeURIComponent(this.state.gallery[index]).split('/');
-    const fileName = urlTokens[urlTokens.length - 1].split('?')[0];
-    const storage = getStorage();
-    deleteObject(storageRef(storage, `project-gallery/${fileName}`)).catch(console.log);
-    this.onChange('gallery', this.state.gallery.filter((url, i) => i !== index));
+  shotFileName = (url) => {
+    return (shotStoragePath(url) || '').split('/').pop();
   }
 
-  // milestone rows only become draggable once the grab handle is pressed, so
-  // selecting the title text keeps working
-  onArmDrag = (index) => {
-    this.dragArmed = index;
+  // the line under the title: how big this shot is and which file it came from
+  shotNote = (shot) => {
+    const fileName = this.shotFileName(shot.url);
+    return shot.size ? `${Math.round(shot.size / 1000)} kB · ${fileName}` : fileName;
+  }
+
+  // shots uploaded before the size was recorded read it back from storage, so the
+  // row can show it and the next save persists it
+  loadShotSizes = () => {
+    const storage = getStorage();
+    this.state.gallery.filter(shot => !shot.size && shotStoragePath(shot.url)).forEach(shot => {
+      getMetadata(storageRef(storage, shotStoragePath(shot.url)))
+        .then(meta => this.setState(state => ({
+          gallery: state.gallery.map(item => item.url === shot.url ? {...item, size: meta.size} : item)
+        })))
+        .catch(() => {}); // Note: the file may be gone, the name alone still shows
+    });
+  }
+
+  onGalleryRemove = (index) => {
+    const shot = this.state.gallery[index];
+    // the file goes from storage too, so there is no getting it back
+    if (!window.confirm(`Delete ${this.shotFileName(shot.url)}? The image is removed from storage for good.`)) {
+      return;
+    }
+    const path = shotStoragePath(shot.url);
+    if (path) {
+      deleteObject(storageRef(getStorage(), path)).catch(console.log);
+    }
+    this.onChange('gallery', this.state.gallery.filter((item, i) => i !== index));
+  }
+
+  updateShot = (index, patch) => {
+    this.onChange('gallery', this.state.gallery.map((shot, i) => {
+      return i === index ? {...shot, ...patch} : shot;
+    }));
+  }
+
+  onToggleCentered = (index) => {
+    this.updateShot(index, {centered: !this.state.gallery[index].centered});
+  }
+
+  onShotTitle = (index, title) => {
+    this.updateShot(index, {title});
+  }
+
+  // rows only become draggable once their grab handle is pressed, so selecting
+  // the text inside them keeps working
+  onArmDrag = (index, field) => {
+    this.dragArmed = `${field}:${index}`;
   }
 
   onDragStart = (e, index, field) => {
-    if (field === 'milestones' && this.dragArmed !== index) {
+    if (this.dragArmed !== `${field}:${index}`) {
       e.preventDefault();
       return;
     }
@@ -338,24 +385,40 @@ class EditProject extends Component {
     return (
       <div className='field'>
         <label>Gallery</label>
-        <div className='gallery-grid'>
-          {this.state.gallery.map((url, index) => {
+        <div className='gallery-rows'>
+          {this.state.gallery.map((shot, index) => {
             return (
-              <div key={url} className={classNames('tile', {dragging: this.state.dragField === 'gallery' && index === this.state.dragIndex})} draggable
-                   onDragStart={e => this.onDragStart(e, index, 'gallery')} onDragOver={e => this.onDragOver(e, index, 'gallery')}
-                   onDragEnd={this.onDragEnd}>
-                <img src={url} alt='' />
-                {index === 0 && <span className='cover'>cover</span>}
-                <button className='remove' title='Remove' onClick={() => this.onGalleryRemove(index)}>✕</button>
+              <div key={shot.url} className={classNames('shot-row', {cover: index === 0, dragging: this.state.dragField === 'gallery' && index === this.state.dragIndex})}
+                   draggable onDragStart={e => this.onDragStart(e, index, 'gallery')} onDragOver={e => this.onDragOver(e, index, 'gallery')}
+                   onDragEnd={this.onDragEnd} onMouseUp={this.onDragEnd}>
+                <span className='handle' title='Drag to reorder' onMouseDown={() => this.onArmDrag(index, 'gallery')}>⠿</span>
+                <div className='shot-thumb'>
+                  <img src={shot.url} alt='' />
+                  {index === 0 && <span className='cover-badge'>cover</span>}
+                </div>
+                <div className='shot-info'>
+                  <input className='shot-title' placeholder='add a label…' value={shot.title}
+                         onChange={e => this.onShotTitle(index, e.target.value)} />
+                  <div className='shot-meta'>
+                    <span className='note' title={this.shotNote(shot)}>{this.shotNote(shot)}</span>
+                    <span className='tools'>
+                      <button className={classNames('align', {on: shot.centered})} onClick={() => this.onToggleCentered(index)}
+                              title={shot.centered ? 'Centered — click to crop from the top' : 'Cropped from the top — click to center'}>⊙</button>
+                      <button className='remove' title='Delete the image' onClick={() => this.onGalleryRemove(index)}>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </span>
+                  </div>
+                </div>
               </div>
             )
           })}
           {this.state.galleryProgress !== null
-            ? <div className='tile add'><progress value={this.state.galleryProgress} max='100' /></div>
-            : <button className='tile add' onClick={() => this.galleryInputRef.current.click()}>⇧ add</button>}
+            ? <div className='shot-add'><progress value={this.state.galleryProgress} max='100' /></div>
+            : <button className='shot-add' onClick={() => this.galleryInputRef.current.click()}>⇧ add images</button>}
         </div>
         <input type='file' accept='image/*' multiple ref={this.galleryInputRef} style={{display: 'none'}} onChange={this.onGalleryUpload} />
-        <div className='hint'>drag to reorder · first is the cover</div>
+        <div className='hint'>drag ⠿ to reorder · first is the cover</div>
       </div>
     )
   }
@@ -381,7 +444,7 @@ class EditProject extends Component {
                    key={index} draggable
                    onDragStart={e => this.onDragStart(e, index, 'milestones')} onDragOver={e => this.onDragOver(e, index, 'milestones')}
                    onDragEnd={this.onDragEnd} onMouseUp={this.onDragEnd}>
-                <span className='handle' title='Drag to reorder' onMouseDown={() => this.onArmDrag(index)}>⠿</span>
+                <span className='handle' title='Drag to reorder' onMouseDown={() => this.onArmDrag(index, 'milestones')}>⠿</span>
                 <span className='name'>{milestone.title}</span>
                 <span className='right'>
                   {milestone.date && <span className='date'>{milestone.date}</span>}

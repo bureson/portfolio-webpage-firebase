@@ -2164,6 +2164,36 @@ button.chip.add:hover {
 .dialog.wide {
   max-width: 680px;
 }
+.dialog.photo-dialog {
+  max-width: 1100px;
+}
+.dialog.photo-dialog .photo-full {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+/* fit the whole shot on screen: overlay padding + head + nav + the padding above */
+.dialog.photo-dialog .photo-full img {
+  border-radius: 12px;
+  display: block;
+  max-height: calc(100vh - 300px);
+  max-width: 100%;
+}
+.dialog.photo-dialog .photo-nav {
+  align-items: center;
+  border-top: 1px solid rgba(236, 229, 195, 0.12);
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  padding: 14px 20px;
+}
+.dialog.photo-dialog .photo-nav .count {
+  color: rgba(236, 229, 195, 0.5);
+  font-family: var(--monoFont);
+  font-size: 12px;
+  min-width: 54px;
+  text-align: center;
+}
 .dialog .head {
   display: flex;
   justify-content: space-between;
@@ -3289,6 +3319,9 @@ button.chip.add:hover {
   margin-top: 5px;
   text-align: right;
 }
+.editor-rail .field .switch-row {
+  margin-top: 10px;
+}
 .editor-rail .photo-box {
   border: 1px solid rgba(236, 229, 195, 0.2);
   border-radius: 12px;
@@ -3388,7 +3421,7 @@ button.chip.add:hover {
   gap: 10px;
   padding: 14px 16px;
 }
-.editor-rail .visibility .switch-row {
+.editor-rail .switch-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -3851,12 +3884,32 @@ button.chip.add:hover {
   color: var(--contrastColor);
 }
 .project-shot {
+  background: none;
   border: 1px solid var(--borderColor);
   border-radius: 18px;
+  cursor: zoom-in;
+  display: block;
   overflow: hidden;
+  padding: 0;
+  width: 100%;
 }
 .project-shot .photo {
   height: 420px;
+}
+/* screenshots read top-down, so anchor the crop to the top rather than the middle;
+   per-project `coverCentered` opts back into a centred crop */
+.project-shot .photo .img {
+  background-position: top center;
+}
+.project-shot.centered .photo .img {
+  background-position: center;
+}
+.shot-caption {
+  color: rgba(236, 229, 195, 0.5);
+  font-family: var(--monoFont);
+  font-size: 12px;
+  margin: 12px 0 0;
+  text-align: center;
 }
 .project-thumbs {
   display: flex;
@@ -4049,71 +4102,193 @@ button.chip.add:hover {
   font-size: 12px;
   width: 100%;
 }
-.gallery-grid {
+/* reorder dialog (inspired by mockup 21b): handle, shot, project, status */
+.admin-actions {
+  display: flex;
+  gap: 10px;
+}
+.sort-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.sort-rows .sort-row {
+  align-items: center;
+  background: rgba(236, 229, 195, 0.03);
+  border: 1px solid rgba(236, 229, 195, 0.15);
+  border-radius: 10px;
   display: grid;
-  gap: 8px;
-  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  grid-template-columns: 16px 76px 1fr auto;
+  padding: 8px 12px;
 }
-.gallery-grid .tile {
-  border: 1px solid rgba(236, 229, 195, 0.2);
-  border-radius: 8px;
-  box-sizing: border-box;
-  height: 64px;
+.sort-rows .sort-row.dragging {
+  background: rgba(232, 193, 90, 0.06);
+  border-color: var(--contrastColor);
+}
+.sort-rows .sort-row .handle {
+  color: rgba(236, 229, 195, 0.35);
+  cursor: grab;
+  font-family: var(--monoFont);
+  font-size: 13px;
+  user-select: none;
+}
+.sort-rows .sort-row .shot {
+  background: rgba(236, 229, 195, 0.06);
+  border: 1px solid rgba(236, 229, 195, 0.15);
+  border-radius: 6px;
+  height: 46px;
   overflow: hidden;
-  position: relative;
 }
-.gallery-grid .tile img {
+.sort-rows .sort-row .shot img {
   display: block;
   height: 100%;
   object-fit: cover;
   width: 100%;
 }
-.gallery-grid .tile.dragging {
+.sort-rows .sort-row .what {
+  min-width: 0;
+}
+.sort-rows .sort-row .name {
+  align-items: baseline;
+  color: var(--brightColor);
+  display: flex;
+  font-size: 15px;
+  font-weight: 600;
+  gap: 8px;
+}
+.sort-rows .sort-row .meta {
+  color: rgba(236, 229, 195, 0.5);
+  font-family: var(--monoFont);
+  font-size: 11.5px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* gallery rows (mockup 22a): thumb + label, reordered by the grab handle */
+.gallery-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gallery-rows .shot-row {
+  align-items: stretch;
+  background: rgba(236, 229, 195, 0.03);
+  border: 1px solid rgba(236, 229, 195, 0.15);
+  border-radius: 10px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: 14px 76px 1fr;
+  padding: 8px;
+}
+.gallery-rows .shot-row .handle {
+  align-self: center;
+  color: rgba(236, 229, 195, 0.35);
+  cursor: grab;
+  font-family: var(--monoFont);
+  font-size: 13px;
+  user-select: none;
+}
+.gallery-rows .shot-row.cover {
+  border-color: rgba(232, 193, 90, 0.5);
+}
+.gallery-rows .shot-row.dragging {
   border-color: var(--contrastColor);
   opacity: 0.6;
 }
-.gallery-grid .tile .cover {
+.gallery-rows .shot-thumb {
+  border: 1px solid rgba(236, 229, 195, 0.15);
+  border-radius: 6px;
+  min-height: 52px;
+  overflow: hidden;
+  position: relative;
+}
+.gallery-rows .shot-thumb img {
+  display: block;
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+.gallery-rows .cover-badge {
   background: rgba(8, 13, 24, 0.7);
   border-radius: 5px;
   color: var(--contrastColor);
   font-family: var(--monoFont);
-  font-size: 9.5px;
+  font-size: 9px;
   left: 5px;
-  padding: 1px 6px;
+  padding: 1px 5px;
   position: absolute;
-  top: 5px;
-}
-.gallery-grid .tile .remove {
-  align-items: center;
-  background: rgba(8, 13, 24, 0.7);
-  border: none;
-  border-radius: 6px;
-  color: rgba(236, 229, 195, 0.8);
-  display: flex;
-  font-size: 10px;
-  height: 20px;
-  justify-content: center;
-  opacity: 0;
-  padding: 0;
-  position: absolute;
-  right: 4px;
   top: 4px;
-  width: 20px;
 }
-.gallery-grid .tile:hover .remove {
-  opacity: 1;
+.gallery-rows .shot-info {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  justify-content: center;
+  min-width: 0;
 }
-.gallery-grid .tile.add {
+.editor-rail .field .gallery-rows .shot-title {
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--brightColor);
+  font-size: 12.5px;
+  outline: none;
+  padding: 0;
+}
+.editor-rail .field .gallery-rows .shot-title::placeholder {
+  color: rgba(236, 229, 195, 0.4);
+  font-style: italic;
+}
+.gallery-rows .shot-meta {
+  color: rgba(236, 229, 195, 0.45);
+  display: flex;
+  font-family: var(--monoFont);
+  font-size: 10.5px;
+  gap: 8px;
+  justify-content: space-between;
+}
+.gallery-rows .shot-meta .note {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.gallery-rows .shot-meta .tools {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+.gallery-rows .shot-meta button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-size: 10.5px;
+  padding: 0;
+}
+.gallery-rows .shot-meta button:hover {
+  color: var(--contrastColor);
+}
+/* a centered shot keeps its mark lit, so the crop is readable at a glance */
+.gallery-rows .shot-meta .align.on {
+  color: var(--contrastColor);
+}
+.gallery-rows .shot-add {
   align-items: center;
   background: none;
   border: 1px dashed rgba(232, 193, 90, 0.5);
+  border-radius: 10px;
+  box-sizing: border-box;
   color: var(--contrastColor);
   display: flex;
   font-family: var(--monoFont);
   font-size: 11px;
+  height: 40px;
   justify-content: center;
+  width: 100%;
 }
-.gallery-grid .tile.add progress {
+.gallery-rows .shot-add progress {
   width: 80%;
 }
 .milestone-rows {
