@@ -28,6 +28,7 @@ class EditProject extends Component {
       body: '',
       desc: '',
       dirty: false,
+      dragField: null,
       dragIndex: null,
       gallery: [],
       galleryProgress: null,
@@ -251,27 +252,38 @@ class EditProject extends Component {
     this.onChange('gallery', this.state.gallery.filter((url, i) => i !== index));
   }
 
-  onDragStart = (e, index) => {
-    e.dataTransfer.effectAllowed = 'move';
-    this.setState({ dragIndex: index });
+  // milestone rows only become draggable once the grab handle is pressed, so
+  // selecting the title text keeps working
+  onArmDrag = (index) => {
+    this.dragArmed = index;
   }
 
-  onDragOver = (e, index) => {
+  onDragStart = (e, index, field) => {
+    if (field === 'milestones' && this.dragArmed !== index) {
+      e.preventDefault();
+      return;
+    }
+    e.dataTransfer.effectAllowed = 'move';
+    this.setState({ dragIndex: index, dragField: field });
+  }
+
+  onDragOver = (e, index, field) => {
     e.preventDefault();
     this.setState(state => {
-      if (state.dragIndex === null || state.dragIndex === index) {
+      if (state.dragIndex === null || state.dragField !== field || state.dragIndex === index) {
         return null;
       }
-      const gallery = [...state.gallery];
-      const [moved] = gallery.splice(state.dragIndex, 1);
-      gallery.splice(index, 0, moved);
-      return { gallery, dragIndex: index, dirty: true };
+      const list = [...state[field]];
+      const [moved] = list.splice(state.dragIndex, 1);
+      list.splice(index, 0, moved);
+      return { [field]: list, dragIndex: index, dirty: true };
     });
   }
 
   onDragEnd = () => {
+    this.dragArmed = null;
     if (this.state.dragIndex !== null) {
-      this.setState({ dragIndex: null });
+      this.setState({ dragIndex: null, dragField: null });
       this.scheduleSave();
     }
   }
@@ -329,8 +341,8 @@ class EditProject extends Component {
         <div className='gallery-grid'>
           {this.state.gallery.map((url, index) => {
             return (
-              <div key={url} className={classNames('tile', {dragging: index === this.state.dragIndex})} draggable
-                   onDragStart={e => this.onDragStart(e, index)} onDragOver={e => this.onDragOver(e, index)}
+              <div key={url} className={classNames('tile', {dragging: this.state.dragField === 'gallery' && index === this.state.dragIndex})} draggable
+                   onDragStart={e => this.onDragStart(e, index, 'gallery')} onDragOver={e => this.onDragOver(e, index, 'gallery')}
                    onDragEnd={this.onDragEnd}>
                 <img src={url} alt='' />
                 {index === 0 && <span className='cover'>cover</span>}
@@ -353,9 +365,23 @@ class EditProject extends Component {
       <div className='field'>
         <label>Milestones</label>
         <div className='milestone-rows'>
+          <div className='row add'>
+            <span className='handle ghost' aria-hidden='true'>⠿</span>
+            <input placeholder='What happened ...' value={this.state.milestoneTitle}
+                   onChange={e => this.setState({milestoneTitle: e.target.value})}
+                   onKeyDown={e => e.key === 'Enter' && this.onAddMilestone()} />
+            <input className='date' placeholder={convertTimestamp(Math.floor(Date.now() / 1000), 'mmm yyyy')} value={this.state.milestoneDate}
+                   onChange={e => this.setState({milestoneDate: e.target.value})}
+                   onKeyDown={e => e.key === 'Enter' && this.onAddMilestone()} />
+            <button title='Add milestone' disabled={!this.state.milestoneTitle.trim()} onClick={this.onAddMilestone}>+</button>
+          </div>
           {this.state.milestones.map((milestone, index) => {
             return (
-              <div className='row' key={index}>
+              <div className={classNames('row', {dragging: this.state.dragField === 'milestones' && index === this.state.dragIndex})}
+                   key={index} draggable
+                   onDragStart={e => this.onDragStart(e, index, 'milestones')} onDragOver={e => this.onDragOver(e, index, 'milestones')}
+                   onDragEnd={this.onDragEnd} onMouseUp={this.onDragEnd}>
+                <span className='handle' title='Drag to reorder' onMouseDown={() => this.onArmDrag(index)}>⠿</span>
                 <span className='name'>{milestone.title}</span>
                 <span className='right'>
                   {milestone.date && <span className='date'>{milestone.date}</span>}
@@ -364,16 +390,8 @@ class EditProject extends Component {
               </div>
             )
           })}
-          <div className='row add'>
-            <input placeholder='What happened ...' value={this.state.milestoneTitle}
-                   onChange={e => this.setState({milestoneTitle: e.target.value})}
-                   onKeyDown={e => e.key === 'Enter' && this.onAddMilestone()} />
-            <input className='date' placeholder='Feb 2025' value={this.state.milestoneDate}
-                   onChange={e => this.setState({milestoneDate: e.target.value})}
-                   onKeyDown={e => e.key === 'Enter' && this.onAddMilestone()} />
-            <button title='Add milestone' disabled={!this.state.milestoneTitle.trim()} onClick={this.onAddMilestone}>+</button>
-          </div>
         </div>
+        <div className='hint'>drag to reorder · first is the latest</div>
       </div>
     )
   }

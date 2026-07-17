@@ -31,6 +31,8 @@ export const convertTimestamp = (timestamp, format) => {
       return date.getDate() + ' ' + month + ' ' + date.getFullYear();
     case 'yyyy-mm-dd':
       return date.getFullYear() + '-' + mm + '-' + dd;
+    case 'mmm yyyy':
+      return month.slice(0, 3) + ' ' + date.getFullYear();
     default:
       return month + ' ' + date.getFullYear();
   }

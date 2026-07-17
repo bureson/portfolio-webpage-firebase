@@ -7,7 +7,7 @@ import LazyPhoto from './LazyPhoto';
 class ProjectRow extends Component {
 
   navigate = (e) => {
-    // Note: let actual links (project name, visit/code) handle themselves
+    // Note: let the project name link handle itself
     if (e.target.closest('a')) return;
     this.props.history.push(`/projects/${this.props.project.key}`);
   }
@@ -34,14 +34,8 @@ class ProjectRow extends Component {
           </div>
           {project.years && <div className='years'>{project.years}</div>}
           {project.desc && <p className='desc'>{project.desc}</p>}
-          <div className='bottom'>
-            <div className='tech-chips'>
-              {tech.map(item => <span className='tech' key={item}>{item}</span>)}
-            </div>
-            <div className='links'>
-              {project.appUrl && <a href={project.appUrl} target='_blank' rel='noreferrer'>visit →</a>}
-              {project.repoUrl && <a className='code' href={project.repoUrl} target='_blank' rel='noreferrer'>code ↗</a>}
-            </div>
+          <div className='tech-chips'>
+            {tech.map(item => <span className='tech' key={item}>{item}</span>)}
           </div>
         </div>
       </div>

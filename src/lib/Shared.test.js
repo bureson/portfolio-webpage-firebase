@@ -24,6 +24,10 @@ describe('component/Shared', () => {
       expect(convertTimestamp(1514145600, 'yyyy-mm-dd')).toBe('2017-12-24');
     });
 
+    it('converts to mmm yyyy', () => {
+      expect(convertTimestamp(608544000, 'mmm yyyy')).toBe('Apr 1989');
+    });
+
     it('uses default date format', () => {
       expect(convertTimestamp(608544000)).toBe('April 1989');
     })

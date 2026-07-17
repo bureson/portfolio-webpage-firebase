@@ -1113,7 +1113,7 @@ button.primary:hover {
   border-radius: 16px;
   cursor: pointer;
   padding: 30px 36px;
-  margin: 10px 0 30px;
+  margin: 0 0 30px;
   transition: border-color 300ms ease-in-out;
 }
 .blog-featured:hover {
@@ -3383,6 +3383,9 @@ button.chip.add:hover {
 .editor-rail .visibility {
   border: 1px solid var(--borderColor);
   border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
   padding: 14px 16px;
 }
 .editor-rail .visibility .switch-row {
@@ -3667,6 +3670,10 @@ button.chip.add:hover {
   .page-title .pills {
     margin: 0 0 22px;
   }
+  /* the admin add button wraps below the title, so it carries the gap */
+  .page-title > button {
+    margin: 0 0 22px;
+  }
 }
 
 /* projects (mockups 18a/21a/22a) */
@@ -3752,25 +3759,9 @@ button.chip.add:hover {
   line-height: 1.65;
   margin: 0 0 18px;
 }
-.project-row .bottom {
-  align-items: center;
-  display: flex;
-  gap: 16px;
-  justify-content: space-between;
+/* chips sit flush with the bottom of the card, however tall the text above runs */
+.project-row .tech-chips {
   margin-top: auto;
-}
-.project-row .links {
-  display: flex;
-  font-size: 13.5px;
-  font-weight: 500;
-  gap: 16px;
-  white-space: nowrap;
-}
-.project-row .links a.code {
-  color: rgba(236, 229, 195, 0.6);
-}
-.project-row .links a.code:hover {
-  color: var(--contrastColor);
 }
 .status-pill {
   border: 1px solid rgba(236, 229, 195, 0.3);
@@ -4143,8 +4134,23 @@ button.chip.add:hover {
   justify-content: space-between;
   padding: 8px 12px;
 }
+.milestone-rows .row.dragging {
+  background: rgba(232, 193, 90, 0.06);
+  border-color: var(--contrastColor);
+}
+.milestone-rows .row .handle {
+  color: rgba(236, 229, 195, 0.35);
+  cursor: grab;
+  flex: none;
+  user-select: none;
+}
+/* keeps the add row's text aligned with the draggable rows above it */
+.milestone-rows .row .handle.ghost {
+  visibility: hidden;
+}
 .milestone-rows .row .name {
   color: var(--brightColor);
+  flex: 1;
   overflow-wrap: anywhere;
 }
 .milestone-rows .row .right {
@@ -4234,10 +4240,5 @@ button.chip.add:hover {
     align-items: flex-start;
     flex-direction: column;
     gap: 8px;
-  }
-  .project-row .bottom {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 12px;
   }
 }
