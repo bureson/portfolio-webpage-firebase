@@ -30,7 +30,10 @@ class ProjectRow extends Component {
                 <span className='title'>{project.title}{!project.public && <span className='draft-pill'>draft</span>}</span>
               </Link>
             </div>
-            <span className={`status-pill ${project.status}`}>{statusLabel(project.status)}</span>
+            <div className='badges'>
+              <span className={`status-pill ${project.status}`}>{statusLabel(project.status)}</span>
+              {project.appUrl && <a className='visit-pill' href={project.appUrl} target='_blank' rel='noreferrer'>Visit →</a>}
+            </div>
           </div>
           {project.years && <div className='years'>{project.years}</div>}
           {project.desc && <p className='desc'>{project.desc}</p>}

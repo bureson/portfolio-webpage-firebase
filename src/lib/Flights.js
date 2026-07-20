@@ -5,7 +5,7 @@ const EMISSIONS_API = 'https://travelimpactmodel.googleapis.com/v1/flights:compu
 let airportsPromise = null;
 
 // Note: lazy import keeps the ~180 KB dataset out of the main bundle,
-// it is only fetched once the flight dialog needs it
+// it is only fetched once a flight view needs it (dialog, or leg tooltips)
 export const loadAirports = () => {
   if (!airportsPromise) {
     airportsPromise = import('./airports.json').then(module => module.default);
@@ -74,6 +74,14 @@ export const resolveLeg = async (origin, destination) => {
     console.log(error);
   }
   return { km, co2: estimateCO2(km), estimated: true };
+};
+
+// [50.101, 14.26] -> '50.101° N · 14.260° E'
+export const formatCoords = (lat, lon) => {
+  const hemisphere = (value, positive, negative) => {
+    return `${Math.abs(value).toFixed(3)}° ${value >= 0 ? positive : negative}`;
+  };
+  return `${hemisphere(lat, 'N', 'S')} · ${hemisphere(lon, 'E', 'W')}`;
 };
 
 export const formatKm = (km) => {

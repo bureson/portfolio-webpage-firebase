@@ -1934,6 +1934,40 @@ button.chip.add:hover {
   font-size: 13px;
   font-weight: 500;
   padding: 7px 13px;
+  position: relative;
+}
+.airport-tip {
+  background: #0b1426;
+  border: 1px solid rgba(232, 193, 90, 0.4);
+  border-radius: 8px;
+  bottom: calc(100% + 8px);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  left: 50%;
+  line-height: 1.4;
+  opacity: 0;
+  padding: 7px 11px;
+  pointer-events: none;
+  position: absolute;
+  transform: translateX(-50%);
+  transition: opacity 200ms ease-in-out;
+  white-space: nowrap;
+  z-index: 5;
+}
+.airport:hover .airport-tip {
+  opacity: 1;
+}
+.airport-tip .name {
+  color: var(--brightColor);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+}
+.airport-tip .coords {
+  color: rgba(236, 229, 195, 0.55);
+  font-family: var(--monoFont);
+  font-size: 11px;
 }
 .flight-card .segment,
 .getting-there .segment {
@@ -3818,6 +3852,30 @@ button.chip.add:hover {
   border-color: rgba(232, 193, 90, 0.5);
   color: var(--contrastColor);
 }
+.project-row .badges {
+  align-items: center;
+  display: flex;
+  flex-shrink: 0;
+  gap: 12px;
+}
+/* the call to action from the project page, outlined and sized down to sit
+   alongside the status pill */
+.project-row a.visit-pill {
+  background: none;
+  border: 1px solid var(--contrastColor);
+  border-radius: 999px;
+  color: var(--contrastColor);
+  font-family: var(--monoFont);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  padding: 5px 12px;
+  white-space: nowrap;
+}
+.project-row a.visit-pill:hover {
+  background: rgba(232, 193, 90, 0.12);
+  color: var(--contrastColor);
+}
 .tech-chips {
   display: flex;
   flex-wrap: wrap;
@@ -3864,7 +3922,7 @@ button.chip.add:hover {
   display: flex;
   gap: 12px;
 }
-.content .project-head a.cta {
+.project-head a.cta {
   background: var(--contrastColor);
   border-radius: 999px;
   color: #080d18;
@@ -3873,7 +3931,12 @@ button.chip.add:hover {
   padding: 11px 26px;
   white-space: nowrap;
 }
-.content .project-head a.ghost {
+/* the global a:hover would recolour the label into the fill, so hold it dark */
+.project-head a.cta:hover {
+  background: var(--brightColor);
+  color: #080d18;
+}
+.project-head a.ghost {
   border: 1px solid rgba(236, 229, 195, 0.25);
   border-radius: 999px;
   color: rgba(236, 229, 195, 0.7);
@@ -3881,7 +3944,7 @@ button.chip.add:hover {
   padding: 10px 22px;
   white-space: nowrap;
 }
-.content .project-head a.ghost:hover {
+.project-head a.ghost:hover {
   border-color: var(--contrastColor);
   color: var(--contrastColor);
 }
