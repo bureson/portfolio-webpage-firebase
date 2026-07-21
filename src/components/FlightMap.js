@@ -1,13 +1,21 @@
 import React, { Component } from 'react';
 
 import { classNames } from '../lib/Shared';
-import { loadAirports, loadWorldMap, formatKm } from '../lib/Flights';
+import { loadAirports, loadWorldMap, formatKm, routeKey } from '../lib/Flights';
 
 const W = 1000, H = 500;
 const MAX_ZOOM = 12;
 // auto-fit on a year filter zooms gentler than manual zoom so the
 // routes keep their global context; padding also covers the arc lift
 const FIT_ZOOM = 5, FIT_PAD = 48;
+// a single trip gets its own frame: a wide banner cropped to the legs.
+// the margin scales with the trip so it clears the arc lift on a long
+// haul without stranding a short hop in empty ocean
+const FOCUS_ASPECT = 2.1, FOCUS_ZOOM = 16, FOCUS_PAD = 0.2, FOCUS_PAD_RANGE = [16, 50];
+// dots and labels are sized against the map width, and the dialog is
+// barely half as wide as the page, so the focus map needs them bigger
+// to land at the same on-screen size
+const FOCUS_MARK_SCALE = 2.2;
 const px = (lon) => (lon + 180) / 360 * W;
 const py = (lat) => (90 - lat) / 180 * H;
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -20,7 +28,8 @@ class FlightMap extends Component {
       airports: null,
       world: null,
       tooltip: null,
-      panning: false
+      panning: false,
+      frameAspect: null
     };
     this.svgRef = React.createRef();
     this.cardRef = React.createRef();
@@ -44,6 +53,26 @@ class FlightMap extends Component {
     if (prevProps.flights !== this.props.flights) {
       this.animateTo(this.fitView());
     }
+    this.fillFrame();
+  }
+
+  // the panel beside a focus map can be taller than the map's own
+  // aspect, which would letterbox it. Widen the frame to whatever the
+  // cell actually is; only ever growing keeps it from oscillating with
+  // the height it is measuring
+  fillFrame = () => {
+    const cell = this.props.focus && this.cardRef.current && this.cardRef.current.parentElement;
+    if (!cell) {
+      return;
+    }
+    const { width, height } = cell.getBoundingClientRect();
+    if (!width || !height) {
+      return;
+    }
+    const aspect = width / height;
+    if (aspect < (this.state.frameAspect || FOCUS_ASPECT) - 0.02) {
+      this.setState({ frameAspect: aspect });
+    }
   }
 
   componentWillUnmount = () => {
@@ -63,31 +92,54 @@ class FlightMap extends Component {
       if (!airports[leg.from] || !airports[leg.to]) return;
       [leg.from, leg.to].forEach(code => visits.set(code, (visits.get(code) || 0) + 1));
       const [a, b] = [leg.from, leg.to].sort();
-      const key = `${a}-${b}`;
+      const key = routeKey(a, b);
       if (!routes.has(key)) routes.set(key, { a, b, km: leg.km, count: 0 });
       routes.get(key).count++;
     }));
     return { routes: [...routes.values()].sort((a, b) => a.count - b.count), visits: [...visits.entries()] };
   }
 
-  // full width, cropped vertically to the latitudes actually flown;
-  // derived from baseFlights (when given) so a year filter changes the
-  // routes but never the card shape
-  baseView = () => {
+  // pixel bounds of every airport the given flights touch
+  bounds = (flights) => {
     const airports = this.state.airports;
-    const flights = this.props.baseFlights || this.props.flights;
-    let yMin = H, yMax = 0;
+    let xMin = W, xMax = 0, yMin = H, yMax = 0;
     flights.forEach(flight => (flight.legs || []).forEach(leg => {
       [leg.from, leg.to].forEach(code => {
         if (!airports[code]) return;
-        const y = py(airports[code][0]);
+        const [lat, lon] = airports[code];
+        const x = px(lon), y = py(lat);
+        if (x < xMin) xMin = x;
+        if (x > xMax) xMax = x;
         if (y < yMin) yMin = y;
         if (y > yMax) yMax = y;
       });
     }));
-    yMin = Math.max(0, yMin - 40);
-    yMax = Math.min(H, yMax + 40);
-    return { x: 0, y: r1(yMin), w: W, h: r1(yMax - yMin) };
+    return { xMin, xMax, yMin, yMax };
+  }
+
+  // full width, cropped vertically to the latitudes actually flown;
+  // derived from baseFlights (when given) so a year filter changes the
+  // routes but never the card shape. In focus mode the frame closes in
+  // on the trip itself instead
+  baseView = () => {
+    const { xMin, xMax, yMin, yMax } = this.bounds(this.props.baseFlights || this.props.flights);
+    if (this.props.focus) {
+      const aspect = this.state.frameAspect || FOCUS_ASPECT;
+      const [padMin, padMax] = FOCUS_PAD_RANGE;
+      const pad = Math.min(Math.max(Math.max(xMax - xMin, yMax - yMin) * FOCUS_PAD, padMin), padMax);
+      let w = Math.max(xMax - xMin + pad * 2, (yMax - yMin + pad * 2) * aspect, W / FOCUS_ZOOM);
+      let h = w / aspect;
+      if (w > W) { w = W; h = w / aspect; }
+      if (h > H) { h = H; w = h * aspect; }
+      return {
+        x: r1(Math.min(Math.max((xMin + xMax - w) / 2, 0), W - w)),
+        y: r1(Math.min(Math.max((yMin + yMax - h) / 2, 0), H - h)),
+        w: r1(w), h: r1(h)
+      };
+    }
+    const top = Math.max(0, yMin - 40);
+    const bottom = Math.min(H, yMax + 40);
+    return { x: 0, y: r1(top), w: W, h: r1(bottom - top) };
   }
 
   // quadratic arc bowing away from the equator, like a great circle;
@@ -124,19 +176,7 @@ class FlightMap extends Component {
     if (!this.props.baseFlights || this.props.flights === this.props.baseFlights) {
       return Object.assign({}, base);
     }
-    const airports = this.state.airports;
-    let xMin = W, xMax = 0, yMin = H, yMax = 0;
-    this.props.flights.forEach(flight => (flight.legs || []).forEach(leg => {
-      [leg.from, leg.to].forEach(code => {
-        if (!airports[code]) return;
-        const [lat, lon] = airports[code];
-        const x = px(lon), y = py(lat);
-        if (x < xMin) xMin = x;
-        if (x > xMax) xMax = x;
-        if (y < yMin) yMin = y;
-        if (y > yMax) yMax = y;
-      });
-    }));
+    const { xMin, xMax, yMin, yMax } = this.bounds(this.props.flights);
     if (xMin > xMax) {
       return Object.assign({}, base);
     }
@@ -189,11 +229,13 @@ class FlightMap extends Component {
     svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
     // dots and labels keep their on-screen size while the map scales
     const shrink = Math.sqrt(base.w / view.w);
+    const unit = this.unit || 1;
     svg.querySelectorAll('.airport').forEach(dot => {
       dot.setAttribute('r', (Number(dot.dataset.r) / shrink).toFixed(2));
     });
     svg.querySelectorAll('.airport-label').forEach(label => {
-      label.style.fontSize = `${(7.5 / shrink).toFixed(2)}px`;
+      label.style.fontSize = `${(7.5 * unit / shrink).toFixed(2)}px`;
+      label.style.strokeWidth = `${(2 * unit / shrink).toFixed(2)}px`;
       const lift = (Number(label.dataset.cy) - Number(label.dataset.y)) / shrink;
       label.setAttribute('y', (Number(label.dataset.cy) - lift).toFixed(2));
     });
@@ -291,8 +333,13 @@ class FlightMap extends Component {
     const maxCount = Math.max(...routes.map(route => route.count));
     const maxVisits = Math.max(...visits.map(([, count]) => count));
     const labelled = new Set([...visits].sort((a, b) => b[1] - a[1]).slice(0, 9).map(([code]) => code));
+    // dots and labels are sized in map units, so a cropped frame has to
+    // scale them down to keep the same on-screen size
+    const unit = this.unit = this.base.w / W * (this.props.focus ? FOCUS_MARK_SCALE : 1);
+    // hovering a leg row lights up its arc and the two airports it joins
+    const lit = new Set(this.props.highlight ? this.props.highlight.split('-') : []);
     return (
-      <div className='flight-map' ref={this.cardRef}>
+      <div className={classNames('flight-map', {focus: this.props.focus})} ref={this.cardRef}>
         <svg ref={this.svgRef} className={classNames({panning: this.state.panning})}
              viewBox={`${this.base.x} ${this.base.y} ${this.base.w} ${this.base.h}`}
              role='img' aria-label='World map with flight routes'
@@ -309,11 +356,13 @@ class FlightMap extends Component {
             // leaving the right edge re-enters on the left
             const offsets = arc.wrap ? [0, arc.wrap] : [0];
             return (
-              <g className='route' key={`${route.a}-${route.b}`}>
+              <g className={classNames('route', {lit: this.props.highlight === routeKey(route.a, route.b)})} key={`${route.a}-${route.b}`}>
                 {offsets.map(offset => (
                   <g key={offset} transform={offset ? `translate(${offset} 0)` : undefined}>
                     <path className='glow' d={arc.d} />
-                    <path className='line' d={arc.d} style={style} />
+                    {/* pathLength normalises the length so the draw
+                        animation runs evenly on every arc */}
+                    <path className='line' d={arc.d} style={style} pathLength='600' />
                     <path className='hit' d={arc.d} data-label={label} />
                   </g>
                 ))}
@@ -323,14 +372,17 @@ class FlightMap extends Component {
           {visits.map(([code, count]) => {
             const [lat, lon, name] = this.state.airports[code];
             const x = r1(px(lon)), y = r1(py(lat));
-            const radius = r1(1.6 + (count / maxVisits) * 2.2);
-            const labelY = r1(y - radius - 3.5);
+            const radius = r1((1.6 + (count / maxVisits) * 2.2) * unit);
+            const labelY = r1(y - radius - 3.5 * unit);
             return (
               <g key={code}>
-                <circle className='airport' cx={x} cy={y} r={radius} data-r={radius}>
+                <circle className={classNames('airport', {lit: lit.has(code)})} cx={x} cy={y} r={radius} data-r={radius}>
                   <title>{`${code} · ${name} · ${count}×`}</title>
                 </circle>
-                {labelled.has(code) && <text className='airport-label' x={x} y={labelY} data-y={labelY} data-cy={y}>{code}</text>}
+                {/* the halo is drawn in map units too, it has to shrink
+                    with the glyphs or it swallows them */}
+                {labelled.has(code) && <text className='airport-label' x={x} y={labelY} data-y={labelY} data-cy={y}
+                                             style={{fontSize: `${r1(7.5 * unit)}px`, strokeWidth: `${r1(2 * unit)}px`}}>{code}</text>}
               </g>
             )
           })}

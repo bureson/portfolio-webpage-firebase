@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 
-import { formatCoords, formatKm, loadAirports } from '../lib/Flights';
+import { formatCO2, formatCoords, formatKm, loadAirports } from '../lib/Flights';
 
 class FlightLegs extends Component {
 
@@ -36,8 +36,34 @@ class FlightLegs extends Component {
     )
   }
 
+  // one leg per row, route on the left and its numbers on the right;
+  // the chain layout below cannot breathe inside a narrow dialog
+  renderRows = (legs) => {
+    return (
+      <div className='leg-rows'>
+        {legs.map((leg, index) => (
+          <div className='row' key={index}
+               onMouseEnter={() => this.props.onHover && this.props.onHover(leg)}
+               onMouseLeave={() => this.props.onHover && this.props.onHover(null)}>
+            <div className='route'>
+              {this.renderAirport(leg.from)}
+              <span className='arrow'>➤</span>
+              {this.renderAirport(leg.to)}
+            </div>
+            <span className='stats' title={leg.estimated ? 'CO₂ estimated from the distance' : undefined}>
+              {formatKm(leg.km)} · {formatCO2(leg.co2)}{leg.estimated ? '*' : ''}
+            </span>
+          </div>
+        ))}
+      </div>
+    )
+  }
+
   render = () => {
     const legs = this.props.legs || [];
+    if (this.props.rows) {
+      return this.renderRows(legs);
+    }
     return (
       <div className='legs'>
         {legs.map((leg, index) => {

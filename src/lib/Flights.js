@@ -111,6 +111,12 @@ export const kmComparisons = (km) => {
   ];
 };
 
+// the map draws one arc per pair of airports, whichever way it was
+// flown, so both directions of a leg share this key
+export const routeKey = (from, to) => {
+  return [from, to].sort().join('-');
+};
+
 export const flightYear = (flight) => {
   return new Date(flight.date * 1000).getFullYear();
 };

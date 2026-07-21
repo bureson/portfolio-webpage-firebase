@@ -33,6 +33,8 @@ export const convertTimestamp = (timestamp, format) => {
       return date.getFullYear() + '-' + mm + '-' + dd;
     case 'mmm yyyy':
       return month.slice(0, 3) + ' ' + date.getFullYear();
+    case 'mmm':
+      return month.slice(0, 3);
     default:
       return month + ' ' + date.getFullYear();
   }

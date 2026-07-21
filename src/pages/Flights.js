@@ -1,15 +1,12 @@
-import React, { Component } from 'react';
-import { Link } from 'react-router-dom';
+import React, { Component, Fragment } from 'react';
 import { getDatabase, ref, onValue, remove } from 'firebase/database';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
+import FlightDetail from '../components/FlightDetail';
 import FlightDialog from '../components/FlightDialog';
-import FlightLegs from '../components/FlightLegs';
 import FlightMap from '../components/FlightMap';
 import FlightTimeline from '../components/FlightTimeline';
 import Loader from '../components/Loader';
-import { convertTimestamp } from '../lib/Shared';
+import { classNames, convertTimestamp } from '../lib/Shared';
 import { flightTotals, flightYear, formatKm, formatCO2, kmComparisons } from '../lib/Flights';
 
 class Flights extends Component {
@@ -23,12 +20,14 @@ class Flights extends Component {
       year: null,
       dialog: false,
       editing: null,
+      open: null,
       loading: true
     }
   }
 
   componentDidMount = () => {
     document.title = 'Flights | Ondrej Bures';
+    document.addEventListener('keydown', this.onKeyDown);
     const db = getDatabase();
     const flightListRef = ref(db, 'flight-log');
     this.unsubscribe = onValue(flightListRef, snapshot => {
@@ -58,33 +57,63 @@ class Flights extends Component {
   }
 
   componentWillUnmount = () => {
+    document.removeEventListener('keydown', this.onKeyDown);
     this.unsubscribe && this.unsubscribe();
   }
 
-  onDelete = (e, key) => {
-    e.preventDefault();
+  onKeyDown = (e) => {
+    if (e.key === 'Escape' && this.state.open) {
+      this.setState({ open: null });
+    }
+  }
+
+  onDelete = (key) => {
     if (window.confirm('Are you sure you want to remove the flight?')) {
       const db = getDatabase();
       const flightRef = ref(db, `flight-log/${key}`);
       remove(flightRef);
+      this.setState({ open: null });
     }
   }
 
-  renderCountryChips = (flight) => {
-    const countryKeys = (flight.countries || []).filter(key => this.state.countries[key]);
-    if (!countryKeys.length) return null;
+  // flights arrive newest first, so consecutive runs are already the years
+  yearGroups = (flights) => {
+    return flights.reduce((groups, flight) => {
+      const year = flightYear(flight);
+      const group = groups[groups.length - 1];
+      const { km, co2 } = flightTotals(flight);
+      if (!group || group.year !== year) {
+        groups.push({ year, flights: [flight], km, co2 });
+      } else {
+        group.flights.push(flight);
+        group.km += km;
+        group.co2 += co2;
+      }
+      return groups;
+    }, []);
+  }
+
+  renderRow = (flight) => {
+    const totals = flightTotals(flight);
+    const legCount = (flight.legs || []).length;
+    const open = this.state.open === flight.key;
     return (
-      <div className='trip-to'>
-        <div className='label'>Trip to</div>
-        {countryKeys.map(key => {
-          const country = this.state.countries[key];
-          return (
-            <Link className='country-chip' to={`/countries/${key}`} key={key}>
-              <span className='code'>{(country.iso || '').toUpperCase()}</span>
-              {country.name}
-            </Link>
-          )
-        })}
+      <div className={classNames('flight-row', {open})} key={flight.key}>
+        <button className='row' onClick={() => this.setState({open: open ? null : flight.key})}>
+          <span className='month'>{convertTimestamp(flight.date, 'mmm')}</span>
+          <span className='name'>{flight.title}</span>
+          <span className='count'>{legCount} {legCount === 1 ? 'leg' : 'legs'}</span>
+          <span className='km'>→ {formatKm(totals.km)}</span>
+          <span className='co2'>☁ {formatCO2(totals.co2)}</span>
+          <span className='chev'>{open ? '▴' : '▾'}</span>
+        </button>
+        <div className='detail'>
+          <div className='detail-inner'>
+            <FlightDetail flight={flight} countries={this.state.countries} authed={this.state.authed} open={open}
+                          onEdit={() => this.setState({dialog: true, editing: flight})}
+                          onDelete={() => this.onDelete(flight.key)} />
+          </div>
+        </div>
       </div>
     )
   }
@@ -92,30 +121,19 @@ class Flights extends Component {
   renderFlights = (flights) => {
     if (this.state.loading) return <Loader />;
     return (
-      <div className='flight-list'>
-        {flights.map(flight => {
-          const totals = flightTotals(flight);
-          const legCount = (flight.legs || []).length;
-          return (
-            <div className='flight-card' key={flight.key}>
-              <div className='top'>
-                <div className='ident'>
-                  <span className='title'>{flight.title}</span>
-                  <span className='date'>{convertTimestamp(flight.date)}</span>
-                </div>
-                <div className='metrics'>
-                  <span>{legCount} {legCount === 1 ? 'leg' : 'legs'}</span>
-                  <span>→ {formatKm(totals.km)}</span>
-                  <span className='co2'>☁ {formatCO2(totals.co2)}</span>
-                  {this.state.authed && <button onClick={() => this.setState({dialog: true, editing: flight})}><FontAwesomeIcon icon={faEdit} /></button>}
-                  {this.state.authed && <button onClick={(e) => this.onDelete(e, flight.key)}><FontAwesomeIcon icon={faTrash} /></button>}
-                </div>
-              </div>
-              <FlightLegs legs={flight.legs} />
-              {this.renderCountryChips(flight)}
+      <div className='flight-ledger'>
+        {this.yearGroups(flights).map(group => (
+          <Fragment key={group.year}>
+            <div className='year-head'>
+              <span className='year'>{group.year}</span>
+              <span className='rule'></span>
+              <span className='summary'>
+                {group.flights.length} {group.flights.length === 1 ? 'trip' : 'trips'} · {formatKm(group.km)} · ☁ {formatCO2(group.co2)}
+              </span>
             </div>
-          )
-        })}
+            {group.flights.map(this.renderRow)}
+          </Fragment>
+        ))}
       </div>
     )
   }
