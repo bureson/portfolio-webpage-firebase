@@ -16,6 +16,11 @@ const FOCUS_ASPECT = 2.1, FOCUS_ZOOM = 16, FOCUS_PAD = 0.2, FOCUS_PAD_RANGE = [1
 // barely half as wide as the page, so the focus map needs them bigger
 // to land at the same on-screen size
 const FOCUS_MARK_SCALE = 2.2;
+// the arcs draw themselves in quicker the longer the leg: duration eases
+// from DRAW_SLOW for a hop down to DRAW_FAST for anything DRAW_REF map
+// units or longer (a third of the way around the world)
+const DRAW_SLOW = 2200, DRAW_FAST = 900, DRAW_REF = 250;
+const drawMs = (len) => Math.round(DRAW_SLOW - (DRAW_SLOW - DRAW_FAST) * Math.sqrt(Math.min(len / DRAW_REF, 1)));
 const px = (lon) => (lon + 180) / 360 * W;
 const py = (lat) => (90 - lat) / 180 * H;
 const r1 = (n) => Math.round(n * 10) / 10;
@@ -42,6 +47,60 @@ class FlightMap extends Component {
     Promise.all([loadAirports(), loadWorldMap()]).then(([airports, world]) => this.setState({ airports, world }));
   }
 
+  // the arcs draw themselves in on first paint. A dash long enough to
+  // cover the whole arc, wound back and then let out, is the reveal, but
+  // vector-effect: non-scaling-stroke has the browser measure the dash
+  // against the arc on screen rather than in map units and ignore
+  // pathLength with it, so the dash never lines up with the arc and the
+  // longest legs are left with an undrawn tail. Drop the vector-effect
+  // for the duration instead: pathLength then makes every arc exactly 1
+  // unit long, and stroke-width scaled by hand holds its weight
+  drawRoutes = () => {
+    const svg = this.svgRef.current;
+    if (!svg || this.drawn || window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+    const view = this.view || this.base;
+    const ctm = svg.getScreenCTM();
+    const lines = [...svg.querySelectorAll('.route .line')];
+    if (!view || !lines.length) {
+      return;
+    }
+    const scale = (ctm && ctm.a) || svg.getBoundingClientRect().width / view.w;
+    if (!scale) {
+      return;
+    }
+    this.drawn = true;
+    // the pace comes off the map units, so a leg keeps its timing
+    // whatever the card is sized to
+    const draws = lines.map(line => {
+      const width = parseFloat(line.style.strokeWidth);
+      return { line, width, ms: drawMs(line.getTotalLength()) };
+    });
+    draws.forEach(({ line, width }) => {
+      line.setAttribute('pathLength', 1);
+      line.style.vectorEffect = 'none';
+      line.style.strokeWidth = width / scale;
+      line.style.transition = 'none';
+      line.style.strokeDasharray = 1;
+      line.style.strokeDashoffset = 1;
+    });
+    // settle the hidden state before the transition, or both values land
+    // in one style pass and the arcs simply appear
+    svg.getBoundingClientRect();
+    draws.forEach(({ line, ms }) => {
+      line.style.transition = `stroke-dashoffset ${ms}ms ease-out`;
+      line.style.strokeDashoffset = 0;
+    });
+    // hand the arcs back to the stylesheet: a leftover dasharray would
+    // repeat along them once drawn, and it survives any later zoom
+    this.drawTimer = setTimeout(() => draws.forEach(({ line, width }) => {
+      line.removeAttribute('pathLength');
+      line.style.vectorEffect = line.style.transition = line.style.strokeDasharray = line.style.strokeDashoffset = '';
+      line.style.strokeWidth = width;
+    }), Math.max(...draws.map(d => d.ms)) + 50);
+  }
+
   componentDidUpdate = (prevProps) => {
     // React wheel handlers are passive, attach natively so zoom can
     // preventDefault the page scroll
@@ -54,6 +113,7 @@ class FlightMap extends Component {
       this.animateTo(this.fitView());
     }
     this.fillFrame();
+    this.drawRoutes();
   }
 
   // the panel beside a focus map can be taller than the map's own
@@ -77,6 +137,7 @@ class FlightMap extends Component {
 
   componentWillUnmount = () => {
     cancelAnimationFrame(this.anim);
+    clearTimeout(this.drawTimer);
     if (this.svgRef.current) {
       this.svgRef.current.removeEventListener('wheel', this.onWheel);
     }
@@ -360,9 +421,7 @@ class FlightMap extends Component {
                 {offsets.map(offset => (
                   <g key={offset} transform={offset ? `translate(${offset} 0)` : undefined}>
                     <path className='glow' d={arc.d} />
-                    {/* pathLength normalises the length so the draw
-                        animation runs evenly on every arc */}
-                    <path className='line' d={arc.d} style={style} pathLength='600' />
+                    <path className='line' d={arc.d} style={style} />
                     <path className='hit' d={arc.d} data-label={label} />
                   </g>
                 ))}

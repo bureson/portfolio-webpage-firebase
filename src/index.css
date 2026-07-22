@@ -1799,18 +1799,8 @@ button.chip.add:hover {
   white-space: nowrap;
   z-index: 5;
 }
-@media (prefers-reduced-motion: no-preference) {
-  .flight-map .route .line {
-    stroke-dasharray: 600;
-    stroke-dashoffset: 600;
-    animation: route-draw 1.6s ease-out forwards;
-  }
-}
-@keyframes route-draw {
-  to {
-    stroke-dashoffset: 0;
-  }
-}
+/* the arcs draw themselves in from FlightMap.drawRoutes, which has to
+   measure each one to get the dash right */
 .flight-timeline {
   margin: 0 0 24px;
 }
