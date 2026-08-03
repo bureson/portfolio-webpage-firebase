@@ -36,16 +36,20 @@ class Attachments extends Component {
     this.unsubscribe && this.unsubscribe();
   }
 
-  onFileUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  onFileUpload = async (e) => {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
     e.target.value = null;
-    uploadAttachment(file, this.props.post, progress => this.setState({progress}))
-      .then(() => this.setState({progress: null}))
-      .catch(error => {
+    for (let i = 0; i < files.length; i++) {
+      this.setState({progress: Math.round(i / files.length * 100)});
+      try {
+        await uploadAttachment(files[i], this.props.post,
+          progress => this.setState({progress: Math.round((i + progress / 100) / files.length * 100)}));
+      } catch (error) {
         console.log(error); // Note: eventually handle error
-        this.setState({progress: null});
-      });
+      }
+    }
+    this.setState({progress: null});
   }
 
   onDelete = (e, attachment) => {
@@ -69,8 +73,8 @@ class Attachments extends Component {
         <label>Files ({this.state.attachments.length})</label>
         {isUploading
           ? <progress value={this.state.progress} max='100' />
-          : <button className='upload' onClick={() => this.fileInputRef.current.click()}>+ Upload file</button>}
-        <input type='file' ref={this.fileInputRef} style={{display: 'none'}} onChange={e => this.onFileUpload(e)} />
+          : <button className='upload' onClick={() => this.fileInputRef.current.click()}>+ Upload files</button>}
+        <input type='file' multiple ref={this.fileInputRef} style={{display: 'none'}} onChange={e => this.onFileUpload(e)} />
         {this.state.attachments.map(attachment => {
           return (
             <div className='file-row' key={attachment.key}
