@@ -3411,7 +3411,26 @@ button.chip.add:hover {
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
-  margin: 0 0 22px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  padding: 10px 0;
+  margin: -10px 0 12px; /* offsets the padding so the layout matches the non-sticky spacing */
+}
+.editor-toolbar::before {
+  /* mirrors the fixed page gradient (see canvas) so the pinned bar blends into
+     the background instead of reading as a black strip */
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(160deg, #080d18 0%, #0b1426 55%, #0d1a33 100%);
+  background-attachment: fixed;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+.editor-toolbar.stuck::before {
+  opacity: 1;
 }
 .editor-toolbar button {
   border: 1px solid rgba(236, 229, 195, 0.18);
@@ -3460,6 +3479,10 @@ button.chip.add:hover {
   flex-direction: column;
   gap: 24px;
   padding: 32px 0 40px 28px;
+  position: sticky;
+  /* sticks at the top while it fits the viewport, otherwise pins its bottom edge;
+     --rail-h is kept up to date by a ResizeObserver in EditPost */
+  top: min(0px, calc(100vh - var(--rail-h, 100vh)));
 }
 .editor-rail .field label {
   display: block;
@@ -3679,6 +3702,7 @@ button.chip.add:hover {
   .editor-rail {
     border-top: 1px solid var(--borderColor);
     padding-left: 0;
+    position: static; /* the rail stacks below the editor here, sticking makes no sense */
   }
   .editor-title {
     font-size: 32px;

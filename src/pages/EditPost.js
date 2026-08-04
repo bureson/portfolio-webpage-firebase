@@ -36,6 +36,7 @@ class EditPost extends Component {
       saving: false,
       timestamp: null,
       title: '',
+      toolbarStuck: false,
       view: 'write'
     };
   }
@@ -200,6 +201,40 @@ class EditPost extends Component {
       });
   }
 
+  // watches a zero-height sentinel right above the toolbar — once it scrolls
+  // past the viewport top the toolbar is pinned, which toggles its background
+  setToolbarSentinelRef = (el) => {
+    if (this.toolbarObserver) {
+      this.toolbarObserver.disconnect();
+      this.toolbarObserver = null;
+    }
+    if (el && window.IntersectionObserver) {
+      this.toolbarObserver = new IntersectionObserver(([entry]) => {
+        const toolbarStuck = !entry.isIntersecting && entry.boundingClientRect.top < 0;
+        if (toolbarStuck !== this.state.toolbarStuck) {
+          this.setState({toolbarStuck});
+        }
+      });
+      this.toolbarObserver.observe(el);
+    }
+  }
+
+  // keeps --rail-h current so the CSS can pin the rail's bottom edge when it
+  // outgrows the viewport (see .editor-rail); callback ref because the rail
+  // only renders after loading finishes
+  setRailRef = (el) => {
+    if (this.railObserver) {
+      this.railObserver.disconnect();
+      this.railObserver = null;
+    }
+    if (el && window.ResizeObserver) {
+      this.railObserver = new ResizeObserver(() => {
+        el.style.setProperty('--rail-h', el.offsetHeight + 'px');
+      });
+      this.railObserver.observe(el);
+    }
+  }
+
   autoGrow = (el) => {
     if (!el) return;
     el.style.height = 'auto';
@@ -220,7 +255,9 @@ class EditPost extends Component {
     const editor = () => this.editorRef.current;
     const isUploading = this.state.imageProgress !== null;
     return (
-      <div className='editor-toolbar'>
+      <>
+      <div className='toolbar-sentinel' ref={this.setToolbarSentinelRef} />
+      <div className={classNames('editor-toolbar', {stuck: this.state.toolbarStuck})}>
         <button title='Bold (Ctrl+B)' style={{fontWeight: 700}} onClick={() => editor() && editor().wrapSelection('**')}>B</button>
         <button title='Italic (Ctrl+I)' style={{fontStyle: 'italic'}} onClick={() => editor() && editor().wrapSelection('*')}>I</button>
         <button title='Heading' onClick={() => editor() && editor().prefixLine('### ')}>H3</button>
@@ -234,6 +271,7 @@ class EditPost extends Component {
         <input type='file' accept='image/*' ref={this.imageInputRef} style={{display: 'none'}} onChange={this.onImageUpload} />
         <div className='note'>markdown supported · Ctrl+S saves</div>
       </div>
+      </>
     )
   }
 
@@ -308,7 +346,7 @@ class EditPost extends Component {
               {showPreview && <div className='post-body' dangerouslySetInnerHTML={{__html: mdConverter.makeHtml(this.state.body)}} />}
             </div>
           </div>
-          <div className='editor-rail'>
+          <div className='editor-rail' ref={this.setRailRef}>
             <div className='save-actions'>
               <button onClick={this.save} disabled={this.state.saving}>{this.state.saving ? 'Saving …' : 'Save'}</button>
               <button className='primary' onClick={this.onSaveAndClose} disabled={this.state.saving}>Save &amp; close</button>
