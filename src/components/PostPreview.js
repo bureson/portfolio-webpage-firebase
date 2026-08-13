@@ -1,8 +1,7 @@
 import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
-import { Converter } from 'showdown';
-
 import { convertTimestamp, readingTime } from '../lib/Shared';
+import { createConverter } from '../lib/Markdown';
 import LazyPhoto from './LazyPhoto';
 
 class PostPreview extends Component {
@@ -15,11 +14,7 @@ class PostPreview extends Component {
 
   render = () => {
     const post = this.props.post;
-    const mdConverter = new Converter({
-        noHeaderId: true,
-        underline: true,
-        openLinksInNewWindow: true
-    });
+    const mdConverter = createConverter();
     const perexHtml = mdConverter.makeHtml(post.perex);
     if (this.props.featured) {
       return (

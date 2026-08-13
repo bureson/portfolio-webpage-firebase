@@ -27,6 +27,19 @@ export const sortProjects = (projects, order) => {
   });
 }
 
+// The portfolio itself is listed as a project; its visit link would only
+// reload the page, so callers swap it for a "you are here" marker instead.
+// Hostnames are compared www-insensitively and a malformed url counts as
+// elsewhere.
+export const isThisSite = (appUrl) => {
+  try {
+    const strip = (host) => host.replace(/^www\./, '');
+    return strip(new URL(appUrl).hostname) === strip(window.location.hostname);
+  } catch {
+    return false;
+  }
+}
+
 // tech is stored as one comma-separated string, split it for the chips
 export const techList = (tech) => {
   if (!tech) return [];

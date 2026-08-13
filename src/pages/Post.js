@@ -3,9 +3,8 @@ import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove, query, orderByChild, equalTo } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Converter } from 'showdown';
-
 import { readingTime, convertTimestamp } from '../lib/Shared';
+import { createConverter } from '../lib/Markdown';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
@@ -126,11 +125,7 @@ class Post extends Component {
       return <NoMatch />
     }
     const post = this.state.post;
-    const mdConverter = new Converter({
-      noHeaderId: true,
-      underline: true,
-      openLinksInNewWindow: true
-    });
+    const mdConverter = createConverter();
     const perexHtml = mdConverter.makeHtml(post.perex);
     const bodyHtml = mdConverter.makeHtml(post.body);
     const availablePostList = this.state.authed ? this.state.blogList : this.state.blogList.filter(p => p.public);

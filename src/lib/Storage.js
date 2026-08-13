@@ -35,3 +35,7 @@ export const uploadAttachment = (file, postKey, onProgress) => {
 export const isImage = (fileName) => {
   return /\.(png|jpe?g|gif|webp|avif|svg)$/i.test(fileName);
 }
+
+export const isVideo = (fileName) => {
+  return /\.(mp4|webm|mov|m4v)$/i.test(fileName);
+}

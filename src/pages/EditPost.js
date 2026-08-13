@@ -1,13 +1,12 @@
 import React, { Component, Suspense } from 'react';
 import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
-import { Converter } from 'showdown';
-
 import Attachments from '../components/Attachments';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import { classNames, convertTimestamp, readingTime } from '../lib/Shared';
-import { uploadAttachment, isImage } from '../lib/Storage';
+import { uploadAttachment, isImage, isVideo } from '../lib/Storage';
+import { createConverter } from '../lib/Markdown';
 
 // Note: CodeMirror is admin-only, keep it out of the visitor bundle
 const MarkdownEditor = React.lazy(() => import('../components/MarkdownEditor'));
@@ -91,6 +90,12 @@ class EditPost extends Component {
     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
       e.preventDefault();
       this.save();
+    }
+    // the native browser find can't see the whole document (codemirror only
+    // renders visible lines), so route Ctrl+F to the editor's search panel
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f' && this.state.view !== 'preview' && this.editorRef.current) {
+      e.preventDefault();
+      this.editorRef.current.openSearch();
     }
   }
 
@@ -243,9 +248,13 @@ class EditPost extends Component {
 
   insertAttachment = (attachment) => {
     const alt = attachment.name.replace(/\.[^.]+$/, '').replace(/[-_]+/g, ' ');
-    const snippet = isImage(attachment.name)
-      ? `![${alt}](${attachment.url})`
-      : `[${alt}](${attachment.url})`;
+    let snippet = `[${alt}](${attachment.url})`;
+    if (isImage(attachment.name)) {
+      snippet = `![${alt}](${attachment.url})`;
+    } else if (isVideo(attachment.name)) {
+      // Note: showdown passes video blocks through as raw html
+      snippet = `<video src="${attachment.url}" controls></video>`;
+    }
     if (this.editorRef.current) {
       this.editorRef.current.insertBlock(snippet);
     }
@@ -267,8 +276,8 @@ class EditPost extends Component {
         <button title='Link' onClick={() => editor() && editor().insertLink()}>[link]</button>
         {isUploading
           ? <progress value={this.state.imageProgress} max='100' />
-          : <button className='image' title='Upload an image and insert it at the cursor' onClick={() => this.imageInputRef.current.click()}>⇧ image</button>}
-        <input type='file' accept='image/*' ref={this.imageInputRef} style={{display: 'none'}} onChange={this.onImageUpload} />
+          : <button className='image' title='Upload an image or video and insert it at the cursor' onClick={() => this.imageInputRef.current.click()}>⇧ media</button>}
+        <input type='file' accept='image/*,video/*' ref={this.imageInputRef} style={{display: 'none'}} onChange={this.onImageUpload} />
         <div className='note'>markdown supported · Ctrl+S saves</div>
       </div>
       </>
@@ -302,11 +311,7 @@ class EditPost extends Component {
     if (this.state.loading) {
       return <Loader />
     }
-    const mdConverter = new Converter({
-      noHeaderId: true,
-      underline: true,
-      openLinksInNewWindow: true
-    });
+    const mdConverter = createConverter();
     const view = this.state.view;
     const showEditor = view === 'write' || view === 'split';
     const showPreview = view === 'preview' || view === 'split';

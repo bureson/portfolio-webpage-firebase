@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { EditorState } from '@codemirror/state';
 import { EditorView, keymap, placeholder } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap } from '@codemirror/commands';
+import { search, searchKeymap, openSearchPanel } from '@codemirror/search';
 import { markdown, markdownLanguage } from '@codemirror/lang-markdown';
 import { syntaxHighlighting, HighlightStyle } from '@codemirror/language';
 import { tags } from '@lezer/highlight';
@@ -31,6 +32,98 @@ const cosmosTheme = EditorView.theme({
   },
   '.cm-placeholder': {
     color: 'rgba(236, 229, 195, 0.35)'
+  },
+  '.cm-panels': {
+    backgroundColor: '#0d1322',
+    color: 'rgba(236, 229, 195, 0.85)'
+  },
+  '.cm-panels.cm-panels-top': {
+    border: '1px solid var(--borderColor)',
+    borderRadius: '10px',
+    marginBottom: '12px'
+  },
+  '.cm-panel.cm-search': {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: '6px',
+    fontFamily: "'IBM Plex Mono', monospace",
+    fontSize: '12px',
+    padding: '10px 40px 10px 12px',
+    position: 'relative'
+  },
+  '.cm-panel.cm-search br': {
+    display: 'none'
+  },
+  '.cm-panel.cm-search .cm-textfield': {
+    backgroundColor: 'rgba(236, 229, 195, 0.05)',
+    border: '1px solid rgba(236, 229, 195, 0.18)',
+    borderRadius: '8px',
+    color: '#f4efd9',
+    fontFamily: 'inherit',
+    fontSize: '12px',
+    margin: '0',
+    padding: '6px 10px',
+    width: '200px'
+  },
+  '.cm-panel.cm-search .cm-textfield:focus': {
+    borderColor: 'rgba(232, 193, 90, 0.5)',
+    outline: 'none'
+  },
+  '.cm-panel.cm-search .cm-textfield::placeholder': {
+    color: 'rgba(236, 229, 195, 0.35)'
+  },
+  '.cm-panel.cm-search button.cm-button': {
+    background: 'none',
+    border: '1px solid rgba(236, 229, 195, 0.18)',
+    borderRadius: '8px',
+    color: 'rgba(236, 229, 195, 0.6)',
+    cursor: 'pointer',
+    fontFamily: 'inherit',
+    fontSize: '12px',
+    margin: '0',
+    padding: '6px 11px',
+    whiteSpace: 'nowrap'
+  },
+  '.cm-panel.cm-search button.cm-button:hover': {
+    borderColor: 'rgba(232, 193, 90, 0.5)',
+    color: '#e8c15a'
+  },
+  '.cm-panel.cm-search label': {
+    alignItems: 'center',
+    color: 'rgba(236, 229, 195, 0.45)',
+    cursor: 'pointer',
+    display: 'inline-flex',
+    fontSize: '11px',
+    gap: '5px',
+    margin: '0 0 0 4px',
+    whiteSpace: 'nowrap'
+  },
+  '.cm-panel.cm-search input[type="checkbox"]': {
+    accentColor: '#e8c15a',
+    margin: '0'
+  },
+  '.cm-panel.cm-search [name="close"]': {
+    background: 'none',
+    border: 'none',
+    color: 'rgba(236, 229, 195, 0.5)',
+    cursor: 'pointer',
+    fontSize: '18px',
+    lineHeight: '1',
+    padding: '4px 8px',
+    position: 'absolute',
+    right: '6px',
+    top: '8px'
+  },
+  '.cm-panel.cm-search [name="close"]:hover': {
+    color: '#f4efd9'
+  },
+  '.cm-searchMatch': {
+    backgroundColor: 'rgba(232, 193, 90, 0.22)',
+    borderRadius: '2px'
+  },
+  '.cm-searchMatch.cm-searchMatch-selected': {
+    backgroundColor: 'rgba(232, 193, 90, 0.45)'
   }
 }, { dark: true });
 
@@ -70,7 +163,10 @@ class MarkdownEditor extends Component {
         doc: this.props.value || '',
         extensions: [
           history(),
-          keymap.of([...editorKeymap, ...defaultKeymap, ...historyKeymap]),
+          // Note: the browser's own find can't see lines codemirror hasn't
+          // rendered, so Ctrl+F in the editor opens this panel instead
+          search({ top: true }),
+          keymap.of([...editorKeymap, ...defaultKeymap, ...historyKeymap, ...searchKeymap]),
           markdown({ base: markdownLanguage }),
           syntaxHighlighting(cosmosHighlight),
           cosmosTheme,
@@ -89,6 +185,13 @@ class MarkdownEditor extends Component {
 
   focus = () => {
     this.view.focus();
+  }
+
+  // opens the in-editor search panel; the page routes Ctrl+F here because the
+  // browser's own find can't see lines codemirror hasn't rendered
+  openSearch = () => {
+    this.view.focus();
+    openSearchPanel(this.view);
   }
 
   // wraps the selection in a marker pair, e.g. **bold** or *italic*

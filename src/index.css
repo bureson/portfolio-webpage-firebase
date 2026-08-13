@@ -816,9 +816,30 @@ table td.control a:first-child {
   animation: gradient 3s ease infinite;
   margin: 8px 0 24px;
 }
+/* videos and youtube embeds share the image treatment, minus the loading
+   shimmer (letterboxed frames would show it through); the fixed width/height
+   attributes on pasted embed code lose to these rules */
+.post-body video,
+.post-body iframe {
+  border: 1px solid var(--borderColor);
+  border-radius: 16px;
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #000;
+  margin: 8px 0 24px;
+}
+/* an iframe has no intrinsic ratio, so hold youtube's 16:9 explicitly;
+   videos scale by their own ratio via height: auto */
+.post-body iframe {
+  aspect-ratio: 16 / 9;
+}
 @media (min-width: 1100px) {
-  /* Note: let post images break out of the 760px reading column to 980px */
-  .post-body img {
+  /* Note: let post media break out of the 760px reading column to 980px */
+  .post-body img,
+  .post-body video,
+  .post-body iframe {
     width: calc(100% + 220px);
     max-width: none;
     margin-left: -110px;
@@ -3469,7 +3490,9 @@ button.chip.add:hover {
   border-left: 1px solid var(--borderColor);
   padding-left: 36px;
 }
-.editor-page .post-body img {
+.editor-page .post-body img,
+.editor-page .post-body video,
+.editor-page .post-body iframe {
   width: 100%;
   max-width: 100%;
   margin-left: 0;
@@ -4076,7 +4099,7 @@ button.chip.add:hover {
 }
 /* the call to action from the project page, outlined and sized down to sit
    alongside the status pill */
-.project-row a.visit-pill {
+.project-row .visit-pill {
   background: none;
   border: 1px solid var(--contrastColor);
   border-radius: 999px;
@@ -4091,6 +4114,13 @@ button.chip.add:hover {
 .project-row a.visit-pill:hover {
   background: rgba(232, 193, 90, 0.12);
   color: var(--contrastColor);
+}
+/* this very site self-documented as a project — a visit link would just reload
+   the page, so it becomes a non-clickable marker instead */
+.project-row .visit-pill.here {
+  border-style: dashed;
+  border-color: rgba(236, 229, 195, 0.35);
+  color: rgba(236, 229, 195, 0.75);
 }
 .tech-chips {
   display: flex;
@@ -4138,7 +4168,7 @@ button.chip.add:hover {
   display: flex;
   gap: 12px;
 }
-.project-head a.cta {
+.project-head .cta {
   background: var(--contrastColor);
   border-radius: 999px;
   color: #080d18;
@@ -4151,6 +4181,15 @@ button.chip.add:hover {
 .project-head a.cta:hover {
   background: var(--brightColor);
   color: #080d18;
+}
+/* this very site self-documented as a project — the visit button becomes a
+   non-clickable "you are here" marker */
+.project-head .cta.here {
+  background: none;
+  border: 1px dashed rgba(236, 229, 195, 0.35);
+  color: rgba(236, 229, 195, 0.75);
+  font-weight: 500;
+  padding: 10px 25px;
 }
 .project-head a.ghost {
   border: 1px solid rgba(236, 229, 195, 0.25);

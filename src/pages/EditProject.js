@@ -3,13 +3,12 @@ import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject, getMetadata } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Converter } from 'showdown';
-
 import Dropdown from '../components/Dropdown';
 import Loader from '../components/Loader';
 import NoMatch from '../components/NoMatch';
 import { classNames, convertTimestamp } from '../lib/Shared';
 import { galleryList, shotStoragePath, statusList, statusLabel } from '../lib/Projects';
+import { createConverter } from '../lib/Markdown';
 
 // Note: CodeMirror is admin-only, keep it out of the visitor bundle
 const MarkdownEditor = React.lazy(() => import('../components/MarkdownEditor'));
@@ -119,6 +118,12 @@ class EditProject extends Component {
     if ((e.ctrlKey || e.metaKey) && e.key === 's') {
       e.preventDefault();
       this.save();
+    }
+    // the native browser find can't see the whole document (codemirror only
+    // renders visible lines), so route Ctrl+F to the editor's search panel
+    if ((e.ctrlKey || e.metaKey) && e.key === 'f' && this.state.view !== 'preview' && this.editorRef.current) {
+      e.preventDefault();
+      this.editorRef.current.openSearch();
     }
   }
 
@@ -494,11 +499,7 @@ class EditProject extends Component {
     if (this.state.loading) {
       return <Loader />
     }
-    const mdConverter = new Converter({
-      noHeaderId: true,
-      underline: true,
-      openLinksInNewWindow: true
-    });
+    const mdConverter = createConverter();
     const view = this.state.view;
     const showEditor = view === 'write' || view === 'split';
     const showPreview = view === 'preview' || view === 'split';

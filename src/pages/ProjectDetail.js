@@ -4,10 +4,9 @@ import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import { getStorage, ref as storageRef, deleteObject } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { Converter } from 'showdown';
-
 import { classNames, convertTimestamp } from '../lib/Shared';
-import { galleryList, shotStoragePath, statusLabel, techList } from '../lib/Projects';
+import { createConverter } from '../lib/Markdown';
+import { galleryList, isThisSite, shotStoragePath, statusLabel, techList } from '../lib/Projects';
 import Dialog from '../components/Dialog';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
@@ -223,11 +222,7 @@ class ProjectDetail extends Component {
       return <NoMatch />
     }
     const project = this.state.project;
-    const mdConverter = new Converter({
-      noHeaderId: true,
-      underline: true,
-      openLinksInNewWindow: true
-    });
+    const mdConverter = createConverter();
     return (
       <div className='page project-page'>
         <div className='project-head'>
@@ -242,7 +237,9 @@ class ProjectDetail extends Component {
             <h2 className='project-title'>{project.title}{!project.public && <span className='draft-pill'>draft</span>}</h2>
           </div>
           <div className='actions'>
-            {project.appUrl && <a className='cta' href={project.appUrl} target='_blank' rel='noreferrer'>Visit the app →</a>}
+            {project.appUrl && (isThisSite(project.appUrl)
+              ? <span className='cta here'>You are here</span>
+              : <a className='cta' href={project.appUrl} target='_blank' rel='noreferrer'>Visit the app →</a>)}
             {project.repoUrl && <a className='ghost' href={project.repoUrl} target='_blank' rel='noreferrer'>code ↗</a>}
           </div>
         </div>

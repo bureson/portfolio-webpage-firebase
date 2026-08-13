@@ -1,7 +1,7 @@
 import { Component } from 'react';
 import { Link, withRouter } from 'react-router-dom';
 
-import { galleryList, statusLabel, techList } from '../lib/Projects';
+import { galleryList, isThisSite, statusLabel, techList } from '../lib/Projects';
 import LazyPhoto from './LazyPhoto';
 
 class ProjectRow extends Component {
@@ -32,7 +32,9 @@ class ProjectRow extends Component {
             </div>
             <div className='badges'>
               <span className={`status-pill ${project.status}`}>{statusLabel(project.status)}</span>
-              {project.appUrl && <a className='visit-pill' href={project.appUrl} target='_blank' rel='noreferrer'>Visit →</a>}
+              {project.appUrl && (isThisSite(project.appUrl)
+                ? <span className='visit-pill here'>You are here</span>
+                : <a className='visit-pill' href={project.appUrl} target='_blank' rel='noreferrer'>Visit →</a>)}
             </div>
           </div>
           {project.years && <div className='years'>{project.years}</div>}
