@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { getAuth, signOut } from 'firebase/auth';
-import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faGoodreads, faYoutubeSquare } from '@fortawesome/free-brands-svg-icons';
+import { faFacebookSquare, faInstagram, faLinkedin, faGithubSquare, faStrava, faGoodreads, faYoutubeSquare } from '@fortawesome/free-brands-svg-icons';
 import { faSignOutAlt } from '@fortawesome/free-solid-svg-icons';
 
 import firebaseLogo from '../assets/firebase-logo.png';
@@ -23,6 +23,7 @@ class Footer extends Component {
             <a href='https://www.linkedin.com/in/ondrej-bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faLinkedin} /><span>LinkedIn</span></a>
             <a href='https://www.instagram.com/ondrej_bures/' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faInstagram} /><span>Instagram</span></a>
             <a href='https://www.facebook.com/bureson' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faFacebookSquare} /><span>Facebook</span></a>
+            <a href='https://www.strava.com/athletes/71304078' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faStrava} /><span>Strava</span></a>
             <a href='https://www.goodreads.com/user/show/71882156-ondrej-bures' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faGoodreads} /><span>Goodreads</span></a>
             <a href='https://youtube.com/@czeBuri' target='_blank' rel='noopener noreferrer'><FontAwesomeIcon icon={faYoutubeSquare} /><span>YouTube</span></a>
             {this.props.authed && <button className='logout' onClick={this.onLogout}><FontAwesomeIcon icon={faSignOutAlt} /><span>log out</span></button>}

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, Fragment } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
@@ -55,9 +55,16 @@ class Home extends Component {
     }, { onlyOnce: true });
   }
 
+  // each card hints at the shape of what it is waiting for; the word has
+  // no shape to hint at, so it gets the one small orbit of the page
   renderWord = () => {
     if (this.state.loadingCourse) {
-      return <Loader />
+      return (
+        <div className='card-loading'>
+          <Loader small />
+          <div className='caption'>fetching today's word…</div>
+        </div>
+      )
     }
     const word = this.state.word;
     if (!word) return null;
@@ -72,7 +79,17 @@ class Home extends Component {
 
   renderCountries = () => {
     if (this.state.loadingCountries) {
-      return <Loader />
+      return (
+        <div className='country-grid skeleton' aria-hidden='true'>
+          {[0, 1].map(i => (
+            <div className='country-tile' key={i}>
+              <div className='photo' style={{animationDelay: `${i * 0.3}s`}} />
+              <div className='bar title' style={{animationDelay: `${i * 0.3 + 0.15}s`}} />
+              <div className='bar meta' style={{animationDelay: `${i * 0.3 + 0.3}s`}} />
+            </div>
+          ))}
+        </div>
+      )
     }
     return (
       <div className='country-grid'>
@@ -93,7 +110,16 @@ class Home extends Component {
 
   renderPosts = () => {
     if (this.state.loadingBlog) {
-      return <Loader />
+      return (
+        <div className='blog-skeleton' aria-hidden='true'>
+          {[0, 1].map(i => (
+            <Fragment key={i}>
+              <div className='bar title' style={{animationDelay: `${i * 0.4}s`}} />
+              <div className='bar meta' style={{animationDelay: `${i * 0.4 + 0.2}s`}} />
+            </Fragment>
+          ))}
+        </div>
+      )
     }
     return this.state.blog.slice(0, 2).map(post => {
       return (

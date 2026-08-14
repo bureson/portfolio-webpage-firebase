@@ -383,8 +383,13 @@ class FlightMap extends Component {
   }
 
   render = () => {
-    if (!this.state.airports || !this.state.world || !this.props.flights.length) {
+    if (!this.props.flights.length) {
       return null;
+    }
+    // the airports and world outline arrive as lazy chunks, so a cold
+    // load would otherwise pop the card in a few hundred ms late
+    if (!this.state.airports || !this.state.world) {
+      return <div className={classNames('flight-map', 'skeleton', {focus: this.props.focus})} ref={this.cardRef} />;
     }
     const { routes, visits } = this.mapData();
     if (!routes.length) {

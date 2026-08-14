@@ -601,8 +601,61 @@ table td.control a:first-child {
 .home-card .post .meta {
   margin: 5px 0 0;
 }
-.home-card .spinner {
-  margin: 30px auto;
+.home-card .card-loading {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  margin: 0 0 20px;
+}
+.home-card .card-loading .caption {
+  font-family: var(--monoFont);
+  font-size: 11px;
+  color: rgba(236, 229, 195, 0.4);
+}
+/* loading cards sketch the shape of their content in glowing bars */
+.home-card .bar {
+  border-radius: 6px;
+  background: rgba(236, 229, 195, 0.07);
+  animation: core-glow 1.6s ease-in-out infinite;
+}
+.home-card .bar.title {
+  height: 16px;
+}
+.home-card .bar.meta {
+  height: 11px;
+  background: rgba(236, 229, 195, 0.05);
+}
+.home-card .blog-skeleton {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 14px;
+  margin: 0 0 20px;
+}
+.home-card .blog-skeleton .bar.title {
+  width: 85%;
+}
+.home-card .blog-skeleton .bar.title:nth-child(3) {
+  width: 70%;
+}
+.home-card .blog-skeleton .bar.meta {
+  width: 40%;
+}
+/* the photo blocks only breathe in opacity: a scale pulse at tile size
+   would push neighbours across the grid gap */
+.home-card .country-grid.skeleton .photo {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+.home-card .country-grid.skeleton .bar.title {
+  width: 70%;
+  margin: 0 0 6px;
+}
+.home-card .country-grid.skeleton .bar.meta {
+  width: 50%;
 }
 .page-header {
   width: 100%;
@@ -1739,6 +1792,35 @@ button.chip.add:hover {
 }
 .flight-map svg.panning {
   cursor: grabbing;
+}
+/* holds the card's place while the airport and world-map chunks load;
+   the aspect approximates the loaded map's latitude crop so the swap
+   barely moves the page */
+.flight-map.skeleton {
+  aspect-ratio: 1000 / 380;
+}
+.flight-map.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 32%, rgba(236, 229, 195, 0.06) 50%, transparent 68%);
+  animation: skeleton-sweep 1.4s ease-in-out infinite;
+}
+.flight-map.skeleton.focus {
+  aspect-ratio: 2.1 / 1;
+}
+@keyframes skeleton-sweep {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .flight-map.skeleton::after,
+  .orbit-loader .ring,
+  .orbit-loader .core,
+  .home-card .bar,
+  .home-card .country-grid.skeleton .photo {
+    animation: none;
+  }
 }
 .flight-map .land {
   fill: rgba(236, 229, 195, 0.07);
@@ -3235,12 +3317,67 @@ button.chip.add:hover {
   box-sizing: border-box;
   overflow: hidden;
 }
-.spinner {
-  width: 40px;
-  height: 40px;
-  background-color: var(--contrastColor);
+.orbit-loader {
+  position: relative;
+  width: 120px;
+  height: 120px;
   margin: 100px auto;
-  animation: loader-rotate 1.2s infinite ease-in-out;
+}
+.orbit-loader .ring {
+  position: absolute;
+  inset: 0;
+  animation: orbit-spin 2.8s linear infinite;
+}
+.orbit-loader .ring.inner {
+  inset: 18px;
+  animation: orbit-spin-rev 1.9s linear infinite;
+}
+.orbit-loader .ring svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+.orbit-loader .track {
+  fill: none;
+  stroke: rgba(236, 229, 195, 0.12);
+  stroke-width: 1.5;
+}
+.orbit-loader .satellite {
+  fill: var(--contrastColor);
+}
+.orbit-loader .ring.inner .track {
+  stroke: rgba(236, 229, 195, 0.1);
+  stroke-dasharray: 4 7;
+}
+.orbit-loader .ring.inner .satellite {
+  fill: rgba(220, 225, 255, 0.85);
+}
+.orbit-loader .core {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 10px;
+  height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 999px;
+  background: var(--contrastColor);
+  box-shadow: 0 0 18px 4px rgba(232, 193, 90, 0.45);
+  animation: core-glow 2.2s ease-in-out infinite;
+}
+.orbit-loader.small {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto;
+}
+.orbit-loader.small .ring.inner {
+  display: none;
+}
+.orbit-loader.small .core {
+  width: 5px;
+  height: 5px;
+  margin: -2.5px 0 0 -2.5px;
+  box-shadow: 0 0 8px 2px rgba(232, 193, 90, 0.4);
+  animation: none;
 }
 .powered-by {
   opacity: 0.7;
@@ -3271,15 +3408,39 @@ button.chip.add:hover {
   -webkit-filter: grayscale(0);
   filter: none;
 }
-@keyframes loader-rotate {
-  0% {
-    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+@keyframes orbit-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes orbit-spin-rev {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(-360deg);
+  }
+}
+/* shared by the orbit core and the homepage card skeletons */
+@keyframes core-glow {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
   }
   50% {
-    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    opacity: 1;
+    transform: scale(1.12);
   }
-  100% {
-    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+}
+@keyframes skeleton-pulse {
+  0%, 100% {
+    opacity: 0.6;
+  }
+  50% {
+    opacity: 1;
   }
 }
 @keyframes gradient {
