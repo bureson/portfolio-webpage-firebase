@@ -26,17 +26,21 @@ body {
   padding: 0;
 }
 html {
-  background: #080d18;
+  background: linear-gradient(160deg, #080d18 0%, #0b1426 55%, #0d1a33 100%) fixed #080d18;
 }
 canvas {
   position: fixed;
   top: 0;
   left: 0;
-  background: linear-gradient(160deg, #080d18 0%, #0b1426 55%, #0d1a33 100%);
   z-index: -1;
   height: 100vh;
   height: 100lvh; /* cover the space revealed when the mobile URL bar collapses */
   width: 100vw;
+}
+canvas.aurora-canvas {
+  /* blur turns the rays into aurora curtains; must not sit on the same element
+     as the page gradient or brightness() would lift the whole background */
+  filter: blur(20px) brightness(1.45) saturate(1.35);
 }
 h1 {
   color: var(--brightColor);

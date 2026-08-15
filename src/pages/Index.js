@@ -12,7 +12,8 @@ import Flights from './Flights';
 import Course from './Course';
 import { definition } from '../lib/CourseModel';
 import Footer from '../components/Footer';
-import GalaxyFlight from '../components/GalaxyFlight';
+import Aurora from '../components/Aurora';
+// import GalaxyFlight from '../components/GalaxyFlight';
 import Home from './Home';
 import Login from './Login';
 import Menu from '../components/Menu';
@@ -81,7 +82,7 @@ class Index extends Component {
   render = () => {
     const defaultCourse = Object.keys(definition).find(key => definition[key].default);
     return (
-      <GalaxyFlight>
+      <Aurora>
         <div className='container' onClick={this.navigateLogin}>
           <div className='navigation'>
             <Link className='home-link' to='/'>
@@ -111,7 +112,7 @@ class Index extends Component {
           </div>
           <Footer authed={this.state.authed} />
         </div>
-      </GalaxyFlight>
+      </Aurora>
     )
   }
 }
