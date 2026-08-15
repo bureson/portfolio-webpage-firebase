@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import { getDatabase, ref as databaseRef, onValue, set } from 'firebase/database';
 import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL, deleteObject } from 'firebase/storage';
 
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTrash } from '@fortawesome/free-solid-svg-icons';
+
 import Dialog from './Dialog';
 import Dropdown from './Dropdown';
-import { classNames, convertTimestamp } from '../lib/Shared';
+import { classNames, convertTimestamp, getBlogPostKeys } from '../lib/Shared';
 
 class CountryDialog extends Component {
 
@@ -13,7 +16,7 @@ class CountryDialog extends Component {
     const country = props.country;
     this.state = {
       blogPostList: [],
-      blogPostKey: (country && country.blogPostKey) || null,
+      blogPostKeys: getBlogPostKeys(country),
       date: convertTimestamp(country ? country.date : Math.floor(Date.now() / 1000), 'yyyy-mm-dd'),
       description: (country && country.description) || '',
       filePath: (country && country.photoPath) || null,
@@ -97,7 +100,10 @@ class CountryDialog extends Component {
       photoPath: this.state.filePath || '',
       iso: this.state.iso || '',
       magnet: this.state.magnet,
-      blogPostKey: this.state.blogPostKey || null,
+      // set() replaces the whole node, so a legacy blogPostKey field is dropped here
+      blogPostKeys: this.state.blogPostKeys.length
+        ? this.state.blogPostKeys.reduce((map, postKey) => Object.assign(map, {[postKey]: true}), {})
+        : null,
       description: this.state.description || '',
       timestamp: (country && country.timestamp) || Math.floor(Date.now() / 1000)
     }).then(() => this.props.onClose()).catch(console.log);
@@ -119,8 +125,10 @@ class CountryDialog extends Component {
   }
 
   render = () => {
-    const selectedPost = this.state.blogPostList.find(post => post.key === this.state.blogPostKey);
-    const postOptionList = [{ key: '', title: 'None' }, ...this.state.blogPostList];
+    const selectedPostList = this.state.blogPostKeys
+          .map(postKey => this.state.blogPostList.find(post => post.key === postKey))
+          .filter(Boolean);
+    const postOptionList = this.state.blogPostList.filter(post => !this.state.blogPostKeys.includes(post.key));
     return (
       <Dialog kicker='Countries log' title={this.props.country ? `Edit ${this.props.country.name}` : 'Add a country'} onClose={this.props.onClose}>
         <div className='dialog-body'>
@@ -144,8 +152,21 @@ class CountryDialog extends Component {
           </div>
           <div className='field-grid souvenir-row'>
             <div className='field'>
-              <label>Related blog post</label>
-              <Dropdown selected={selectedPost ? selectedPost.title : 'None'} optionList={postOptionList} select={post => this.setState({ blogPostKey: post.key || null })} />
+              <label>Related blog posts</label>
+              <Dropdown selected='Add a post ...' optionList={postOptionList}
+                        select={post => this.setState({ blogPostKeys: [...this.state.blogPostKeys, post.key] })} />
+              {!!selectedPostList.length && <div className='post-chips'>
+                {selectedPostList.map(post => {
+                  return (
+                    <div className='chip' key={post.key}>
+                      <span>{post.title}</span>
+                      <button onClick={() => this.setState({ blogPostKeys: this.state.blogPostKeys.filter(postKey => postKey !== post.key) })}>
+                        <FontAwesomeIcon icon={faTrash} />
+                      </button>
+                    </div>
+                  )
+                })}
+              </div>}
             </div>
             <div className='field'>
               <label>Souvenir</label>

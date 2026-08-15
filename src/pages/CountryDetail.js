@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
-import { getDatabase, ref, onValue, remove } from 'firebase/database';
+import { Link } from 'react-router-dom';
+import { getDatabase, ref, onValue, remove, get } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-import { convertTimestamp } from '../lib/Shared';
+import { convertTimestamp, getBlogPostKeys, readingTime } from '../lib/Shared';
 import CountryDialog from '../components/CountryDialog';
 import DiveLog from '../components/DiveLog';
 import GettingThere from '../components/GettingThere';
@@ -43,19 +44,20 @@ class CountryDetail extends Component {
         });
         return;
       }
-      const postRef = ref(db, 'blog/' + countryPayload.blogPostKey);
-      onValue(postRef, snapshot => {
-        const postPayload = snapshot.val();
+      const postKeys = getBlogPostKeys(countryPayload);
+      Promise.all(postKeys.map(postKey => get(ref(db, 'blog/' + postKey)))).then(snapshots => {
+        const postList = snapshots
+              .map((snapshot, index) => snapshot.val() ? Object.assign({key: postKeys[index]}, snapshot.val()) : null)
+              .filter(Boolean)
+              .sort((a, b) => b.timestamp - a.timestamp);
         this.setState({
           country: Object.assign({
             key: countryKey
           }, countryPayload),
-          post: postPayload ? Object.assign({
-            key: countryPayload.blogPostKey
-          }, postPayload) : null,
+          postList,
           loading: false
         });
-      }, { onlyOnce: true });
+      });
     }, { onlyOnce: true });
   }
 
@@ -86,12 +88,17 @@ class CountryDetail extends Component {
       return <NoMatch />
     }
     const country = this.state.country;
-    const hasPost = !!this.state.post;
+    const postList = this.state.postList || [];
+    const hasPost = !!postList.length;
     return (
       <div className='page country-detail'>
         <div className='country-hero'>
           <LazyPhoto className='photo' src={country.photoPath} />
           <div className='shade'></div>
+          {this.state.authed && <div className='controls'>
+            <button onClick={() => this.setState({dialog: true})}><FontAwesomeIcon icon={faEdit} /></button>
+            <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
+          </div>}
           <div className='hero-overlay'>
             <div>
               <div className='meta-row'>
@@ -109,10 +116,6 @@ class CountryDetail extends Component {
                   </svg>
                 </div>}
               </div>
-              {this.state.authed && <div className='controls'>
-                <button onClick={() => this.setState({dialog: true})}><FontAwesomeIcon icon={faEdit} /></button>
-                <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
-              </div>}
             </div>
           </div>
         </div>
@@ -122,7 +125,19 @@ class CountryDetail extends Component {
               <p className='kicker'>Notes</p>
               <p>{country.description}</p>
             </div>}
-            {hasPost && <PostPreview post={this.state.post} featured label='From the blog' hideCover />}
+            {postList.length === 1 && <PostPreview post={postList[0]} featured label='From the blog' hideCover />}
+            {postList.length > 1 && <div className='blog-list-card'>
+              <p className='kicker'>From the blog</p>
+              {postList.map(post => {
+                return (
+                  <Link className='post-row' to={`/blog/${post.key}`} key={post.key}>
+                    <span className='date'>{convertTimestamp(post.timestamp)}</span>
+                    <span className='title'>{post.title}{!post.public && <span className='draft-pill'>draft</span>}</span>
+                    <span className='pill'>~{readingTime(post.body)} min</span>
+                  </Link>
+                )
+              })}
+            </div>}
             <GettingThere authed={this.state.authed} country={country.key} />
           </div>
           <Places authed={this.state.authed} country={country.key} />

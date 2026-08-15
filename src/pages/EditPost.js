@@ -151,6 +151,15 @@ class EditPost extends Component {
     result && result.then(saved => saved && this.props.history.push(`/blog/${this.state.key}`));
   }
 
+  // keeps the original time of day so same-day post ordering doesn't shift
+  onCreatedChange = (e) => {
+    if (!e.target.value) return;
+    const [year, month, day] = e.target.value.split('-').map(Number);
+    const date = new Date((this.state.timestamp || Math.floor(Date.now() / 1000)) * 1000);
+    date.setFullYear(year, month - 1, day);
+    this.onChange('timestamp', Math.floor(date.getTime() / 1000));
+  }
+
   onTogglePublish = () => {
     this.setState({
       public: !this.state.public,
@@ -362,6 +371,11 @@ class EditPost extends Component {
                 <button className={classNames('switch', {on: this.state.public})} aria-label='Toggle public'
                         onClick={this.onTogglePublish} />
               </div>
+              <div className='switch-row'>
+                <span>Created</span>
+                <input type='date' value={this.state.timestamp ? convertTimestamp(this.state.timestamp, 'yyyy-mm-dd') : ''}
+                       onChange={this.onCreatedChange} />
+              </div>
             </div>
             <div className='field'>
               <label>Cover photo</label>
@@ -371,7 +385,6 @@ class EditPost extends Component {
             <Attachments post={this.state.key} onInsert={this.insertAttachment} />
             <div className='stats'>
               <div>{wordCount.toLocaleString('en').replace(/,/g, ' ')} words · ~{readingTime(this.state.body)} min read</div>
-              {this.state.timestamp && <div>created {convertTimestamp(this.state.timestamp, 'dd:mm:yyyy')}</div>}
             </div>
           </div>
         </div>

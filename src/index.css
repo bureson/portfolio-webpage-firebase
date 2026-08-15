@@ -741,7 +741,15 @@ table td.control a:first-child {
   gap: 8px;
   margin-left: auto;
 }
+.post-hero > .controls {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  display: flex;
+  gap: 8px;
+}
 .post-page .meta-row .controls button,
+.post-hero > .controls button,
 .project-page .meta-row .controls button {
   display: flex;
   align-items: center;
@@ -756,6 +764,7 @@ table td.control a:first-child {
   width: 32px;
 }
 .post-page .meta-row .controls button:hover,
+.post-hero > .controls button:hover,
 .project-page .meta-row .controls button:hover {
   border-color: var(--contrastColor);
   color: var(--contrastColor);
@@ -1304,7 +1313,8 @@ button.primary:hover {
   margin-left: 10px;
   vertical-align: 2px;
 }
-.blog-row .pill {
+.blog-row .pill,
+.blog-list-card .post-row .pill {
   border: 1px solid rgba(232, 193, 90, 0.35);
   border-radius: 999px;
   color: var(--contrastColor);
@@ -1503,6 +1513,9 @@ button.primary:hover {
   width: 30px;
 }
 .country-hero .controls {
+  position: absolute;
+  top: 18px;
+  right: 18px;
   display: flex;
   gap: 8px;
 }
@@ -1542,6 +1555,52 @@ button.primary:hover {
    whatever combination of blog / flights cards is present */
 .detail-grid .side-stack .notes-card {
   flex: 1;
+}
+/* compact stack shown when a country links more than one post */
+.blog-list-card {
+  background: rgba(232, 193, 90, 0.07);
+  border: 1px solid rgba(232, 193, 90, 0.35);
+  border-radius: 16px;
+  padding: 20px 28px 10px;
+}
+.blog-list-card .kicker {
+  font-size: 11.5px;
+  margin: 0 0 4px;
+}
+.blog-list-card .post-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 0;
+}
+.blog-list-card .post-row + .post-row {
+  border-top: 1px solid rgba(232, 193, 90, 0.15);
+}
+.blog-list-card .post-row .title {
+  flex: 1;
+  color: var(--brightColor);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.35;
+  transition: color 300ms ease-in-out;
+}
+.blog-list-card .post-row:hover .title {
+  color: var(--contrastColor);
+}
+/* fixed date column so the titles line up whatever the month length */
+.blog-list-card .post-row .date {
+  color: rgba(236, 229, 195, 0.6);
+  font-family: var(--monoFont);
+  font-size: 11.5px;
+  min-width: 110px;
+  white-space: nowrap;
+}
+/* fixed width so the dates line up whatever the pill's digit count */
+.blog-list-card .post-row .pill {
+  box-sizing: border-box;
+  min-width: 68px;
+  text-align: center;
 }
 .notes-card {
   background: rgba(236, 229, 195, 0.05);
@@ -2640,6 +2699,12 @@ button.chip.add:hover {
   flex-wrap: wrap;
   gap: 8px;
 }
+.dialog .post-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
 .dialog .type-chips .chip {
   cursor: pointer;
   border-color: rgba(236, 229, 195, 0.25);
@@ -3689,6 +3754,15 @@ button.chip.add:hover {
   height: auto;
   width: 100%;
 }
+.editor-rail .visibility input[type='date'] {
+  color-scheme: dark; /* keeps the native calendar icon visible on the dark background */
+  border-radius: 8px;
+  font-family: var(--monoFont);
+  font-size: 12px;
+  height: auto;
+  line-height: normal;
+  padding: 5px 8px;
+}
 .editor-rail .upload {
   background: rgba(236, 229, 195, 0.03);
   border: 1px dashed rgba(232, 193, 90, 0.4);
@@ -4002,6 +4076,11 @@ button.chip.add:hover {
   }
   .post-hero .hero-overlay {
     padding: 16px 20px;
+  }
+  .post-hero > .controls,
+  .country-hero .controls {
+    top: 12px;
+    right: 12px;
   }
   .post-page .post-title {
     font-size: 34px;

@@ -40,6 +40,15 @@ export const convertTimestamp = (timestamp, format) => {
   }
 }
 
+// reads both link shapes: the current blogPostKeys map and the legacy single
+// blogPostKey (countries migrate to the map lazily, on their next dialog save)
+export const getBlogPostKeys = (country) => {
+  if (country && country.blogPostKeys) {
+    return Object.keys(country.blogPostKeys);
+  }
+  return country && country.blogPostKey ? [country.blogPostKey] : [];
+}
+
 export const defaultByType = (type) => {
   switch (type) {
     case 'timestamp':

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
-import { convertTimestamp, sortBy } from '../lib/Shared';
+import { convertTimestamp, getBlogPostKeys, sortBy } from '../lib/Shared';
 import CountryDialog from '../components/CountryDialog';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
@@ -132,7 +132,7 @@ class Countries extends Component {
               <div className='country'>
                 <div className='ribbons'>
                   {country.magnet && this.renderMagnetRibbon()}
-                  {country.blogPostKey && this.renderBlogRibbon()}
+                  {!!getBlogPostKeys(country).length && this.renderBlogRibbon()}
                   {!!this.state.diveCounts[country.key] && this.renderDiveRibbon()}
                 </div>
                 <LazyPhoto className='photo' src={country.photoPath} />

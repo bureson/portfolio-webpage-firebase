@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
-import { getDatabase, ref, onValue, remove, query, orderByChild, equalTo } from 'firebase/database';
+import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { readingTime, convertTimestamp } from '../lib/Shared';
+import { readingTime, convertTimestamp, getBlogPostKeys } from '../lib/Shared';
 import { createConverter } from '../lib/Markdown';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
@@ -63,10 +63,12 @@ class Post extends Component {
         loading: false
       });
     }, { onlyOnce: true });
-    const countryRef = query(ref(db, 'country'), orderByChild('blogPostKey'), equalTo(postKey));
-    onValue(countryRef, snapshot => {
+    // the country list is small, so the reverse lookup filters client-side
+    onValue(ref(db, 'country'), snapshot => {
       const payload = snapshot.val() || {};
-      const countryList = Object.keys(payload).map(key => Object.assign({key}, payload[key]));
+      const countryList = Object.keys(payload)
+            .map(key => Object.assign({key}, payload[key]))
+            .filter(country => getBlogPostKeys(country).includes(postKey));
       this.setState({
         countryList
       });
@@ -84,14 +86,21 @@ class Post extends Component {
     }
   }
 
-  renderMetaRow = (post) => {
+  renderMetaRow = (post, withControls) => {
     return (
       <div className='meta-row'>
         <p className='kicker'>{convertTimestamp(post.timestamp)} · ~{readingTime(post.body)} min read</p>
-        {this.state.authed && <div className='controls'>
-          <Link to={`/blog/${post.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
-          <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
-        </div>}
+        {withControls && this.renderControls(post)}
+      </div>
+    )
+  }
+
+  renderControls = (post) => {
+    if (!this.state.authed) return null;
+    return (
+      <div className='controls'>
+        <Link to={`/blog/${post.key}/edit`}><button><FontAwesomeIcon icon={faEdit} /></button></Link>
+        <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
       </div>
     )
   }
@@ -138,6 +147,7 @@ class Post extends Component {
           ? <div className='post-hero'>
               <LazyPhoto className='photo' src={post.coverPath} />
               <div className='shade'></div>
+              {this.renderControls(post)}
               <div className='hero-overlay'>
                 {this.renderMetaRow(post)}
                 {this.renderTitle(post)}
@@ -145,7 +155,7 @@ class Post extends Component {
               </div>
             </div>
           : <div className='post-head'>
-              {this.renderMetaRow(post)}
+              {this.renderMetaRow(post, true)}
               {this.renderTitle(post)}
               {this.renderChips()}
             </div>}
