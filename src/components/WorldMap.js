@@ -1,108 +1,140 @@
 import React, { Component } from 'react';
 
-import * as am4core from '@amcharts/amcharts4/core';
-import * as am4maps from '@amcharts/amcharts4/maps';
-import am4geodata_worldHigh from '@amcharts/amcharts4-geodata/worldHigh';
+import { classNames } from '../lib/Shared';
+import Dialog from './Dialog';
+
+// per-country outlines pre-projected to the same 1000x500 equirectangular
+// frame as the flight map, lazy so the ~130 KB chunk stays out of the
+// main bundle
+let countryMapPromise = null;
+const loadCountryMap = () => {
+  if (!countryMapPromise) {
+    countryMapPromise = import('../lib/countrymap.json').then(module => module.default);
+  }
+  return countryMapPromise;
+};
+
+// continent frames in map units; with slice the map always covers the
+// card, cropping each frame's edges to the card's aspect. Europe gets
+// breathing room (Iceland, North Africa) as the default view
+const CONTINENTS = [
+  { code: 'EU', name: 'Europe', view: [390, 45, 275, 150] },
+  { code: 'AS', name: 'Asia', view: [517, 14, 452, 321] },
+  { code: 'AF', name: 'Africa', view: [444, 144, 209, 206] },
+  { code: 'NA', name: 'North America', view: [0, 14, 433, 246] },
+  { code: 'SA', name: 'South America', view: [219, 150, 240, 324] },
+  { code: 'OC', name: 'Oceania', view: [748, 230, 252, 173] }
+];
+// the whole world, Antarctica included, cropped to the landmass
+const WORLD_VIEW = [0, 14, 1000, 486];
 
 class WorldMap extends Component {
-  load () {
-    // Note: inspired by example at: https://www.amcharts.com/demos/grouped-countries-map/
-    const chart = am4core.create('chartdiv', am4maps.MapChart);
-    chart.geodata = am4geodata_worldHigh;
-    chart.projection = new am4maps.projections.NaturalEarth1();
-    chart.zoomControl = new am4maps.ZoomControl();
-    const contrastColor = '#e8c15a';
 
-    chart.panEventsEnabled = false;
-    chart.homeZoomLevel = 1.12;
-    // chart.minZoomLevel = 1.12;
-    // chart.maxZoomLevel = 1.12;
-    chart.homeGeoPoint = {
-      latitude: 20,
-      longitude: 0
+  constructor(props) {
+    super(props);
+    this.state = {
+      countries: null,
+      continent: 'EU',
+      dialog: false,
+      tooltip: null
     };
-
-    const homeButton = new am4core.Button();
-    homeButton.events.on('hit', () => chart.goHome());
-
-    homeButton.icon = new am4core.Sprite();
-    homeButton.padding(7, 5, 7, 5);
-    homeButton.width = 30;
-    homeButton.icon.path = 'M16,8 L14,8 L14,16 L10,16 L10,10 L6,10 L6,16 L2,16 L2,8 L0,8 L8,0 L16,8 Z M16,8';
-    homeButton.marginBottom = 10;
-    homeButton.parent = chart.zoomControl;
-    homeButton.insertBefore(chart.zoomControl.plusButton);
-
-    const groupData = Object.values(this.props.countryList.reduce((data, country) => {
-      const year = new Date(country.date * 1000).getFullYear();
-      const countryList = data[year] ? data[year].data : [];
-      if (!country.iso) console.log(country);
-      return { ...data, [year]: { data: [...countryList, { id: country.iso, title: country.name, customData: year.toString() }] } };
-    }, {}));
-
-    // This array will be populated with country IDs to exclude from the world series
-    const excludedCountries = [];
-
-    // Create a series for each group, and populate the above array
-    groupData.forEach(group => {
-      const series = chart.series.push(new am4maps.MapPolygonSeries());
-      series.name = group.name;
-      series.useGeodata = true;
-      const includedCountries = [];
-      group.data.forEach(country => {
-        includedCountries.push(country.id);
-        excludedCountries.push(country.id);
-      });
-      series.include = includedCountries;
-
-      series.fill = am4core.color(contrastColor);
-      series.setStateOnChildren = true;
-      series.calculateVisualCenter = true;
-
-      const mapPolygonTemplate = series.mapPolygons.template;
-      mapPolygonTemplate.fill = am4core.color(contrastColor);
-      mapPolygonTemplate.fillOpacity = 0.8;
-      mapPolygonTemplate.nonScalingStroke = true;
-      mapPolygonTemplate.tooltipPosition = 'fixed'
-
-      mapPolygonTemplate.events.on('over', event => {
-        series.mapPolygons.each(mapPolygon => {
-          mapPolygon.isHover = true;
-        });
-        event.target.isHover = false;
-        event.target.isHover = true;
-      });
-
-      mapPolygonTemplate.events.on('out', event => {
-        series.mapPolygons.each(mapPolygon => {
-          mapPolygon.isHover = false;
-        })
-      });
-
-      const hoverState = mapPolygonTemplate.states.create('hover');
-      hoverState.properties.fill = am4core.color(contrastColor);
-
-      mapPolygonTemplate.tooltipText = 'Visited {title} in {customData}';
-      series.data = JSON.parse(JSON.stringify(group.data));
-    });
-
-    // The rest of the world.
-    const worldSeries = chart.series.push(new am4maps.MapPolygonSeries());
-    const worldSeriesName = 'world';
-    worldSeries.name = worldSeriesName;
-    worldSeries.useGeodata = true;
-    worldSeries.exclude = excludedCountries;
-    worldSeries.fillOpacity = 0.8;
-    worldSeries.hiddenInLegend = true;
-    worldSeries.mapPolygons.template.nonScalingStroke = true;
+    this.cardRef = React.createRef();
+    this.svgRef = React.createRef();
+    this.view = this.props.full ? WORLD_VIEW : CONTINENTS[0].view;
   }
 
-  render () {
-    setTimeout(() => this.load(), 50);
+  componentDidMount = () => {
+    loadCountryMap().then(countries => this.setState({ countries }));
+  }
+
+  componentWillUnmount = () => {
+    cancelAnimationFrame(this.anim);
+  }
+
+  selectContinent = (continent) => {
+    if (continent.code === this.state.continent) return;
+    this.setState({ continent: continent.code, tooltip: null });
+    this.animateTo(continent.view);
+  }
+
+  animateTo = (target) => {
+    cancelAnimationFrame(this.anim);
+    const svg = this.svgRef.current;
+    if (!svg) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.view = [...target];
+      svg.setAttribute('viewBox', target.join(' '));
+      return;
+    }
+    const from = [...this.view];
+    const start = performance.now();
+    const step = (now) => {
+      const t = Math.min((now - start) / 500, 1);
+      const ease = 1 - Math.pow(1 - t, 3);
+      this.view = from.map((v, i) => v + (target[i] - v) * ease);
+      svg.setAttribute('viewBox', this.view.join(' '));
+      if (t < 1) this.anim = requestAnimationFrame(step);
+    };
+    this.anim = requestAnimationFrame(step);
+  }
+
+  onHover = (e) => {
+    const hit = e.target.closest('path[data-label]');
+    if (!hit) {
+      if (this.state.tooltip) this.setState({ tooltip: null });
+      return;
+    }
+    const rect = this.cardRef.current.getBoundingClientRect();
+    this.setState({ tooltip: { label: hit.dataset.label, x: e.clientX - rect.left, y: e.clientY - rect.top } });
+  }
+
+  render = () => {
+    const full = this.props.full;
+    if (!this.state.countries) {
+      return <div className={classNames('world-map', 'skeleton', {full})} />;
+    }
+    const visited = this.props.countryList.reduce((map, country) => {
+      const iso = (country.iso || '').toUpperCase();
+      if (iso) map[iso] = country;
+      return map;
+    }, {});
     return (
-      <div id='chartdiv'></div>
+      <React.Fragment>
+        <div className={classNames('world-map', {full})} ref={this.cardRef}>
+          {/* the viewBox animates imperatively on continent change; React
+              leaves the attribute alone as long as the JSX value is stable */}
+          <svg ref={this.svgRef} viewBox={this.view.join(' ')} preserveAspectRatio={full ? 'xMidYMid meet' : 'xMidYMid slice'}
+               role='img' aria-label='Map highlighting visited countries'
+               onMouseMove={this.onHover} onMouseLeave={() => this.setState({tooltip: null})}>
+            {Object.keys(this.state.countries).map(iso => {
+              const country = visited[iso];
+              return <path key={iso} className={classNames('country', {visited: !!country})} d={this.state.countries[iso]}
+                           data-label={country && `Visited ${country.name} in ${new Date(country.date * 1000).getFullYear()}`} />
+            })}
+          </svg>
+          {!full && (
+            <div className='continents'>
+              {CONTINENTS.map(continent => (
+                <button key={continent.code} title={continent.name}
+                        className={classNames({active: this.state.continent === continent.code})}
+                        onClick={() => this.selectContinent(continent)}>{continent.code}</button>
+              ))}
+            </div>
+          )}
+          {!full && <button className='expand' onClick={() => this.setState({dialog: true})}>⤢ Full map</button>}
+          {this.state.tooltip && <div className='tooltip' style={{left: this.state.tooltip.x, top: this.state.tooltip.y}}>{this.state.tooltip.label}</div>}
+        </div>
+        {this.state.dialog && (
+          <Dialog className='map-dialog' kicker='Countries log' title='All visited countries' onClose={() => this.setState({dialog: false})}>
+            <div className='map-full'>
+              <WorldMap countryList={this.props.countryList} full />
+            </div>
+          </Dialog>
+        )}
+      </React.Fragment>
     )
   }
+
 }
 
 export default WorldMap;

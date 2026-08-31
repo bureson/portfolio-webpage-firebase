@@ -3,8 +3,6 @@
   "version": "1.2.0",
   "private": true,
   "dependencies": {
-    "@amcharts/amcharts4": "^4.10.26",
-    "@amcharts/amcharts4-geodata": "^4.1.23",
     "@codemirror/commands": "^6.10.4",
     "@codemirror/lang-markdown": "^6.5.1",
     "@codemirror/language": "^6.12.4",
@@ -52,5 +50,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@amcharts/amcharts4-geodata": "^4.1.32"
   }
 }
