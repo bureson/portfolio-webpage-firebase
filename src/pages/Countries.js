@@ -7,6 +7,7 @@ import CountryDialog from '../components/CountryDialog';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
 import Search from '../components/Search';
+import WorldMap from '../components/WorldMap';
 
 class Countries extends Component {
 
@@ -179,21 +180,24 @@ class Countries extends Component {
             </div>
           </div>
           <div className='info'>
-            <p>
-              I never saw myself as a big traveller, but it all started in summer of 2013 after my master's degree graduation. A friend of mine inspired me to try surfing in Indonesia.
-              &nbsp;I got hooked up almost immediatelly and this new passion eventually led me to Morocco, Sri Lanka, Hawaii (USA) or Australia. In 2014 I visited a total of 7 countries
-              &nbsp;and slowly started adopting a challenge to visit 30 countries before turning 30 years old. With a little time to spare I completed this challenge in January 2019 in
-              &nbsp;Tanzania. Until this day I have visited {this.state.countryList.length} countries. You can see their overview in the grid below with the date of my visit and a little note
-              &nbsp;that usually sums my impression of the country.
-            </p>
-            <p>
-              On my travels I like to collect small fridge magnets for each country to remind me of places that I've been to when back home. Because I've visited some countries multiple times and
-              &nbsp;it's easy to lose track of those that already have a place on my fridge, I came up with a star badge ⭐ so the next time I visit the country I have an easily accessible visual
-              &nbsp;cue for myself to remember whether I have a magnet or not. Currently you can find {magnetCount} magnets on my fridge!
-            </p>
-            <p>
-              To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with an article badge 📄.
-            </p>
+            <div className='text'>
+              <p>
+                I never saw myself as a big traveller, but it all started in summer of 2013 after my master's degree graduation. A friend of mine inspired me to try surfing in Indonesia.
+                &nbsp;I got hooked up almost immediatelly and this new passion eventually led me to Morocco, Sri Lanka, Hawaii (USA) or Australia. In 2014 I visited a total of 7 countries
+                &nbsp;and slowly started adopting a challenge to visit 30 countries before turning 30 years old. With a little time to spare I completed this challenge in January 2019 in
+                &nbsp;Tanzania. Until this day I have visited {this.state.countryList.length} countries. You can see their overview in the grid below with the date of my visit and a little note
+                &nbsp;that usually sums my impression of the country.
+              </p>
+              <p>
+                On my travels I like to collect small fridge magnets for each country to remind me of places that I've been to when back home. Because I've visited some countries multiple times and
+                &nbsp;it's easy to lose track of those that already have a place on my fridge, I came up with a star badge ⭐ so the next time I visit the country I have an easily accessible visual
+                &nbsp;cue for myself to remember whether I have a magnet or not. Currently you can find {magnetCount} magnets on my fridge!
+              </p>
+              <p>
+                To improve the UX of this page, I have also connected the countries with corresponding blog post. The connected countries are highlighted with an article badge 📄.
+              </p>
+            </div>
+            <WorldMap countryList={this.state.countryList} />
           </div>
         </div>
         <div className='filter-bar'>
