@@ -154,8 +154,12 @@ class FlightMap extends Component {
       [leg.from, leg.to].forEach(code => visits.set(code, (visits.get(code) || 0) + 1));
       const [a, b] = [leg.from, leg.to].sort();
       const key = routeKey(a, b);
-      if (!routes.has(key)) routes.set(key, { a, b, km: leg.km, count: 0 });
-      routes.get(key).count++;
+      // from/to keep the direction actually flown for the tooltip;
+      // `both` flips it to a two-way arrow once the return shows up
+      if (!routes.has(key)) routes.set(key, { a, b, from: leg.from, to: leg.to, km: leg.km, count: 0 });
+      const route = routes.get(key);
+      route.count++;
+      if (leg.from !== route.from) route.both = true;
     }));
     return { routes: [...routes.values()].sort((a, b) => a.count - b.count), visits: [...visits.entries()] };
   }
@@ -417,7 +421,7 @@ class FlightMap extends Component {
             const arc = this.arcFor(route.a, route.b);
             const t = (route.count - 1) / Math.max(maxCount - 1, 1);
             const style = { strokeOpacity: 0.35 + t * 0.55, strokeWidth: 0.8 + t * 1.2 };
-            const label = `${route.a} ⇄ ${route.b} · ${route.count}× · ${formatKm(route.km)}`;
+            const label = `${route.from} ${route.both ? '⇄' : '→'} ${route.to} · ${route.count}× · ${formatKm(route.km)}`;
             // arc.wrap adds a copy shifted by one map width, so a route
             // leaving the right edge re-enters on the left
             const offsets = arc.wrap ? [0, arc.wrap] : [0];
