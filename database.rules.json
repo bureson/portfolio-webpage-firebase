@@ -1,7 +1,7 @@
 {
   "rules": {
     ".read": true,
-    ".write": "auth != null",
+    ".write": "auth != null && auth.uid == 'I0Q5JV8dEPcF5jnL4fkzPSXfqSN2'",
     "attachment": {
       ".indexOn": ["post"]
     },

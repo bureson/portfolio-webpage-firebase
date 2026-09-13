@@ -42,7 +42,7 @@ class Index extends Component {
     onAuthStateChanged(auth, (user) => {
       if (user) {
         this.setState({
-          authed: !user.isAnonymous,
+          authed: true,
           user: user
         })
       } else {
