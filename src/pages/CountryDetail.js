@@ -4,7 +4,7 @@ import { getDatabase, ref, onValue, remove, get } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
 
-import { convertTimestamp, getBlogPostKeys, readingTime } from '../lib/Shared';
+import { convertTimestamp, getBlogPostKeys, readingTime, setNoIndex } from '../lib/Shared';
 import CountryDialog from '../components/CountryDialog';
 import DiveLog from '../components/DiveLog';
 import GettingThere from '../components/GettingThere';
@@ -30,6 +30,10 @@ class CountryDetail extends Component {
     this.loadData();
   }
 
+  componentWillUnmount = () => {
+    setNoIndex(false);
+  }
+
   loadData = () => {
     const countryKey = this.props.match.params.country;
     const db = getDatabase();
@@ -37,6 +41,7 @@ class CountryDetail extends Component {
     onValue(countryRef, snapshot => {
       const countryPayload = snapshot.val();
       document.title = `${countryPayload ? countryPayload.name : 'Not found'} | Ondrej Bures`;
+      setNoIndex(!countryPayload);
       if (!countryPayload) {
         this.setState({
           country: null,

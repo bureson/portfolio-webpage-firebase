@@ -1,12 +1,15 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 
+import { setCanonical } from '../lib/Shared';
+
 const RouteChangeListener = props => {
   // GoatCounter counts the initial page load itself; only SPA navigations
   // after that need to be reported manually.
   const isInitialLoad = React.useRef(true);
   React.useEffect(() => {
     window.scrollTo(0, 0);
+    setCanonical(props.location.pathname);
     if (isInitialLoad.current) {
       isInitialLoad.current = false;
       return;

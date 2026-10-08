@@ -4,7 +4,7 @@ import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import { getStorage, ref as storageRef, deleteObject } from 'firebase/storage';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { classNames, convertTimestamp } from '../lib/Shared';
+import { classNames, convertTimestamp, setNoIndex } from '../lib/Shared';
 import { createConverter } from '../lib/Markdown';
 import { galleryList, isThisSite, shotStoragePath, statusLabel, techList } from '../lib/Projects';
 import Dialog from '../components/Dialog';
@@ -42,6 +42,7 @@ class ProjectDetail extends Component {
   }
 
   componentWillUnmount = () => {
+    setNoIndex(false);
     document.removeEventListener('keydown', this.onKeyDown);
   }
 
@@ -79,6 +80,7 @@ class ProjectDetail extends Component {
     onValue(ref(db, 'project/' + projectKey), snapshot => {
       const payload = snapshot.val();
       document.title = `${payload ? payload.title : 'Not found'} | Ondrej Bures`;
+      setNoIndex(!payload || !payload.public);
       this.setState({
         project: payload ? Object.assign({
           key: projectKey

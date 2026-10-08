@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getDatabase, ref, set, push, child } from 'firebase/database';
 
+import { loadGoogleMaps } from '../lib/GoogleMaps';
 import { convertTimestamp } from '../lib/Shared';
 
 class Autocomplete extends Component {
@@ -17,12 +18,16 @@ class Autocomplete extends Component {
   }
 
   componentDidMount = () => {
-    this.autocomplete = new window.google.maps.places.Autocomplete(this.refs.autocomplete, {types: ['geocode']});
-    this.event = this.autocomplete.addListener('place_changed', this.onSelected.bind(this));
+    loadGoogleMaps().then(maps => {
+      if (this.unmounted) return;
+      this.autocomplete = new maps.places.Autocomplete(this.refs.autocomplete, {types: ['geocode']});
+      this.event = this.autocomplete.addListener('place_changed', this.onSelected.bind(this));
+    }).catch(console.log);
   }
 
   componentWillUnmount() {
-    this.event.remove();
+    this.unmounted = true;
+    this.event && this.event.remove();
   }
 
   onSelected = () => {

@@ -1,9 +1,16 @@
 import React, { Component } from 'react';
 
+import { setNoIndex } from '../lib/Shared';
+
 class NoMatch extends Component {
 
   componentDidMount = () => {
     document.title = 'Not found | Ondrej Bures';
+    setNoIndex(true);
+  }
+
+  componentWillUnmount = () => {
+    setNoIndex(false);
   }
 
   render = () => {

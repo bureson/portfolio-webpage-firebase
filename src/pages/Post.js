@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
-import { readingTime, convertTimestamp, getBlogPostKeys } from '../lib/Shared';
+import { readingTime, convertTimestamp, getBlogPostKeys, setNoIndex } from '../lib/Shared';
 import { createConverter } from '../lib/Markdown';
 import LazyPhoto from '../components/LazyPhoto';
 import Loader from '../components/Loader';
@@ -20,6 +20,10 @@ class Post extends Component {
       post: null,
       loading: true
     }
+  }
+
+  componentWillUnmount = () => {
+    setNoIndex(false);
   }
 
   componentDidMount = () => {
@@ -56,6 +60,7 @@ class Post extends Component {
     onValue(postRef, snapshot => {
       const payload = snapshot.val();
       document.title = `${payload ? payload.title : 'Not found'} | Ondrej Bures`;
+      setNoIndex(!payload || !payload.public);
       this.setState({
         post: payload ? Object.assign({
           key: postKey

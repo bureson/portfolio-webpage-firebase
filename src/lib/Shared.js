@@ -145,3 +145,32 @@ export const valueByType = (value, type) => {
       return value;
   }
 }
+
+// Note: every URL serves the same index.html with HTTP 200, so pages that
+// resolve to nothing (or to a draft) opt out of indexing themselves
+export const setNoIndex = (noIndex) => {
+  const existing = document.head.querySelector('meta[name="robots"]');
+  if (noIndex && !existing) {
+    const meta = document.createElement('meta');
+    meta.name = 'robots';
+    meta.content = 'noindex';
+    document.head.appendChild(meta);
+  } else if (!noIndex && existing) {
+    existing.remove();
+  }
+}
+
+export const SITE_URL = 'https://www.ondrejbures.com';
+
+// Note: point every host the app is served from (web.app, firebaseapp.com)
+// at the one public domain so search engines don't index duplicates
+export const setCanonical = (pathname) => {
+  const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : '/';
+  let link = document.head.querySelector('link[rel="canonical"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.rel = 'canonical';
+    document.head.appendChild(link);
+  }
+  link.href = SITE_URL + path;
+}
