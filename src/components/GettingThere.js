@@ -3,8 +3,12 @@ import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue } from 'firebase/database';
 
 import FlightLegs from './FlightLegs';
+import Pager from './Pager';
 import { classNames, convertTimestamp } from '../lib/Shared';
 import { flightTotals, formatKm, formatCO2, kmComparisons } from '../lib/Flights';
+
+// trips shown per page; a long list used to stretch the sidebar (and the map beside it)
+const PER_PAGE = 5;
 
 class GettingThere extends Component {
 
@@ -14,6 +18,7 @@ class GettingThere extends Component {
       authed: props.authed,
       flights: [],
       expanded: null,
+      page: 0,
       loading: true
     }
   }
@@ -48,6 +53,12 @@ class GettingThere extends Component {
     this.setState(state => ({
       expanded: state.expanded === key ? null : key
     }));
+  }
+
+  // switching pages collapses the open trip, so every page starts compact
+  onPageChange = (e, page) => {
+    e.preventDefault();
+    this.setState({ page, expanded: null });
   }
 
   summary = (totals, legCount) => {
@@ -104,7 +115,8 @@ class GettingThere extends Component {
               </div>
             : <Link className='more' to='/flights'>full flight log →</Link>}
         </div>
-        {flights.map(this.renderTrip)}
+        {flights.slice(this.state.page * PER_PAGE, (this.state.page + 1) * PER_PAGE).map(this.renderTrip)}
+        {flights.length > PER_PAGE && <Pager itemsCount={flights.length} perPage={PER_PAGE} currentPage={this.state.page} onPageChange={this.onPageChange} />}
         <div className='foot'>
           <div>{this.summary(totals, legCount)}</div>
           {flights.length > 1 && <Link to='/flights'>full flight log →</Link>}

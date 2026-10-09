@@ -14,18 +14,18 @@
     "@fortawesome/free-solid-svg-icons": "^6.7.2",
     "@fortawesome/react-fontawesome": "^0.2.0",
     "@lezer/highlight": "^1.2.3",
-    "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react": "13.3",
+    "@testing-library/dom": "^10.4.2",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
     "@testing-library/user-event": "^14.4.2",
     "firebase": "^12.7.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^5.0.1",
     "react-scripts": "^5.0.1",
-    "reading-time": "1.2",
+    "reading-time": "^1.5.0",
     "recharts": "^2.1.13",
-    "showdown": "2.1",
-    "web-vitals": "^2.1.4"
+    "showdown": "2.1"
   },
   "scripts": {
     "start": "react-scripts start",

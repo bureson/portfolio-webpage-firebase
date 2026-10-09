@@ -2613,6 +2613,12 @@ button.chip.add:hover {
   color: var(--contrastColor);
   white-space: nowrap;
 }
+/* the last trip already draws the line above; the pager only separates itself from the foot */
+.getting-there .pager {
+  border-top: 0;
+  border-bottom: 1px solid rgba(236, 229, 195, 0.08);
+  padding: 12px 22px;
+}
 .dialog-overlay {
   display: flex;
   align-items: flex-start;

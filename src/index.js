@@ -6,7 +6,6 @@ import { initializeApp } from 'firebase/app';
 import './index.css';
 import Index from './pages/Index';
 import RouteChangeListener from './components/RouteChangeListener';
-import reportWebVitals from './reportWebVitals';
 
 const config = {
   apiKey: "AIzaSyAeVI0XvsnAu3W7msJQ3Iff4ly-gcm9uLs",
@@ -28,7 +27,3 @@ ReactDOM.render(
   document.getElementById('root')
 );
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals 
-reportWebVitals();
