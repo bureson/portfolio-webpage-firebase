@@ -1,5 +1,5 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { initializeApp } from 'firebase/app';
 
@@ -17,13 +17,12 @@ const config = {
 };
 initializeApp(config);
 
-ReactDOM.render(
+createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <Router>
       <RouteChangeListener />
       <Route component={Index} path='/' />
     </Router>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 );
 

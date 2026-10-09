@@ -8,6 +8,7 @@ class Autocomplete extends Component {
 
   constructor(props) {
     super(props);
+    this.autocompleteRef = React.createRef();
     this.state = {
       country: props.country,
       date: convertTimestamp(Math.floor(Date.now() / 1000), 'yyyy-mm-dd'),
@@ -20,7 +21,7 @@ class Autocomplete extends Component {
   componentDidMount = () => {
     loadGoogleMaps().then(maps => {
       if (this.unmounted) return;
-      this.autocomplete = new maps.places.Autocomplete(this.refs.autocomplete, {types: ['geocode']});
+      this.autocomplete = new maps.places.Autocomplete(this.autocompleteRef.current, {types: ['geocode']});
       this.event = this.autocomplete.addListener('place_changed', this.onSelected.bind(this));
     }).catch(console.log);
   }
@@ -68,7 +69,7 @@ class Autocomplete extends Component {
           <div className='field-grid place-row'>
             <div className='field'>
               <label>Place</label>
-              <input ref='autocomplete' placeholder='Search a place ...' />
+              <input ref={this.autocompleteRef} placeholder='Search a place ...' />
             </div>
             <div className='field'>
               <label>Date</label>

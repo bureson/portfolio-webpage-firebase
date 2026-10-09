@@ -3,12 +3,12 @@ import { render, screen, fireEvent } from '@testing-library/react';
 
 import Footer from './Footer';
 
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
-  signOut: jest.fn()
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(),
+  signOut: vi.fn()
 }));
 
-const { signOut } = require('firebase/auth');
+import { signOut } from 'firebase/auth';
 
 describe('component/Footer', () => {
   it('renders without the log out button when not authed', () => {

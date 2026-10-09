@@ -34,7 +34,7 @@ describe('component/Pager', () => {
   });
 
   it('navigates', () => {
-    const onPageChange = jest.fn();
+    const onPageChange = vi.fn();
     render(<Pager itemsCount={20} currentPage={1} perPage={5} onPageChange={onPageChange} />);
 
     fireEvent.click(screen.getByText('2'));

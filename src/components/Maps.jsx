@@ -6,9 +6,16 @@ class Maps extends Component {
 
   constructor(props) {
     super(props);
+    this.mapRef = React.createRef();
     this.state = {
       places: props.places
     };
+  }
+
+  componentDidMount = () => {
+    // StrictMode simulates an unmount and remount on the same instance in
+    // development, which would otherwise leave the flag stuck at true
+    this.unmounted = false;
   }
 
   componentDidUpdate = (prevProps) => {
@@ -30,7 +37,7 @@ class Maps extends Component {
     // Note: reuse a single Map instance — Google Maps objects are never
     // garbage collected, so recreating one per update leaks the old map
     if (!this.map) {
-      this.map = new window.google.maps.Map(this.refs.map, {
+      this.map = new window.google.maps.Map(this.mapRef.current, {
         controlSize: 24,
         mapTypeControl: false,
         streetViewControl: false
@@ -78,7 +85,7 @@ class Maps extends Component {
   render = () => {
     const className = this.state.places.length ? 'map' : 'no-map';
     return (
-      <div ref='map' className={className}></div>
+      <div ref={this.mapRef} className={className}></div>
     )
   }
 

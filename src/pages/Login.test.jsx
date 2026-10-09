@@ -3,22 +3,22 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 
 import Login from './Login';
 
-jest.mock('firebase/auth', () => ({
-  getAuth: jest.fn(),
-  signInWithPopup: jest.fn(),
-  GoogleAuthProvider: jest.fn()
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(),
+  signInWithPopup: vi.fn(),
+  GoogleAuthProvider: vi.fn()
 }));
 
-const { signInWithPopup, GoogleAuthProvider } = require('firebase/auth');
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
 describe('page/Login', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   it('signs in with Google and redirects home', async () => {
     signInWithPopup.mockResolvedValue({});
-    const history = { push: jest.fn() };
+    const history = { push: vi.fn() };
 
     render(<Login history={history} />);
     fireEvent.click(screen.getByRole('button', { name: /log in with google/i }));
@@ -30,7 +30,7 @@ describe('page/Login', () => {
 
   it('shows the error message on failure', async () => {
     signInWithPopup.mockRejectedValue({ message: 'rejected' });
-    const history = { push: jest.fn() };
+    const history = { push: vi.fn() };
 
     render(<Login history={history} />);
     fireEvent.click(screen.getByRole('button'));
@@ -40,7 +40,7 @@ describe('page/Login', () => {
   });
 
   it('does not render email or password fields', () => {
-    render(<Login history={{ push: jest.fn() }} />);
+    render(<Login history={{ push: vi.fn() }} />);
 
     expect(screen.queryByLabelText('E-mail')).not.toBeInTheDocument();
     expect(screen.queryByLabelText('Password')).not.toBeInTheDocument();

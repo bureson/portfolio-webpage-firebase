@@ -4,17 +4,17 @@ import { MemoryRouter } from 'react-router-dom';
 
 import Home from './Home';
 
-jest.mock('firebase/database', () => ({
-  getDatabase: jest.fn(),
-  ref: jest.fn(),
-  onValue: jest.fn()
+vi.mock('firebase/database', () => ({
+  getDatabase: vi.fn(),
+  ref: vi.fn(),
+  onValue: vi.fn()
 }));
 
-const { ref, onValue } = require('firebase/database');
+import { ref, onValue } from 'firebase/database';
 
 describe('pages/Home', () => {
   afterEach(() => {
-    jest.restoreAllMocks();
+    vi.restoreAllMocks();
   });
 
   it('renders the hero and cards from firebase data', () => {
@@ -32,7 +32,7 @@ describe('pages/Home', () => {
         p2: { title: 'Private draft', timestamp: 2, public: false, body: 'short' }
       }
     };
-    jest.spyOn(Math, 'random').mockReturnValue(0);
+    vi.spyOn(Math, 'random').mockReturnValue(0);
     ref.mockImplementation((db, path) => path);
     onValue.mockImplementation((path, callback) => callback({ val: () => data[path] }));
 
