@@ -1,4 +1,5 @@
-const readTime = require('reading-time');
+// the package root also pulls in a Node stream helper that the browser bundle cannot resolve
+const readTime = require('reading-time/lib/reading-time');
 
 export const classNames = (...args) => {
   const classNameList = args.reduce((list, arg) => {
