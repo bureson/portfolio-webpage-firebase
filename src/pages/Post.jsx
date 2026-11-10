@@ -135,7 +135,8 @@ class Post extends Component {
     if (this.state.loading) {
       return <Loader />
     }
-    if (!this.state.post) {
+    // a draft is only reachable by the owner; everyone else gets a 404
+    if (!this.state.post || (!this.state.post.public && !this.state.authed)) {
       return <NoMatch />
     }
     const post = this.state.post;

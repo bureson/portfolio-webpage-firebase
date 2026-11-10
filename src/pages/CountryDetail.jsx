@@ -2,10 +2,11 @@ import React, { Component } from 'react';
 import { Link } from 'react-router-dom';
 import { getDatabase, ref, onValue, remove, get } from 'firebase/database';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEdit, faTrash } from '@fortawesome/free-solid-svg-icons';
+import { faEdit, faTrash, faWater } from '@fortawesome/free-solid-svg-icons';
 
 import { convertTimestamp, getBlogPostKeys, readingTime, setNoIndex } from '../lib/Shared';
 import CountryDialog from '../components/CountryDialog';
+import DiveDialog from '../components/DiveDialog';
 import DiveLog from '../components/DiveLog';
 import GettingThere from '../components/GettingThere';
 import LazyPhoto from '../components/LazyPhoto';
@@ -22,6 +23,8 @@ class CountryDetail extends Component {
       authed: props.authed,
       country: null,
       dialog: false,
+      diveCount: null,
+      diveDialog: false,
       loading: true
     }
   }
@@ -93,7 +96,8 @@ class CountryDetail extends Component {
       return <NoMatch />
     }
     const country = this.state.country;
-    const postList = this.state.postList || [];
+    // drafts stay visible to the owner only, same as on the blog page
+    const postList = (this.state.postList || []).filter(post => this.state.authed || post.public);
     const hasPost = !!postList.length;
     return (
       <div className='page country-detail'>
@@ -103,6 +107,7 @@ class CountryDetail extends Component {
           {this.state.authed && <div className='controls'>
             <button onClick={() => this.setState({dialog: true})}><FontAwesomeIcon icon={faEdit} /></button>
             <button onClick={this.onDelete}><FontAwesomeIcon icon={faTrash} /></button>
+            {this.state.diveCount === 0 && <button title='Log a dive' onClick={() => this.setState({diveDialog: true})}><FontAwesomeIcon icon={faWater} /></button>}
           </div>}
           <div className='hero-overlay'>
             <div>
@@ -147,8 +152,9 @@ class CountryDetail extends Component {
           </div>
           <Places authed={this.state.authed} country={country.key} />
         </div>
-        <DiveLog authed={this.state.authed} country={country.key} countryName={country.name} />
+        <DiveLog authed={this.state.authed} country={country.key} countryName={country.name} onDivesLoaded={count => this.setState({diveCount: count})} />
         {this.state.dialog && <CountryDialog country={country} onClose={() => { this.setState({dialog: false}); this.loadData(); }} />}
+        {this.state.diveDialog && <DiveDialog country={country.key} countryName={country.name} onClose={() => this.setState({diveDialog: false})} />}
       </div>
     )
   }

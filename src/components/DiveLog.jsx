@@ -32,6 +32,8 @@ class DiveLog extends Component {
         dives,
         loading: false
       });
+      // lets the parent offer an "add dive" control while the section is hidden
+      this.props.onDivesLoaded && this.props.onDivesLoaded(dives.length);
     });
   }
 
@@ -58,7 +60,8 @@ class DiveLog extends Component {
 
   render = () => {
     const dives = this.state.dives;
-    if (this.state.loading || (!this.state.authed && !dives.length)) {
+    // with no dives the section stays hidden; the owner adds the first one from the hero controls
+    if (this.state.loading || !dives.length) {
       return null;
     }
     const depths = dives.map(dive => dive.depth).filter(depth => depth > 0);
@@ -73,7 +76,7 @@ class DiveLog extends Component {
             <p className='kicker'>Dive log</p>
             <h2>{dives.length} {dives.length === 1 ? 'dive' : 'dives'} in {this.props.countryName}</h2>
           </div>
-          {!!dives.length && <div className='stats'>
+          <div className='stats'>
             {!!depths.length && <div className='stat'>
               <div className='value'>{Math.max(...depths)} m</div>
               <div className='label'>deepest</div>
@@ -86,7 +89,7 @@ class DiveLog extends Component {
               <div className='value'>{Math.round(temps.reduce((sum, temp) => sum + temp, 0) / temps.length)} °C</div>
               <div className='label'>avg water</div>
             </div>}
-          </div>}
+          </div>
         </div>
         <div className='dive-grid'>
           {dives.map(dive => {
