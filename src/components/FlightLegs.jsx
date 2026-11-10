@@ -68,8 +68,9 @@ class FlightLegs extends Component {
       <div className='legs'>
         {legs.map((leg, index) => {
           const next = legs[index + 1];
-          // keep the chain unbroken only when the next leg continues
-          // from this leg's destination (open-jaw trips get a gap)
+          // the next leg usually continues from this leg's destination; on
+          // open-jaw trips a quiet "by land" connector bridges the two
+          // airports, so the route reads as one chain without claiming a flight
           const chained = next && next.from === leg.to;
           return (
             <div className='leg' key={index}>
@@ -79,7 +80,10 @@ class FlightLegs extends Component {
                 <div className='dashes'><span>➤</span></div>
               </div>
               {!chained && this.renderAirport(leg.to)}
-              {!chained && next && <div className='gap'></div>}
+              {!chained && next && <div className='segment land'>
+                <div className='distance'>by land</div>
+                <div className='dashes'></div>
+              </div>}
             </div>
           )
         })}

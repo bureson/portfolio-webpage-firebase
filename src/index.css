@@ -2438,8 +2438,14 @@ button.chip.add:hover {
   top: 50%;
   transform: translateY(-50%);
 }
-.getting-there .gap {
-  width: 22px;
+/* not a flight: fainter dots, no arrow, no distance */
+.getting-there .segment.land .distance {
+  font-style: italic;
+  margin: 0 0 4px;
+}
+.getting-there .segment.land .dashes {
+  background: repeating-linear-gradient(90deg, rgba(236, 229, 195, 0.55) 0 2px, transparent 2px 6px);
+  height: 2px;
 }
 .leg-rows {
   display: flex;
