@@ -111,10 +111,10 @@ class CountryDetail extends Component {
           </div>}
           <div className='hero-overlay'>
             <div>
-              <div className='meta-row'>
-                <p className='kicker'>Conquered · {convertTimestamp(country.date)}</p>
-              </div>
               <h2>{country.name}</h2>
+              <div className='meta-row'>
+                <p className='kicker'>First visited in {convertTimestamp(country.date)}</p>
+              </div>
             </div>
             <div className='actions'>
               <div className='badges'>

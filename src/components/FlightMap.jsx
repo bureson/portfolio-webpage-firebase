@@ -418,7 +418,9 @@ class FlightMap extends Component {
              onDoubleClick={this.onReset} onMouseMove={this.onHover} onMouseLeave={() => this.setState({tooltip: null})}>
           <path className='land' d={this.state.world.path} />
           {routes.map(route => {
-            const arc = this.arcFor(route.a, route.b);
+            // the path runs the way the leg was flown (a/b are only sorted
+            // for the key), so the draw-in animation heads to the destination
+            const arc = this.arcFor(route.from, route.to);
             const t = (route.count - 1) / Math.max(maxCount - 1, 1);
             const style = { strokeOpacity: 0.35 + t * 0.55, strokeWidth: 0.8 + t * 1.2 };
             const label = `${route.from} ${route.both ? '⇄' : '→'} ${route.to} · ${route.count}× · ${formatKm(route.km)}`;

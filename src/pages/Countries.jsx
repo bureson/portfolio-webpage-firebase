@@ -162,7 +162,7 @@ class Countries extends Component {
             <h2>Countries log</h2>
             <div className='stats'>
               <div className='stat'>
-                <div className='value'>{this.state.countryList.length}</div>
+                <div className='value'>{this.state.countryList.length} <span className='check'>{'⚑'}</span></div>
                 <div className='label'>countries</div>
               </div>
               <div className='stat'>

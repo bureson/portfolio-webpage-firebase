@@ -1052,31 +1052,101 @@ table td.control a:first-child {
   border-color: rgba(232, 193, 90, 0.5);
   color: var(--brightColor);
 }
+/* top corner, the bottom edge belongs to the centred chips */
 .world-map .expand {
   position: absolute;
   right: 10px;
-  bottom: 10px;
+  top: 10px;
 }
 /* continent chips refocus the frame */
 .world-map .continents {
   position: absolute;
-  left: 10px;
+  left: 50%;
   bottom: 10px;
+  transform: translateX(-50%);
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
   gap: 4px;
 }
 .world-map .continents button {
   padding: 5px 7px;
 }
-/* the selected chip is filled and inert, so it never reads as a
-   hoverable button next to the hovered one */
+/* round play/pause button; its svg fills it through the .world-map svg
+   rule, the track circle stands in for the border */
+.world-map .continents button.player {
+  position: relative;
+  flex: none;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+}
+/* thin rule between the play button and the continent chips */
+.world-map .continents .divider {
+  flex: none;
+  width: 1px;
+  height: 16px;
+  margin: 0 4px;
+  background: rgba(236, 229, 195, 0.25);
+}
+.world-map .player circle {
+  fill: none;
+  stroke: rgba(236, 229, 195, 0.25);
+  stroke-width: 1;
+}
+/* countdown to the next continent while the card auto-rotates; the
+   duration comes inline from the rotation interval */
+.world-map .player .ring {
+  stroke: var(--contrastColor);
+  stroke-width: 1.5;
+  stroke-dasharray: 100;
+  animation: world-map-progress linear forwards;
+}
+.world-map .player .pause {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+}
+.world-map .player .play {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 1;
+  stroke-linejoin: round;
+}
+@keyframes world-map-progress {
+  from { stroke-dashoffset: 100; }
+  to { stroke-dashoffset: 0; }
+}
+/* the selected chip is inert, so it never reads as a hoverable button
+   next to the hovered one; its gold frame and fill come from the
+   indicator laid over it */
 .world-map .continents button.active,
 .world-map .continents button.active:hover {
-  background: rgba(232, 193, 90, 0.18);
-  border-color: rgba(232, 193, 90, 0.7);
+  border-color: rgba(236, 229, 195, 0.25);
   color: var(--contrastColor);
   cursor: default;
+}
+/* gold frame that glides between chips; sized and placed from script,
+   hidden until its first placement */
+.world-map .continents .indicator {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  background: rgba(232, 193, 90, 0.18);
+  border: 1px solid rgba(232, 193, 90, 0.7);
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: transform 350ms cubic-bezier(0.3, 0, 0.2, 1), width 350ms cubic-bezier(0.3, 0, 0.2, 1);
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-map .continents .indicator {
+    transition: none;
+  }
 }
 /* the dialog instance fills the card; meet letterboxes the world into
    whatever shape the screen leaves, the card background reads as ocean */
@@ -1573,7 +1643,9 @@ button.primary:hover {
 .country-hero .shade {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(8, 13, 24, 0.15) 30%, rgba(8, 13, 24, 0.85) 100%);
+  /* the top half of the photo stays clear; the shade only fades in
+     behind the title at the bottom */
+  background: linear-gradient(180deg, rgba(8, 13, 24, 0) 45%, rgba(8, 13, 24, 0.4) 72%, rgba(8, 13, 24, 0.88) 100%);
 }
 .country-hero .hero-overlay {
   position: absolute;
@@ -1590,7 +1662,7 @@ button.primary:hover {
   display: flex;
   align-items: center;
   gap: 14px;
-  margin: 0 0 10px;
+  margin: 12px 0 0;
 }
 .country-hero .back {
   font-family: var(--monoFont);
